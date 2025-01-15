@@ -8,12 +8,14 @@
 
 - Create QTI 2.1 ZIP packages quickly and easily.
 - Supports the most widely used question types:
-  - Multiple Choice (Single/Multiple Answer)
+  - Multiple Choice
+  - Multiple Answer
   - Fill-in-the-Blank (Textual and Numeric)
-  - Matching and Ordering
+  - Matching
+  - Ordering
 - Automatically generates valid QTI XML files.
 - Ensures compatibility with popular LMS platforms.
-- Designed with extensibility for QTI 3.0 in mind.
+- QTI 3.0 planned for the future
 
 ---
 
