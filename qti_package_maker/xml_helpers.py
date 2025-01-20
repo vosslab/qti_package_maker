@@ -34,6 +34,7 @@ def create_assessment_item(N: int, title: str) -> ET.Element:
 			"title": title,
 			"adaptive": "false",
 			"timeDependent": "false",
+			#TODO make this a timestamp instead??
 			"identifier": f"QUE__{N}"
 		}
 	)
