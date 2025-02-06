@@ -11,7 +11,7 @@ import lxml
 import add_item
 import manifest
 import question_bank
-import item_helpers
+import string_functions
 
 #==============
 
@@ -73,10 +73,9 @@ class QTIPackage:
 
 		def wrapped(*args, **kwargs):
 			question_text = args[0] if args else ""
-			crc16 = item_helpers.get_crc16_from_string(question_text)
+			crc16 = string_functions.get_crc16_from_string(question_text)
 			item_etree = item_func(*args, **kwargs)
-			title = f"Question_{crc16}"
-			self.add_assessment_item(item_etree, title=title, item_type=item_type)
+			self.add_assessment_item(item_etree, title=crc16, item_type=item_type)
 
 		return wrapped
 
@@ -110,7 +109,7 @@ class QTIPackage:
 				assessment_xml_string = lxml.etree.tostring(assessment_item_etree,
 					pretty_print=True, xml_declaration=True, encoding="UTF-8")
 				f.write(assessment_xml_string.decode("utf-8"))
-		print(f"Saved {len(assessment_file_name_list)} assessment items to {self.output_dir}/qti21/")
+		print(f"Saved {len(assessment_file_name_list)} assessment items to {self.package_name}/qti21/")
 		return assessment_file_name_list
 
 	#==============
@@ -155,6 +154,7 @@ class QTIPackage:
 					full_path = os.path.join(root, file)
 					relative_path = os.path.relpath(full_path, self.output_dir)  # Path relative to the output directory
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
+		self.clean_temp_files()
 
 		print(f"Package saved to {zip_path}")
 

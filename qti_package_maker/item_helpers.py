@@ -39,7 +39,7 @@ def create_assessment_item_header(orig_crc16: str):
 	return item_tree
 
 #==============
-def create_response_declaration(response_id: str, correct_values: list) -> lxml.etree.Element:
+def create_response_declaration(correct_values: list) -> lxml.etree.Element:
 	"""
 	Create a <responseDeclaration> element.
 
@@ -49,11 +49,18 @@ def create_response_declaration(response_id: str, correct_values: list) -> lxml.
 
 	Returns:
 		lxml.etree.Element: The <responseDeclaration> element.
+  <responseDeclaration cardinality="multiple" baseType="identifier" identifier="RESPONSE">
+    <correctResponse>
+      <value>answer_1</value>
+      <value>answer_2</value>
+    </correctResponse>
+  </responseDeclaration>
+
 	"""
 	element = lxml.etree.Element(
 		"responseDeclaration",
 		attrib={
-			"identifier": response_id,
+			"identifier": "RESPONSE",
 			"cardinality": "single" if len(correct_values) == 1 else "multiple",
 			"baseType": "identifier",
 		},
@@ -80,7 +87,7 @@ def create_outcome_declarations() -> list:
 	return outcome_declare_tree
 
 #==============
-def create_item_body(question_html_text: str, choices_list: list) -> lxml.etree.Element:
+def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
 	"""
 	Create the <itemBody> element with the question text and choices.
 
@@ -97,8 +104,8 @@ def create_item_body(question_html_text: str, choices_list: list) -> lxml.etree.
 
 	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
 		"responseIdentifier": "RESPONSE",
-		"maxChoices": "1",
-		"shuffle": "true",
+		"maxChoices": f"{max_choices:d}",
+		"shuffle": f"{str(shuffle).lower()}",
 	})
 	for idx, choice_html_text in enumerate(choices_list, start=1):
 		simple_choice = lxml.etree.SubElement(
@@ -109,7 +116,7 @@ def create_item_body(question_html_text: str, choices_list: list) -> lxml.etree.
 	return item_body
 
 #==============
-def create_response_processing(response_id: str) -> lxml.etree.Element:
+def create_response_processing() -> lxml.etree.Element:
 	"""
 	Create a minimal <responseProcessing> element compatible with Canvas and Blackboard.
 
@@ -125,8 +132,8 @@ def create_response_processing(response_id: str) -> lxml.etree.Element:
 
 	# Match correct response
 	match = lxml.etree.SubElement(response_if, "match")
-	lxml.etree.SubElement(match, "variable", {"identifier": response_id})
-	lxml.etree.SubElement(match, "correct", {"identifier": response_id})
+	lxml.etree.SubElement(match, "variable", {"identifier": "RESPONSE"})
+	lxml.etree.SubElement(match, "correct", {"identifier": "RESPONSE"})
 
 	return response_processing
 

@@ -33,12 +33,18 @@ def main():
 	# Parse arguments from the command line
 	#args = parse_arguments()
 
-	qti_packer = package_maker.QTIPackage('example_pool')
+	qti_packer = package_maker.QTIPackage('example_pool_from_test_maker')
 	qti_packer.show_available_question_types()
 	question_text = 'What is your favorite color?'
 	answer_text = 'blue'
 	choices_list = ['blue', 'red', 'yellow']
 	qti_packer.add_MC(question_text, choices_list, answer_text)
+
+	question_text = 'Which are types of fruit?'
+	answers_list = ['orange', 'banana', 'apple']
+	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
+	qti_packer.add_MA(question_text, choices_list, answers_list)
+
 	qti_packer.save_package()
 
 #===========================================================
