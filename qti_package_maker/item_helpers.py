@@ -1,210 +1,132 @@
 
-# Standard Library
-import re
-import os
-import copy
+# PIP3 modules
+import lxml
+import lxml.etree
 import random
-import subprocess
 
-# Pip3 Library
-#import lxml
-import crcmod.predefined #pip
-
-#anticheating measures
-use_nocopy_script = False
-use_insert_hidden_terms = False
-hidden_term_density = 0.7
-use_add_no_click_div = False
-noPrint = True
-noCopy = True
-noScreenshot = False
-autoBlur = True
-
-hidden_term_bank = None
-answer_histogram = {}
-question_count = 0
-crc16_dict = {}
-
-#==========================
-def get_crc16_from_string(mystr):
-	crc16 = crcmod.predefined.Crc('xmodem')
-	try:
-		crc16.update(mystr.encode('ascii', errors='strict'))
-	except UnicodeEncodeError:
-		checkAscii(mystr)
-		raise ValueError
-	return crc16.hexdigest().lower()
-
-#==========================
-def checkAscii(mystr):
-	#destructive function
-	mystr = mystr.replace('. ', '\n')
-	mystr = mystr.replace(', ', '\n')
-	mystr = mystr.replace('<p>', '\n')
-	mystr = mystr.replace('</p>', '\n')
-	mystr = mystr.replace('<br/>', '\n')
-	mystr = mystr.replace('\n\n', '\n')
-	for i,line in enumerate(mystr.split('\n')):
-		for j,c in enumerate(list(line)):
-			try:
-				c.encode('ascii', errors='strict')
-			except UnicodeEncodeError:
-				print(line)
-				print(i, j, c)
-				print("^ is not ascii")
-				raise ValueError
-	return True
-
-#==========================
-def make_question_pretty(question):
-	pretty_question = copy.copy(question)
-	#print(len(pretty_question))
-	pretty_question = re.sub(r'\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
-	pretty_question = re.sub(r'\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
-	if '<table' in pretty_question or '</table' in pretty_question:
-		print("MISSED A TABLE")
-		print(pretty_question)
-		raise ValueError
-		pass
-	#print(len(pretty_question))
-	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
-	pretty_question = re.sub(r'h[0-9]\>', 'p>', pretty_question)
-	pretty_question = re.sub('<br/>', '\n', pretty_question)
-	pretty_question = re.sub('<li>', '\n* ', pretty_question)
-	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
-	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
-	pretty_question = re.sub('</span>', '', pretty_question)
-	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
-	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
-	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
-	pretty_question = re.sub('\n\n', '\n', pretty_question)
-	pretty_question = re.sub('  *', ' ', pretty_question)
-
-	#print(len(pretty_question))
-	return pretty_question
-
-#=====================
-def question_header(question: str, N: int, crc16: str = None) -> str:
+#==============
+def create_assessment_item_header(orig_crc16: str):
 	"""
-	Generate a standardized header for a question.
+	Create the root <assessmentItem> element with common namespaces and attributes.
+
+	Args:
+		N (int): Question ID.
+		title (str): Title of the question.
+
+	Returns:
+		lxml.etree.Element: The root <assessmentItem> element.
+	"""
+	rand_crc16 = f"{random.randrange(16**4):04x}"
+	identifier = f"QUE__{orig_crc16}_{rand_crc16}"
+	nsmap = {
+		None: "http://www.imsglobal.org/xsd/imsqti_v2p1",
+		"xsi": "http://www.w3.org/2001/XMLSchema-instance",
+	}
+	item_tree = lxml.etree.Element(
+		"assessmentItem",
+		nsmap=nsmap,
+		attrib={
+			"{http://www.w3.org/2001/XMLSchema-instance}schemaLocation": (
+				"http://www.imsglobal.org/xsd/imsqti_v2p1 "
+				"http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+			),
+			"title": orig_crc16,
+			"adaptive": "false",
+			"timeDependent": "false",
+			"identifier": identifier,
+		},
+	)
+	return item_tree
+
+#==============
+def create_response_declaration(response_id: str, correct_values: list) -> lxml.etree.Element:
+	"""
+	Create a <responseDeclaration> element.
+
+	Args:
+		response_id (str): Identifier for the response.
+		correct_values (list): List of correct response values.
+
+	Returns:
+		lxml.etree.Element: The <responseDeclaration> element.
+	"""
+	element = lxml.etree.Element(
+		"responseDeclaration",
+		attrib={
+			"identifier": response_id,
+			"cardinality": "single" if len(correct_values) == 1 else "multiple",
+			"baseType": "identifier",
+		},
+	)
+	correct_response = lxml.etree.SubElement(element, "correctResponse")
+	for value in correct_values:
+		lxml.etree.SubElement(correct_response, "value").text = value
+	return element
+
+#==============
+def create_outcome_declarations() -> list:
+	"""
+	Create a minimal list of <outcomeDeclaration> elements.
+
+	Returns:
+		list: A list of <outcomeDeclaration> elements.
+	"""
+	outcome_declare_tree = [
+		lxml.etree.Element(
+			"outcomeDeclaration",
+			attrib={"identifier": "SCORE", "cardinality": "single", "baseType": "float"},
+		)
+	]
+	return outcome_declare_tree
+
+#==============
+def create_item_body(question_html_text: str, choices_list: list) -> lxml.etree.Element:
+	"""
+	Create the <itemBody> element with the question text and choices.
 
 	Args:
 		question (str): The question text.
-		N (int): The question ID or number.
-		crc16 (str): Optional CRC16 checksum for uniqueness (default: None).
+		choices (list): List of choices.
 
 	Returns:
-		str: Formatted question header.
+		lxml.etree.Element: The <itemBody> element.
 	"""
-	# Generate a CRC16 if not provided
-	if crc16 is None:
-		crc16 = get_crc16_from_string(question)
+	item_body = lxml.etree.Element("itemBody")
+	div = lxml.etree.SubElement(item_body, "div")
+	lxml.etree.SubElement(div, "p").text = question_html_text
 
-	# Log the question header
-	print(f"{N:03d}. {crc16} -- {make_question_pretty(question)}")
-
-	# Generate the header
-	header = f"<p>{crc16}</p>\n"
-	header +=  insert_hidden_terms(question)
-
-	return header
+	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
+		"responseIdentifier": "RESPONSE",
+		"maxChoices": "1",
+		"shuffle": "true",
+	})
+	for idx, choice_html_text in enumerate(choices_list, start=1):
+		simple_choice = lxml.etree.SubElement(
+			choice_interaction, "simpleChoice",
+			{"identifier": f"answer_{idx}", "fixed": "true"}
+		)
+		lxml.etree.SubElement(simple_choice, "p").text = choice_html_text
+	return item_body
 
 #==============
-
-def choice_header(choice_text: str, index: int) -> str:
+def create_response_processing(response_id: str) -> lxml.etree.Element:
 	"""
-	Format a choice in a standardized way.
+	Create a minimal <responseProcessing> element compatible with Canvas and Blackboard.
 
 	Args:
-		choice_text (str): The text of the choice.
-		index (int): The index of the choice (e.g., 0 for 'A', 1 for 'B').
+		response_id (str): Identifier for the response.
 
 	Returns:
-		str: Formatted choice header.
+		lxml.etree.Element: The minimal <responseProcessing> element.
 	"""
-	# Generate a label for the choice (e.g., A, B, C, ...)
-	letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
-	label = letters[index]
+	response_processing = lxml.etree.Element("responseProcessing")
+	response_condition = lxml.etree.SubElement(response_processing, "responseCondition")
+	response_if = lxml.etree.SubElement(response_condition, "responseIf")
 
-	# Log the choice
-	print(f"- [{label}] {make_question_pretty(choice_text)}")
+	# Match correct response
+	match = lxml.etree.SubElement(response_if, "match")
+	lxml.etree.SubElement(match, "variable", {"identifier": response_id})
+	lxml.etree.SubElement(match, "correct", {"identifier": response_id})
 
-	# Add hidden terms for obfuscation, if needed
-	noisy_choice_text = insert_hidden_terms(choice_text)
+	return response_processing
 
-	# Wrap in a div or any other required format
-	return add_no_click_div(f"{label}. {noisy_choice_text}")
-
-
-#==========================
-def insert_hidden_terms(text_content):
-	if use_insert_hidden_terms is False:
-		return text_content
-
-	global hidden_term_bank
-	if hidden_term_bank is None:
-		hidden_term_bank = load_hidden_term_bank()
-
-	# Separate table, code and non-table/non-code content
-	parts = re.split(r'(<table>.*?</table>|<code>.*?</code>)', text_content, flags=re.DOTALL)
-
-	# Process each part
-	new_parts = []
-	for part in parts:
-		if part.startswith('<table>') or part.startswith('<code>'):
-			# Keep table and code content unchanged
-			new_parts.append(part)
-		else:  # Apply the modified logic to non-table parts
-			# Replace spaces adjacent to words with '@'
-			#part = re.sub(r'([a-z]) +(?![^<>]*>)', r'\1@', part)
-			part = re.sub(r'([a-z]) +([a-z])(?![^<>]*>)', r'\1@\2', part)
-			#part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
-			#part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
-			words = part.split('@')
-			new_words = []
-			for word in words:
-				new_words.append(word)
-				if random.random() < hidden_term_density:
-					hidden_term = random.choice(hidden_term_bank)
-					new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
-				else:
-					new_words.append(" ")
-			new_parts.append(''.join(new_words))
-	return ''.join(new_parts)
-
-#==========================
-def get_git_root(path=None):
-	"""Return the absolute path of the repository root."""
-	if path is None:
-		# Use the path of the script
-		path = os.path.dirname(os.path.abspath(__file__))
-	try:
-		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
-		return base
-	except subprocess.CalledProcessError:
-		# Not inside a git repository
-		return None
-
-#==========================
-def load_hidden_term_bank():
-	git_root = get_git_root()
-	data_file_path = os.path.join(git_root, 'data/all_short_words.txt')
-	with open(data_file_path, 'r') as file:
-		terms = file.readlines()
-	return [term.strip() for term in terms]
-
-#==========================
-def add_no_click_div(text):
-	#global use_add_no_click_div
-	if use_add_no_click_div is False:
-		return text
-	number = random.randint(1000,9999)
-	output  = f'<div id="drv_{number}" '
-	output += 'oncopy="return false;" onpaste="return false;" oncut="return false;" '
-	output += 'oncontextmenu="return false;" onmousedown="return false;" onselectstart="return false;" '
-	output += '>'
-	output += text
-	output += '</div>'
-	return output
