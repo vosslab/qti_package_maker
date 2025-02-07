@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz identifier="qti12_questions" xmlns="http://canvas.instructure.com/xsd/cccv1p0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://canvas.instructure.com/xsd/cccv1p0 https://canvas.instructure.com/xsd/cccv1p0.xsd">
+  <title>minimal_qti_1.2_sample</title>
+  <description></description>
+  <assignment identifier="assignment_name">
+    <title>minimal_qti_1.2_sample</title>
+  </assignment>
+</quiz>

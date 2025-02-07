@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<manifest
+  identifier='main manifest'
+  xmlns='http://www.imsglobal.org/xsd/imscp_v1p1'
+  xmlns:lom='http://ltsc.ieee.org/xsd/LOM'
+  xmlns:imsmd='http://www.imsglobal.org/xsd/imsmd_v1p2'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xsi:schemaLocation='
+  http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/imscp_v1p1.xsd
+  http://www.imsglobal.org/xsd/imsmd_v1p2 http://www.imsglobal.org/xsd/imsmd_v1p2.xsd
+  http://ltsc.ieee.org/xsd/LOM http://ieee-sa.imeetcentral.com/ltsc/
+  '>
+  <metadata>
+    <schema>QTIv1.2</schema>
+    <schemaversion>1.1.3</schemaversion>
+  </metadata>
+  <organizations/>
+  <resources>
+    <resource identifier='qti12_questions' type='imsqti_xmlv1p2'>
+      <file href='qti12_questions/qti12_questions.xml'/>
+      <dependency identifierref='assignment_name_code'/>
+    </resource>
+    <resource identifier='assignment_name_code' type='associatedcontent/imscc_xmlv1p1/learning-application-resource' href='qti12_questions/assessment_meta.xml'>
+      <file href='qti12_questions/assessment_meta.xml'/>
+    </resource>
+  </resources>
+</manifest>

@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<manifest
+  identifier='main manifest'
+  xmlns='http://www.imsglobal.org/xsd/imscp_v1p1'
+  xmlns:lom='http://ltsc.ieee.org/xsd/LOM'
+  xmlns:imsmd='http://www.imsglobal.org/xsd/imsmd_v1p2'
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xsi:schemaLocation='
+  http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/imscp_v1p1.xsd
+  http://www.imsglobal.org/xsd/imsmd_v1p2 http://www.imsglobal.org/xsd/imsmd_v1p2.xsd
+  http://ltsc.ieee.org/xsd/LOM http://ieee-sa.imeetcentral.com/ltsc/
+  '>
+  <metadata>
+    <schema>QTIv2.1</schema>
+    <schemaversion>2.0</schemaversion>
+  </metadata>
+  <organizations/>
+  <resources>
+    <resource href='qti21/question_bank00001.xml' identifier='question_bank00001' type='imsqti_test_xmlv2p1'>
+      <file href='qti21/question_bank00001.xml'/>
+      <dependency identifierref='assessmentItem00001'/>
+      <dependency identifierref='assessmentItem00002'/>
+    </resource>
+    <resource href='qti21/assessmentItem00001.xml' identifier='assessmentItem00001' type='imsqti_item_xmlv2p1'>
+      <file href='qti21/assessmentItem00001.xml'/>
+    </resource>
+    <resource href='qti21/assessmentItem00002.xml' identifier='assessmentItem00002' type='imsqti_item_xmlv2p1'>
+      <file href='qti21/assessmentItem00002.xml'/>
+    </resource>
+  </resources>
+</manifest>
