@@ -8,7 +8,7 @@ import zipfile
 import lxml
 
 # local repo modules
-import add_item
+import add_item_v2 as add_item
 import manifest
 import question_bank
 import string_functions
