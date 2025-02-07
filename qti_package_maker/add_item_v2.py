@@ -4,7 +4,7 @@
 # Pip3 Library
 
 # QTI Package Maker
-import item_helpers
+import item_helpers_v2 as item_helpers
 import string_functions
 
 #==============

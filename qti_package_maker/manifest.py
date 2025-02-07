@@ -17,7 +17,7 @@ def generate_manifest(assessment_file_name_list: list[str]) -> etree.ElementTree
 	assessment_file_name_list.sort()
 	manifest = create_manifest_header()
 	metadata = create_metadata_section()
-	organizations = etree.Element("organizations")
+	#organizations = etree.Element("organizations")
 	resources = create_resources_section(assessment_file_name_list)
 
 	# Add sections to the manifest
@@ -27,7 +27,6 @@ def generate_manifest(assessment_file_name_list: list[str]) -> etree.ElementTree
 
 	return etree.ElementTree(manifest)
 
-#==============
 def create_manifest_header() -> etree.Element:
 	"""
 	Creates the header element for the manifest, including namespaces and identifiers.
@@ -37,30 +36,26 @@ def create_manifest_header() -> etree.Element:
 	"""
 	# Define namespaces
 	nsmap = {
-		None: "http://www.imsglobal.org/xsd/imscp_v1p1",
-		"csm": "http://www.imsglobal.org/xsd/imsccv1p2/imscsmd_v1p0",
-		"imsmd": "http://ltsc.ieee.org/xsd/LOM",
-		"imsqti": "http://www.imsglobal.org/xsd/imsqti_metadata_v2p1",
-		"xsi": "http://www.w3.org/2001/XMLSchema-instance"
+		None: "http://www.imsglobal.org/xsd/imscp_v1p1",  # Default namespace
+		"imsmd": "http://www.imsglobal.org/xsd/imsmd_v1p2",
+		"lom": "http://ltsc.ieee.org/xsd/LOM",
+		"xsi": "http://www.w3.org/2001/XMLSchema-instance",
 	}
 
-	# Create the root element with namespaces
-	manifest = etree.Element("manifest", nsmap=nsmap, identifier="man00001")
+	# Create the root element with namespaces and identifier attribute
+	manifest = etree.Element("manifest", nsmap=nsmap, identifier="main_manifest")
 
-	# Define the xsi:schemaLocation attribute using the fully qualified name
+	# Define the xsi:schemaLocation attribute with proper pairs
 	manifest.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
-		"http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/imscp_v1p2.xsd "
-		"http://ltsc.ieee.org/xsd/LOM imsmd_loose_v1p3.xsd "
-		"http://www.imsglobal.org/xsd/imsqti_metadata_v2p1 "
-		"http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_metadata_v2p1.xsd "
-		"http://www.imsglobal.org/xsd/imsccv1p2/imscsmd_v1p0 "
-		"http://www.imsglobal.org/profile/cc/ccv1p2/ccv1p2_imscsmd_v1p0.xsd"
+		"http://www.imsglobal.org/xsd/imscp_v1p1 http://www.imsglobal.org/xsd/imscp_v1p1.xsd "
+		"http://www.imsglobal.org/xsd/imsmd_v1p2 http://www.imsglobal.org/xsd/imsmd_v1p2.xsd "
+		"http://ltsc.ieee.org/xsd/LOM http://ieee-sa.imeetcentral.com/ltsc/"
 	)
 
 	return manifest
 
 #==============
-def create_metadata_section() -> etree.Element:
+def create_metadata_section(version="1.2") -> etree.Element:
 	"""
 	Creates the metadata section of the manifest.
 
@@ -69,10 +64,13 @@ def create_metadata_section() -> etree.Element:
 	"""
 	metadata = etree.Element("metadata")
 	schema = etree.SubElement(metadata, "schema")
-	schema.text = "QTIv2.1"
+	schema.text = f"QTIv{version}"
 
 	schema_version = etree.SubElement(metadata, "schemaversion")
-	schema_version.text = "2.0"
+	if version.startswith("2"):
+		schema_version.text = "2.0"
+	else:
+		schema_version.text = "1.1.3"
 
 	return metadata
 
