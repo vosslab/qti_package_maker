@@ -1,0 +1,289 @@
+I have this python module I am writing, but recently I decided I want to have different "engines" so the input and how it is used will be the same, but the unlying code with be using different version of the same function. more specifically
+
+here is the code that is used for an outside function  calling the module
+
+#!/usr/bin/env python
+
+import argparse
+
+import package_maker
+
+#===========================================================
+#===========================================================
+# This function handles the parsing of command-line arguments.
+def parse_arguments():
+	"""
+	Parses command-line arguments for the script.
+
+	Returns:
+		argparse.Namespace: Parsed arguments with attributes `duplicates`,
+		`num_choices`, and `question_type`.
+	"""
+	# Create an argument parser with a description of the script's functionality
+	parser = argparse.ArgumentParser(description="Generate questions.")
+
+	# Parse the provided command-line arguments and return them
+	args = parser.parse_args()
+	return args
+
+#===========================================================
+#===========================================================
+# This function serves as the entry point for generating and saving questions.
+def main():
+	"""
+	Main function that orchestrates question generation and file output.
+	"""
+
+	# Parse arguments from the command line
+	#args = parse_arguments()
+
+	qti_packer = package_maker.QTIPackage('example_pool_from_test_maker')
+	qti_packer.show_available_question_types()
+	question_text = 'What is your favorite color?'
+	answer_text = 'blue'
+	choices_list = ['blue', 'red', 'yellow']
+	qti_packer.add_MC(question_text, choices_list, answer_text)
+
+	question_text = 'Which are types of fruit?'
+	answers_list = ['orange', 'banana', 'apple']
+	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
+	qti_packer.add_MA(question_text, choices_list, answers_list)
+
+	qti_packer.save_package()
+
+#===========================================================
+#===========================================================
+# This block ensures the script runs only when executed directly
+if __name__ == '__main__':
+	# Call the main function to run the program
+	main()
+
+## THE END
+
+so the code takes questions and packages them into a file in this case a ZIP file with v2.1 QTI
+
+I also want the same code to generate v1.2 QTI a different version, or generate an entirely different question package all together.
+
+==============
+
+how is the best way to handle this? I was thinking of having duplicated code that performs different
+
+for example both add_item_v1.py and add_item_v2.py will have the same functions that are called externally
+
+vosslab@MacBookProM1 qti_package_maker] egrep '^def' add_item_v*
+add_item_v1.py:def MC(question_text: str, choices_list: list, answer_text: str):
+add_item_v1.py:def MA(question_text: str, choices_list: list, answers_list: list):
+add_item_v1.py:def FIB(question_text: str,  answers_list):
+add_item_v1.py:def FIB_PLUS(question_text: str, answer_map: dict) -> str:
+add_item_v1.py:def NUM(question_text: str,  answer, tolerance, tol_message=True):
+add_item_v1.py:def MATCH(question_text: str,  answers_list, matching_list):
+add_item_v1.py:def ORDER(question_text: str,  ordered_answers_list):
+add_item_v2.py:def MC(question_text: str, choices_list: list, answer_text: str):
+add_item_v2.py:def MA(question_text: str, choices_list: list, answers_list: list):
+add_item_v2.py:def FIB(question_text: str,  answers_list):
+add_item_v2.py:def FIB_PLUS(question_text: str, answer_map: dict) -> str:
+add_item_v2.py:def NUM(question_text: str,  answer, tolerance, tol_message=True):
+add_item_v2.py:def MATCH(question_text: str,  answers_list, matching_list):
+add_item_v2.py:def ORDER(question_text: str,  ordered_answers_list):
+
+BUT their output will be different and the main class might handle the output differently. Further which function gets called will be determined by the main class in package_maker.py
+
+I was thinking based on the engine selected package_maker.py would know which file to import either add_item_v1.py or add_item_v2.py or something else as add_item.MC(...)
+
+qti_packer = package_maker.QTIPackage('example_pool_from_test_maker', engine='qti_v2')
+or
+qti_packer = package_maker.QTIPackage('example_pool_from_test_maker', engine='qti_v1')
+
+is this a good way to handle it or is there a better way?
+
+======
+======
+======
+
+Approach 1: Dynamic Import
+
+The approach I was describing would be closer to the Dynamic Import method below
+
+# package_maker.py
+import importlib
+class QTIPackage:
+	def __init__(self, name: str, engine: str = 'qti_v2'):
+		self.name = name
+		# Dynamically import the engine class
+		engine_module = importlib.import_module(f"engines.{engine}_engine")
+		engine_class = getattr(engine_module, f"{engine.capitalize()}Engine")
+		self.engine = engine_class()
+
+
+It would have to be dynamic import, because I would like to have perhaps two instances going at once in the same code.
+
+qti_packer1 = package_maker.QTIPackage('example_pool_from_test_maker', engine='qti_v2')
+qti_packer2 = package_maker.QTIPackage('example_pool_from_test_maker', engine='qti_v1')
+
+... do stuff ..
+
+Approach 2: class inheritance
+
+class BaseEngine(ABC):
+--
+class QTIv1Engine(BaseEngine):
+--
+class QTIv2Engine(BaseEngine):
+
+1. this is an approach I have used in the past, but the number of engines will be at most 3 or 4 and the backbone of the code will be similar
+2. I chose add_item as an example of where break the overlap, because add_item_v2.MC(..) and add_item_v1.MC(..)  are very dissimilar. They are both XML but breaks there, they would also take the same input
+
+
+Okay, I am leaning towards Dynamic Import Approach 1, because of one reason, code would be separated better. If I use class inheritance, then reading can be difficult because a function could be called from the base or overrides and it would be hard to tell where it came from. Anyway I am slightly torn on this issue class inheritance is nice, but it's abstraction limits one from figuring out the code.
+
+
+add_item functions are “very dissimilar,”
+
+and they are perhaps the LONGEST part of the code. I could maybe do a mix with class inheritance, that would import a different module and thus run different questions and thus keep the code separate, but still have the "For example, if 70-80% of your code is shared across engines and you’re just tweaking parts of the output, inheritance could make sense." excluding the add_item 70-80% of your code is shared, but the add_item only shared about 10%.
+
+==========================================================================================
+==========================================================================================
+==========================================================================================
+
+file structure
+
+qti_package_maker/
+	__init__.py
+	base_package_maker.py
+	package_maker.py
+	string_functions.py
+	engine_qti_v1_2/
+		__init__.py
+		engine_class.py
+		add_item.py
+		xml_helpers.py
+	engine_qti_v2_1/
+		__init__.py
+		engine_class.py
+		add_item.py
+		xml_helpers.py
+	engine_human_readable/
+		__init__.py
+		engine_class.py
+		add_item.py
+	engine_bbq_text/
+		__init__.py
+		engine_class.py
+		add_item.py
+		readme_specification.txt
+
+#==========================================================================================
+
+# engine_base.py (shared base for all engines)
+class BaseEngine:
+	def __init__(self, package_name: str):
+		self.package_name = package_name
+		#need to override is engine class
+		self.add_item = None
+		self.questions = []
+
+	def save_package(self):
+		raise NotImplementedError
+
+	@property
+	def engine_name(self):
+		# Dynamically get the class name
+		return self.__class__.__name__
+
+	def MC(self, question_text: str, choices_list: list, answer_text: str):
+		question = self.add_item.MC(question_text, choices_list, answer_text)
+		self.questions.append(question)
+
+	def MA(self, question_text: str, choices_list: list, answers_list: list):
+		question = self.add_item.MA(question_text, choices_list, answers_list)
+		self.questions.append(question)
+
+	def show_available_question_types(self):
+		# Get all callable functions from the add_item module
+		if self.add_item:
+			functions = []
+			for name in dir(self.add_item):
+				if callable(getattr(self.add_item, name)) and not name.startswith("__"):
+					functions.append(name)
+			print(f"Available question types: {', '.join(functions)}")
+		else:
+			print(f"No add_item module assigned for engine {self.engine_name}.")
+
+#==========================================================================================
+
+# engine_qti_v1_2/engine_class.py
+
+import engine_qti_v1_2.add_item as add_item
+from base_package_maker import BaseEngine
+
+class QTIv1Engine(BaseEngine):
+	def __init__(self, name: str):
+		super().__init__(name)
+		self.add_item = add_item
+
+#==============
+
+# engine_qti_v1_2/add_item.py
+
+import xml_helpers
+import string_functions
+
+def MC(question_text: str, choices_list: list, answer_text: str):
+	"""
+	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
+	"""
+	return assessment_item_etree
+
+#==========================================================================================
+
+# engine_qti_v2_1/engine_class.py
+
+import engine_qti_v2_1.add_item as add_item
+from base_package_maker import BaseEngine
+
+class QTIv1Engine(BaseEngine):
+	def __init__(self, name: str):
+		super().__init__(name)
+		self.add_item = add_item
+
+#==========================================================================================
+
+
+# package_maker.py
+from engine_qti_v1_2.engine_class import QTIv1Engine
+from engine_qti_v2_1.engine_class import QTIv2Engine
+from engine_human_readable.engine_class import HumanReadable
+from engine_bbq_text.engine_class import BBQText
+
+class MasterQTIPackage:
+	def __init__(self, name: str, engine: str = 'qti_v2'):
+		if engine.lower().startswith('qti_v1'):
+			self.engine = QTIv1Engine(name)
+		elif engine.lower().startswith('qti_v2'):
+			self.engine = QTIv2Engine(name)
+		if engine.lower().startswith('human'):
+			self.engine = QTIv1Engine(name)
+		elif engine.lower().startswith('bbq'):
+			self.engine = QTIv2Engine(name)
+		else:
+			raise ValueError(f"Unknown engine: {engine}")
+
+	def add_MC(self, question_text: str, choices_list: list, answer_text: str):
+		self.engine.MC(question_text, choices_list, answer_text)
+
+	def add_MA(self, question_text: str, choices_list: list, answers_list: list):
+		self.engine.MA(question_text, choices_list, answers_list)
+
+	def save_package(self):
+		print(
+			f"Saving package {self.package_name}\n"
+			f"  with engine {self.engine_name} and\n"
+			f"  {len(self.questions)} questions."
+		)
+		self.engine.save_package()
+
+	def show_available_question_types(self):
+		self.engine.show_available_question_types()
+
+
+
