@@ -8,7 +8,7 @@ import lxml
 
 # QTI Package Maker
 from qti_package_maker.engine_qti_v1_2 import add_item
-from qti_package_maker.base_package_maker import BaseEngine
+from qti_package_maker.common.base_package_maker import BaseEngine
 
 class QTIv1Engine(BaseEngine):
 	def __init__(self, package_name: str):

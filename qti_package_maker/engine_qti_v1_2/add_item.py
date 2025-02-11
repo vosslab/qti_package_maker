@@ -5,7 +5,7 @@
 
 # QTI Package Maker
 from qti_package_maker.engine_qti_v1_2 import xml_helpers
-from qti_package_maker import string_functions
+from qti_package_maker.common import string_functions
 
 #==============
 def MC(question_text: str, choices_list: list, answer_text: str):

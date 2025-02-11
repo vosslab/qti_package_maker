@@ -1,6 +1,6 @@
 ENGINE_NAME = "human_readable"
 
-from qti_package_maker import string_functions
+from qti_package_maker.common import string_functions
 
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 

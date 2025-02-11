@@ -6,8 +6,8 @@ import inspect
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker import string_functions
-from qti_package_maker import validator
+from qti_package_maker.common import string_functions
+from qti_package_maker.common import validator
 
 # engine_base.py (shared base for all engines)
 class BaseEngine:
