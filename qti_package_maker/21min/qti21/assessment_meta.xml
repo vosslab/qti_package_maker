@@ -1,9 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<assessmentTest xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd" identifier="question_bank00001" title="example_pool_from_test_maker">
-  <testPart identifier="question_bank00001_1" navigationMode="nonlinear" submissionMode="simultaneous">
-    <assessmentSection identifier="question_bank00001_1_1" visible="false" title="Section 1">
-      <assessmentItemRef identifier="assessmentItem00001" href="assessmentItem00001.xml"/>
-      <assessmentItemRef identifier="assessmentItem00002" href="assessmentItem00002.xml"/>
+<assessmentTest
+  xmlns="http://www.imsglobal.org/xsd/imsqti_v2p1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.imsglobal.org/xsd/imsqti_v2p1 http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+  identifier="assessment_meta"
+  title="Questions about Blah Blah Blah">
+  <testPart identifier="test_part" navigationMode="nonlinear" submissionMode="simultaneous">
+    <assessmentSection identifier="section_part" visible="false" title="Question Pool">
+      <assessmentItemRef identifier="item_00001" href="item_00001.xml"/>
+      <assessmentItemRef identifier="item_00002" href="item_00002.xml"/>
     </assessmentSection>
   </testPart>
 </assessmentTest>
