@@ -31,7 +31,7 @@ class BaseEngine:
 
 	#==============
 	def add_assessment_item(self, title: str, item_type: str, assessment_item):
-		self.assessment_items.append(assessment_item)
+		self.assessment_items.append((item_type, assessment_item))
 		self.number_of_assessment_items += 1
 		print(f"added assessment_item number {self.number_of_assessment_items} of type {item_type}")
 
