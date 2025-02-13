@@ -21,7 +21,6 @@ class HumanReadable(BaseEngine):
 		self.add_item = add_item
 
 	#==============
-
 	def save_package(self, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
@@ -31,7 +30,10 @@ class HumanReadable(BaseEngine):
 
 		with open(outfile, "w") as f:
 			count = 0
-			for item_number, assessment_text in enumerate(self.assessment_items, start=1):
-				f.write(f"{item_number}. {assessment_text}")
+			for item_number, (item_type, assessment_text) in enumerate(self.assessment_items, start=1):
+				if item_type.lower() == 'match':
+					f.write(f"match {item_number}. {assessment_text}")
+				else:
+					f.write(f"{item_number}. {assessment_text}")
 				count += 1
 		print(f"Saved {count} assessment items to {outfile}")
