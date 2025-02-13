@@ -3,6 +3,7 @@ ENGINE_NAME = "human_readable"
 from qti_package_maker.common import string_functions
 
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
+#letters = 'abcdefghijklmnopqrstuvwxyz'
 
 #==============
 def MC(question_text: str, choices_list: list, answer_text: str):
@@ -19,7 +20,7 @@ def MC(question_text: str, choices_list: list, answer_text: str):
 	assessment_text += '\n'
 	for i, choice_text in enumerate(choices_list):
 		if choice_text == answer_text:
-			prefix = 'x'
+			prefix = '*'
 		else:
 			prefix = ' '
 		pretty_choice = string_functions.make_question_pretty(choice_text)
@@ -42,7 +43,7 @@ def MA(question_text: str, choices_list: list, answers_list: list):
 	assessment_text += '\n'
 	for i, choice_text in enumerate(choices_list):
 		if choice_text in answers_list:
-			prefix = 'x'
+			prefix = '*'
 		else:
 			prefix = ' '
 		pretty_choice = string_functions.make_question_pretty(choice_text)
@@ -60,6 +61,6 @@ def MATCH(question_text: str, answers_list: list, matching_list: list):
 	for i in range(num_items):
 		answer_text = string_functions.make_question_pretty(answers_list[i])
 		match_text = string_functions.make_question_pretty(matching_list[i])
-		assessment_text += f"- {letters[i]}. {answer_text} == {match_text}\n"
+		assessment_text += f"- {letters[i]}. {answer_text} / {match_text}\n"
 	assessment_text += '\n\n'
 	return assessment_text
