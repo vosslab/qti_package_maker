@@ -34,18 +34,18 @@
     </imsmd:lom>
   </metadata>
   <resources>
-    <resource identifier="assessmentItem00001" type="imsqti_item_xmlv2p1">
-      <file href="qti21_items/assessmentItem00001.xml"/>
+    <resource identifier="item_00001" type="imsqti_item_xmlv2p1">
+      <file href="qti21_items/item_00001.xml"/>
       <dependency identifierref="assessment_meta"/>
     </resource>
-    <resource identifier="assessmentItem00002" type="imsqti_item_xmlv2p1">
-      <file href="qti21_items/assessmentItem00002.xml"/>
+    <resource identifier="item_00002" type="imsqti_item_xmlv2p1">
+      <file href="qti21_items/item_00002.xml"/>
       <dependency identifierref="assessment_meta"/>
     </resource>
     <resource identifier="assessment_meta" type="imsqti_test_xmlv2p1">
       <file href="qti21_items/assessment_meta.xml"/>
-      <dependency identifierref="assessmentItem00001"/>
-      <dependency identifierref="assessmentItem00002"/>
+      <dependency identifierref="item_00001"/>
+      <dependency identifierref="item_00002"/>
     </resource>
   </resources>
 </manifest>
