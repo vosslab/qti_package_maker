@@ -1,16 +1,14 @@
 
 # Standard Library
 import os
-import zipfile
 
 # Pip3 Library
-import lxml
 
 # QTI Package Maker
+from qti_package_maker.common import base_package_maker
 from qti_package_maker.engine_human_readable import add_item
-from qti_package_maker.common.base_package_maker import BaseEngine
 
-class HumanReadable(BaseEngine):
+class HumanReadable(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str):
 		super().__init__(package_name)
 
@@ -30,7 +28,9 @@ class HumanReadable(BaseEngine):
 
 		with open(outfile, "w") as f:
 			count = 0
-			for item_number, (item_type, assessment_text) in enumerate(self.assessment_items, start=1):
+			for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
+				item_type = assessment_item_dict['item_type']
+				assessment_text = assessment_item_dict['assessment_item_data']
 				if item_type.lower() == 'match':
 					f.write(f"match {item_number}. {assessment_text}")
 				else:

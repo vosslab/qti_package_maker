@@ -7,10 +7,10 @@ import zipfile
 import lxml
 
 # QTI Package Maker
-from qti_package_maker.common import manifest
+from qti_package_maker.common import qti_manifest
 from qti_package_maker.common import base_package_maker
-from qti_package_maker.engine_qti_v1_2 import add_item
-from qti_package_maker.engine_qti_v1_2 import assessment_meta
+from qti_package_maker.engine_canvas_qti_v1_2 import add_item
+from qti_package_maker.engine_canvas_qti_v1_2 import assessment_meta
 
 
 class QTIv1Engine(base_package_maker.BaseEngine):
@@ -37,7 +37,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 
 		save_count = 0
 		### take each assessment item and merge into the XML etree
-		assessment_items_etree = ??? # create XML header be ready to add assessment items
+		#assessment_items_etree = ??? # create XML header be ready to add assessment items
 		for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
 			save_count += 1
 			# generate XML for the assessment item

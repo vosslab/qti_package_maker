@@ -7,10 +7,10 @@ import zipfile
 import lxml
 
 # QTI Package Maker
-from qti_package_maker.engine_qti_v2_1 import add_item
-from qti_package_maker.common.base_package_maker import BaseEngine
+from qti_package_maker.common import base_package_maker
+from qti_package_maker.engine_blackboard_qti_v2_1 import add_item
 
-class QTIv2Engine(BaseEngine):
+class QTIv2Engine(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str):
 		super().__init__(package_name)
 		self.add_item = add_item

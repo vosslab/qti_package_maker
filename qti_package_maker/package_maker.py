@@ -5,15 +5,15 @@
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.engine_qti_v1_2.engine_class import QTIv1Engine
-from qti_package_maker.engine_qti_v2_1.engine_class import QTIv2Engine
 from qti_package_maker.engine_human_readable.engine_class import HumanReadable
-#from qti_package_maker.engine_bbq_text.engine_class import BBQText
+from qti_package_maker.engine_canvas_qti_v1_2.engine_class import QTIv1Engine
+from qti_package_maker.engine_blackboard_qti_v2_1.engine_class import QTIv2Engine
+from qti_package_maker.engine_blackboard_text_upload.engine_class import BBQTextEngine
 
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str):
 		engine_name = engine_name.lower()
-		if engine_name.startswith('qti_v1'):
+		if engine_name.startswith('qti_v1') or engine_name.startswith('canvas'):
 			self.engine = QTIv1Engine(package_name)
 		elif engine_name.startswith('qti_v2'):
 			self.engine = QTIv2Engine(package_name)
@@ -38,7 +38,7 @@ class MasterQTIPackage:
 		print(
 			f"Saving package {self.engine.package_name}\n"
 			f"  with engine {self.engine.engine_name} and\n"
-			f"  {len(self.engine.assessment_items)} questions."
+			f"  {len(self.engine.assessment_items_tree)} questions."
 		)
 		self.engine.save_package()
 
