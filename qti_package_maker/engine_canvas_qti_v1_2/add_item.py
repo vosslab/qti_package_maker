@@ -17,7 +17,8 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_choice_{item_number}", title=crc16_text)
 
 	# Generate the <itemmetadata> section to store metadata about the question
-	itemmetadata = item_xml_helpers.create_itemmetadata(len(choices_list), 'multiple_choice_question')
+	choice_ids_list = [f"choice_{i+1}" for i in range(len(choices_list))]
+	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'multiple_choice_question')
 
 	# Create the <presentation> section to hold the question text and answer choices
 	presentation_etree = lxml.etree.Element("presentation")
@@ -49,7 +50,8 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_answer_{item_number}", title=crc16_text)
 
 	# Generate the <itemmetadata> section to store metadata about the question
-	itemmetadata = item_xml_helpers.create_itemmetadata(len(choices_list), 'multiple_answers_question')
+	choice_ids_list = [f"choice_{i+1}" for i in range(len(choices_list))]
+	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'multiple_answers_question')
 
 	# Create the <presentation> section to hold the question text and answer choices
 	presentation_etree = lxml.etree.Element("presentation")
@@ -81,7 +83,8 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 	assessment_item_etree = lxml.etree.Element("item", ident=f"matching_{item_number}", title=crc16_text)
 
 	# Generate the <itemmetadata> section for metadata
-	itemmetadata = item_xml_helpers.create_itemmetadata(len(prompts_list), 'matching_question', '100')
+	choice_ids_list = [f"{i+1:04d}" for i in range(len(choices_list))]
+	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'matching_question')
 
 	# Create the <presentation> section for question text and matching choices
 	presentation_etree = lxml.etree.Element("presentation")

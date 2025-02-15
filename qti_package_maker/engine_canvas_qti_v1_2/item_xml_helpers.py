@@ -28,12 +28,10 @@ def create_assessment_items_file_xml_header() -> lxml.etree.Element:
 	return assessment_items_file_xml_root
 
 #==============================================================
-def create_itemmetadata(num_choices: int, question_type: str, prefix: str="choice_"):
+def create_itemmetadata(choice_ids_list: list, question_type: str):
 	"""Create the <itemmetadata> section with QTI metadata fields."""
 	itemmetadata = lxml.etree.Element("itemmetadata")
 	qtimetadata = lxml.etree.SubElement(itemmetadata, "qtimetadata")
-
-	choice_ids_list = [f"{prefix}{i+1}" for i in range(num_choices)]
 
 	# Define QTI metadata fields
 	metadata_fields = [
@@ -79,7 +77,7 @@ def create_matching_response_lid(prompts_list: list, choices_list: list):
 	response_lids = []
 	# Iterate through answers and create a <response_lid> for each one
 	for i, prompt_text in enumerate(prompts_list):
-		response_lid = lxml.etree.Element("response_lid", ident=f"response_100{i + 1}")
+		response_lid = lxml.etree.Element("response_lid", ident=f"response_{i+1:04d}")
 		#response_lid = lxml.etree.Element("response_lid", ident=f"prompt{i + 1}")
 
 		# Add the main item (left-side term)
@@ -92,7 +90,7 @@ def create_matching_response_lid(prompts_list: list, choices_list: list):
 
 		# Add each matching choice as a response_label
 		for j, choice_text in enumerate(choices_list):
-			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=f"choice_{j + 1}")
+			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=f"choice_{j+1}")
 			label_material = lxml.etree.SubElement(response_label, "material")
 			label_mattext = lxml.etree.SubElement(label_material, "mattext")
 			label_mattext.text = choice_text  # Example: "orange", "yellow", "green", "distractor"
@@ -182,7 +180,7 @@ def create_MATCH_resprocessing(prompts_list: list):
 		conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
 
 		# Match the correct response
-		lxml.etree.SubElement(conditionvar, "varequal", respident=f"response_100{i + 1}").text = f"choice_{i + 1}"
+		lxml.etree.SubElement(conditionvar, "varequal", respident=f"response_{i+1:04d}").text = f"choice_{i + 1}"
 		#lxml.etree.SubElement(conditionvar, "varequal", respident=f"prompt{i + 1}").text = f"choice_{i + 1}"
 
 		# Assign a portion of the score
