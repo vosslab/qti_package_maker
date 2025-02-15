@@ -1,5 +1,4 @@
 
-
 # Standard Library
 import inspect
 
@@ -16,7 +15,7 @@ class BaseEngine:
 		self.package_name = package_name
 		#need to override is engine class
 		self.add_item = None
-		self.assessment_items = []
+		self.assessment_items_tree = []
 		self.number_of_assessment_items = 0
 
 	#==============
@@ -30,43 +29,52 @@ class BaseEngine:
 		return self.__class__.__name__
 
 	#==============
-	def add_assessment_item(self, title: str, item_type: str, assessment_item):
-		self.assessment_items.append((item_type, assessment_item))
+	def add_assessment_item(self, title: str, crc16: str, item_type: str, assessment_item_data):
+		assessment_item_dict = {
+			'title': title,
+			'crc16': crc16,
+			'item_type': item_type,
+			'assessment_item_data': assessment_item_data,
+			}
+		self.assessment_items_tree.append(assessment_item_dict)
 		self.number_of_assessment_items += 1
 		print(f"added assessment_item number {self.number_of_assessment_items} of type {item_type}")
 
 	#==============
 	def MC(self, question_text: str, choices_list: list, answer_text: str):
+		title = None
 		validator.validate_MC(question_text, choices_list, answer_text)
 		crc16question = string_functions.get_crc16_from_string(question_text)
 		choices_str = '|'.join(choices_list)
 		crc16choice = string_functions.get_crc16_from_string(choices_str)
 		crc16 = f"{crc16question}_{crc16choice}"
-		assessment_item = self.add_item.MC(question_text, choices_list, answer_text)
+		assessment_item_data = self.add_item.MC(question_text, choices_list, answer_text)
 		function_name = inspect.currentframe().f_code.co_name
-		self.add_assessment_item(crc16, function_name, assessment_item)
+		self.add_assessment_item(title, crc16, function_name, assessment_item_data)
 
 	#==============
 	def MA(self, question_text: str, choices_list: list, answers_list: list):
+		title = None
 		validator.validate_MA(question_text, choices_list, answers_list)
 		crc16question = string_functions.get_crc16_from_string(question_text)
 		choices_str = '|'.join(choices_list)
 		crc16choices = string_functions.get_crc16_from_string(choices_str)
 		crc16merge = f"{crc16question}_{crc16choices}"
-		assessment_item = self.add_item.MA(question_text, choices_list, answers_list)
+		assessment_item_data = self.add_item.MA(question_text, choices_list, answers_list)
 		function_name = inspect.currentframe().f_code.co_name
-		self.add_assessment_item(crc16merge, function_name, assessment_item)
+		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 
 	#==============
 	def MATCH(self, question_text: str, answers_list: list, matching_list: list):
+		title = None
 		validator.validate_MATCH(question_text, answers_list, matching_list)
 		crc16question = string_functions.get_crc16_from_string(question_text)
 		answers_str = '|'.join(answers_list)
 		crc16answers = string_functions.get_crc16_from_string(answers_str)
 		crc16merge = f"{crc16question}_{crc16answers}"
-		assessment_item = self.add_item.MATCH(question_text, answers_list, matching_list)
+		assessment_item_data = self.add_item.MATCH(question_text, answers_list, matching_list)
 		function_name = inspect.currentframe().f_code.co_name
-		self.add_assessment_item(crc16merge, function_name, assessment_item)
+		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 
 	#==============
 	def show_available_question_types(self):
