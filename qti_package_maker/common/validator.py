@@ -155,15 +155,15 @@ def validate_NUM(question_text: str, answer_float: float, tolerance_float: float
 assert validate_NUM("What year was this written?", 2025, 0.5) == True
 
 #========================================================
-def validate_MATCH(question_text: str,  answers_list: list, matching_list: list):
+def validate_MATCH(question_text: str, prompts_list: list, choices_list: list):
 	"""
 	Validate a Matching question.
 	"""
 	validate_string_text(question_text, 'question_text')
-	validate_list_of_strings(answers_list, 'answers_list', 2)
-	validate_list_of_strings(matching_list, 'matching_list', 2)
-	if len(answers_list) != len(matching_list):
-		raise ValueError("Answers list and matching list must have the same length.")
+	validate_list_of_strings(prompts_list, 'prompts_list', 2)
+	validate_list_of_strings(choices_list, 'choices_list', 2)
+	if len(prompts_list) > len(choices_list):
+		raise ValueError("choices_list must be greater or equal to the prompts_list.")
 	return True
 assert validate_MATCH("Match the fruit to their color?", ["orange", "strawberry"], ["orange", "red"]) == True
 

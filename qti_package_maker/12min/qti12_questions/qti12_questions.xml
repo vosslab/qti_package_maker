@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.imsglobal.org/xsd/ims_qtiasiv1p2 http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd">
   <assessment ident="qti12_questions" title="minimal_qti_1.2_sample">
     <section ident="root_section">
-      <item ident="q7question14" title="Sample Question 14 on EDTA">
+      <item ident="{crc16_text}" title="{crc16_text}">
         <itemmetadata>
           <qtimetadata>
             <qtimetadatafield>

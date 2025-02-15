@@ -14,13 +14,13 @@ print("\n")
 from qti_package_maker.package_maker import MasterQTIPackage
 
 def main():
-	qti_packer = MasterQTIPackage('pool_canvas_qti_v1', 'QTI_v1')
+	qti_packer = MasterQTIPackage('dump_canvas_qti_v1', 'QTI_v1')
 	#qti_packer = MasterQTIPackage('pool_human_readable', 'HumanRead')
 	qti_packer.show_available_question_types()
 	question_text = 'What is your favorite color?'
 	answer_text = 'blue'
 	choices_list = ['blue', 'red', 'yellow']
-	qti_packer.add_MC(question_text, choices_list, answer_text)
+	#qti_packer.add_MC(question_text, choices_list, answer_text)
 
 	question_text = 'Which are types of fruit?'
 	answers_list = ['orange', 'banana', 'apple']
@@ -28,9 +28,9 @@ def main():
 	#qti_packer.add_MA(question_text, choices_list, answers_list)
 
 	question_text = 'Match item to color.'
-	answers_list = ['orange', 'banana', 'lettuce',]
-	matching_list = ['orange', 'yellow', 'green',]
-	#qti_packer.add_MATCH(question_text, answers_list, matching_list)
+	prompts_list = ['orange', 'banana', 'lettuce',]
+	choices_list = ['orange', 'yellow', 'green', 'distractor']
+	qti_packer.add_MATCH(question_text, prompts_list, choices_list)
 
 	qti_packer.save_package()
 

@@ -1,6 +1,7 @@
 
 # Standard Library
 import os
+import time
 import zipfile
 
 # Pip3 Library
@@ -24,10 +25,13 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "canvas_qti_v1_2":
 			raise ImportError("Incorrect add_item module imported for QTIv1Engine engine")
 
-		self.output_dir = os.path.join(os.getcwd(), f"{package_name}_package")
+		current_time = time.strftime("%H%M")
+		self.output_dir = os.path.join(os.getcwd(), f"{package_name}_package_{current_time}")
+		print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)
 		self.assessment_base_name = "canvas_qti12_questions"
+		#self.assessment_base_name = "ge1a7f64501d4a867d63bc368d5af4ba1"
 		self.assessment_dir = os.path.join(self.output_dir, self.assessment_base_name)
 		os.makedirs(self.assessment_dir, exist_ok=True)
 		self.assessment_items_file_name = self.assessment_base_name + ".xml"
@@ -56,7 +60,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 			section_level_etree.append(assessment_item_etree)
 
 		# Step 3: Create <assessment> and append <section>
-		assessment_level_etree = lxml.etree.Element("assessment", ident="root_assessment")
+		assessment_level_etree = lxml.etree.Element("assessment", ident="root_assessment", title=self.package_name)
 		assessment_level_etree.append(section_level_etree)
 
 		# Step 4: Create XML root <questestinterop> and append <assessment>
@@ -116,7 +120,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 					full_path = os.path.join(root, file)
 					relative_path = os.path.relpath(full_path, self.output_dir)  # Path relative to the output directory
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
-		self.clean_temp_files()
+		#self.clean_temp_files()
 
 		print(f"Package saved to {zip_path}")
 

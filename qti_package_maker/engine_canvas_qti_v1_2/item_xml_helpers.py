@@ -1,24 +1,14 @@
 #!/usr/bin/env python3
 
-# PIP3 modules
-import lxml
-import lxml.etree
+# Standard Library
 import random
 
-#==============
+# PIP3 modules
+import lxml.etree
+
+#==============================================================
 def create_assessment_items_file_xml_header() -> lxml.etree.Element:
-	"""
-	Create the root <questestinterop> element with common namespaces and attributes.
-	Also adds <assessment> and <section> elements.
-
-	Args:
-		assessment_id (str): Unique identifier for the assessment.
-		assessment_title (str): Title of the assessment.
-		section_id (str): Unique identifier for the root section.
-
-	Returns:
-		lxml.etree.Element: The root <questestinterop> element with <assessment> and <section>.
-	"""
+	""" Create the root <questestinterop> element with common namespaces and attributes. """
 	nsmap = {
 		None: "http://www.imsglobal.org/xsd/ims_qtiasiv1p2",
 		"xsi": "http://www.w3.org/2001/XMLSchema-instance",
@@ -35,116 +25,173 @@ def create_assessment_items_file_xml_header() -> lxml.etree.Element:
 			),
 		},
 	)
-
-	# Add <assessment>
-	#assessment = lxml.etree.SubElement(questestinterop, "assessment", ident=assessment_id, title=assessment_title)
-
-	# Add <section>
-	#section = lxml.etree.SubElement(assessment, "section", ident=section_id)
-
 	return assessment_items_file_xml_root
 
-#==============
-def create_response_declaration(correct_values: list) -> lxml.etree.Element:
-	"""
-	Create a <responseDeclaration> element.
+#==============================================================
+def create_itemmetadata(num_choices: int, question_type: str, prefix: str="choice_"):
+	"""Create the <itemmetadata> section with QTI metadata fields."""
+	itemmetadata = lxml.etree.Element("itemmetadata")
+	qtimetadata = lxml.etree.SubElement(itemmetadata, "qtimetadata")
 
-	Args:
-		response_id (str): Identifier for the response.
-		correct_values (list): List of correct response values.
+	choice_ids_list = [f"{prefix}{i+1}" for i in range(num_choices)]
 
-	Returns:
-		lxml.etree.Element: The <responseDeclaration> element.
-  <responseDeclaration cardinality="multiple" baseType="identifier" identifier="RESPONSE">
-    <correctResponse>
-      <value>answer_1</value>
-      <value>answer_2</value>
-    </correctResponse>
-  </responseDeclaration>
-
-	"""
-	element = lxml.etree.Element(
-		"responseDeclaration",
-		attrib={
-			"identifier": "RESPONSE",
-			"cardinality": "single" if len(correct_values) == 1 else "multiple",
-			"baseType": "identifier",
-		},
-	)
-	correct_response = lxml.etree.SubElement(element, "correctResponse")
-	for value in correct_values:
-		lxml.etree.SubElement(correct_response, "value").text = value
-	return element
-
-#==============
-def create_outcome_declarations() -> list:
-	"""
-	Create a minimal list of <outcomeDeclaration> elements.
-
-	Returns:
-		list: A list of <outcomeDeclaration> elements.
-	"""
-	outcome_declare_tree = [
-		lxml.etree.Element(
-			"outcomeDeclaration",
-			attrib={"identifier": "SCORE", "cardinality": "single", "baseType": "float"},
-		)
+	# Define QTI metadata fields
+	metadata_fields = [
+		("question_type", question_type),
+		("points_possible", "1.0"),
+		("original_answer_ids", ','.join(choice_ids_list))
 	]
-	return outcome_declare_tree
 
-#==============
-def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
+	for field_label, field_entry in metadata_fields:
+		field = lxml.etree.SubElement(qtimetadata, "qtimetadatafield")
+		lxml.etree.SubElement(field, "fieldlabel").text = field_label
+		lxml.etree.SubElement(field, "fieldentry").text = field_entry
+
+	return itemmetadata
+
+#==============================================================
+def create_material_mattext(question_text: str):
+	"""Create the <material> section inside <presentation>."""
+	material = lxml.etree.Element("material")
+	mattext = lxml.etree.SubElement(material, "mattext", texttype="text/html")
+	mattext.text = question_text  # Question text in HTML format
+	return material
+
+#==============================================================
+def create_choice_response_lid(choices_list: list, cardinality: str="Single"):
+	"""Create the <response_lid> section with <render_choice> and answer options."""
+	response_lid = lxml.etree.Element("response_lid", ident="response1", rcardinality=cardinality)
+	render_choice = lxml.etree.SubElement(response_lid, "render_choice")
+
+	# Create choices
+	for index, choice in enumerate(choices_list, start=1):
+		choice_id = f"choice_{index}"
+		response_label = lxml.etree.SubElement(render_choice, "response_label", ident=choice_id)
+		material = lxml.etree.SubElement(response_label, "material")
+		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/plain")
+		mattext.text = choice  # Set choice text
+
+	return response_lid
+
+#==============================================================
+def create_matching_response_lid(prompts_list: list, choices_list: list):
+	"""Create the <response_lid> sections for matching questions."""
+	response_lids = []
+	# Iterate through answers and create a <response_lid> for each one
+	for i, prompt_text in enumerate(prompts_list):
+		response_lid = lxml.etree.Element("response_lid", ident=f"response_100{i + 1}")
+		#response_lid = lxml.etree.Element("response_lid", ident=f"prompt{i + 1}")
+
+		# Add the main item (left-side term)
+		material = lxml.etree.SubElement(response_lid, "material")
+		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/plain")
+		mattext.text = prompt_text  # Example: "orange", "banana", "lettuce"
+
+		# Create <render_choice> section for match options
+		render_choice = lxml.etree.SubElement(response_lid, "render_choice")
+
+		# Add each matching choice as a response_label
+		for j, choice_text in enumerate(choices_list):
+			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=f"choice_{j + 1}")
+			label_material = lxml.etree.SubElement(response_label, "material")
+			label_mattext = lxml.etree.SubElement(label_material, "mattext")
+			label_mattext.text = choice_text  # Example: "orange", "yellow", "green", "distractor"
+
+		response_lids.append(response_lid)
+
+	return response_lids
+
+#==============================================================
+def _create_base_outcomes():
 	"""
-	Create the <itemBody> element with the question text and choices.
-
-	Args:
-		question (str): The question text.
-		choices (list): List of choices.
+	Create the base <resprocessing> structure with <outcomes> and <decvar>.
 
 	Returns:
-		lxml.etree.Element: The <itemBody> element.
+		lxml.etree.Element: The <resprocessing> XML element.
 	"""
-	item_body = lxml.etree.Element("itemBody")
-	div = lxml.etree.SubElement(item_body, "div")
-	lxml.etree.SubElement(div, "p").text = question_html_text
+	resprocessing = lxml.etree.Element("resprocessing")
 
-	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
-		"responseIdentifier": "RESPONSE",
-		"maxChoices": f"{max_choices:d}",
-		"shuffle": f"{str(shuffle).lower()}",
-	})
-	for idx, choice_html_text in enumerate(choices_list, start=1):
-		simple_choice = lxml.etree.SubElement(
-			choice_interaction, "simpleChoice",
-			{"identifier": f"answer_{idx}", "fixed": "true"}
-		)
-		lxml.etree.SubElement(simple_choice, "p").text = choice_html_text
-	return item_body
+	# Define outcomes (scoring)
+	outcomes = lxml.etree.SubElement(resprocessing, "outcomes")
+	lxml.etree.SubElement(outcomes, "decvar", maxvalue="100", minvalue="0", varname="SCORE", vartype="Decimal")
 
-#==============
-def create_response_processing() -> lxml.etree.Element:
+	return resprocessing
+
+#==============================================================
+def create_MC_resprocessing(choices_list, answer_text):
 	"""
-	Create a minimal <responseProcessing> element compatible with Canvas and Blackboard.
-
-	Args:
-		response_id (str): Identifier for the response.
-
-	Returns:
-		lxml.etree.Element: The minimal <responseProcessing> element.
+	Create the <resprocessing> section for Multiple Choice (Single Answer) questions.
 	"""
-	response_processing = lxml.etree.Element("responseProcessing")
-	response_condition = lxml.etree.SubElement(response_processing, "responseCondition")
-	response_if = lxml.etree.SubElement(response_condition, "responseIf")
+	# Get the base <resprocessing>
+	resprocessing = _create_base_outcomes()
 
-	# Match correct response
-	match = lxml.etree.SubElement(response_if, "match")
-	lxml.etree.SubElement(match, "variable", {"identifier": "RESPONSE"})
-	lxml.etree.SubElement(match, "correct", {"identifier": "RESPONSE"})
+	# Define response condition
+	respcondition = lxml.etree.SubElement(resprocessing, "respcondition")
+	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
 
-	return response_processing
+	# Multiple Choice (Single) → NO `<and>`, NO `<not>`, just a single `<varequal>`
+	correct_choice_id = f"choice_{choices_list.index(answer_text) + 1}"
+	lxml.etree.SubElement(conditionvar, "varequal", respident="response1").text = correct_choice_id
 
+	# Assign full 100 points only if the condition is met
+	lxml.etree.SubElement(respcondition, "setvar", action="Set", varname="SCORE").text = "100"
 
-#==============
+	return resprocessing
+
+#==============================================================
+def create_MA_resprocessing(choices_list, answers_list):
+	"""
+	Create the <resprocessing> section, automatically sorting correct and incorrect answers.
+	"""
+	# Get the base <resprocessing>
+	resprocessing = _create_base_outcomes()
+
+	# Define response condition
+	respcondition = lxml.etree.SubElement(resprocessing, "respcondition")
+	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
+	and_condition = lxml.etree.SubElement(conditionvar, "and")
+
+	# Add correct answer conditions
+	for i, choice_text in enumerate(choices_list):
+		choice_id = f"choice_{i + 1}"
+		if choice_text in answers_list:
+			lxml.etree.SubElement(and_condition, "varequal", respident="response1").text = choice_id
+		else:
+			not_condition = lxml.etree.SubElement(and_condition, "not")
+			lxml.etree.SubElement(not_condition, "varequal", respident="response1").text = choice_id
+
+	# Assign full 100 points only if the condition is met
+	lxml.etree.SubElement(respcondition, "setvar", action="Set", varname="SCORE").text = "100"
+
+	return resprocessing
+
+#==============================================================
+def create_MATCH_resprocessing(prompts_list: list):
+	"""
+	Create the <resprocessing> section for matching questions, assigning scores for each match.
+	"""
+	# Get the base <resprocessing>
+	resprocessing = _create_base_outcomes()
+
+	# Distribute points evenly
+	base_score = round(100 / len(prompts_list), 2)
+
+	# Create conditions for each correct match
+	for i in range(len(prompts_list)):
+		respcondition = lxml.etree.SubElement(resprocessing, "respcondition")
+		conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
+
+		# Match the correct response
+		lxml.etree.SubElement(conditionvar, "varequal", respident=f"response_100{i + 1}").text = f"choice_{i + 1}"
+		#lxml.etree.SubElement(conditionvar, "varequal", respident=f"prompt{i + 1}").text = f"choice_{i + 1}"
+
+		# Assign a portion of the score
+		lxml.etree.SubElement(respcondition, "setvar", varname="SCORE", action="Add").text = f"{base_score:.2f}"
+
+	return resprocessing
+
+#==============================================================
+#==============================================================
 def dummy_test_run():
 	"""
 	Run a test generation of assessment XML.

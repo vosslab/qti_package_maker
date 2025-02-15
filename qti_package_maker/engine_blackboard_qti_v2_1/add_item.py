@@ -7,19 +7,9 @@
 from qti_package_maker.common import string_functions
 from qti_package_maker.engine_blackboard_qti_v2_1 import item_xml_helpers
 
-#==============
-def MC(question_text: str, choices_list: list, answer_text: str):
-	"""
-	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
-
-	Args:
-		question_text (str): The question text.
-		choices_list (list): List of answer choices.
-		answer (str): The correct answer.
-
-	Returns:
-		lxml.etree.Element: XML element for the question.
-	"""
+#==============================================================
+def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
+	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
 	assessment_item_etree = xml_helpers.create_assessment_item_header(crc_merge)
 	answer_id = f"answer_{choices_list.index(answer_text) + 1}"
 	# takes a list as input
@@ -37,48 +27,9 @@ def MC(question_text: str, choices_list: list, answer_text: str):
 
 	return assessment_item_etree
 
-
-def MA(question_text: str, choices_list: list, answers_list: list):
-	"""
-	Create a Multiple Answer question in QTI-compliant XML format.
-
-	Args:
-		question_text (str): The question text.
-		choices_list (list): List of answer choices.
-		answers_list (list): List of correct answers.
-
-	Returns:
-		lxml.etree.Element: XML element for the question.
-	"""
-	# Check for a minimum number of choices and duplicates
-	if len(choices_list) < 3:
-		raise ValueError("You need at least three choices for a multiple answer question.")
-
-	choices_set = set(choices_list)
-	if len(choices_list) > len(choices_set):
-		raise ValueError("Duplicate choices are not allowed.")
-
-	# Check for multiple answers and duplicates in answers
-	if len(answers_list) < 2:
-		raise ValueError("You need at least two correct answers for a multiple answer question.")
-
-	answers_set = set(answers_list)
-	if len(answers_list) > len(answers_set):
-		raise ValueError("Duplicate answers are not allowed.")
-
-	# Check that there is at least one non-answer (choice that is not in answers_set)
-	if choices_set == answers_set:
-		raise ValueError("There must be at least one non-answer choice.")
-
-	# Ensure all answers are valid choices
-	if not answers_set.issubset(choices_set):
-		raise ValueError("One or more correct answers are not in the list of choices.")
-
-	crc16question = string_functions.get_crc16_from_string(question_text)
-	choices_str = '|'.join(choices_list)
-	crc16choice = string_functions.get_crc16_from_string(choices_str)
-	crc_merge = f"{crc16question}_{crc16choice}"
-
+#==============================================================
+def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
+	"""Create a Multiple Answer (Checkboxes) question."""
 	assessment_item_etree = xml_helpers.create_assessment_item_header(crc_merge)
 
 	answer_id_list = []
@@ -100,18 +51,27 @@ def MA(question_text: str, choices_list: list, answers_list: list):
 	assessment_item_etree.append(response_processing)
 	return assessment_item_etree
 
-
-def FIB(question_text: str,  answers_list):
+#==============================================================
+def MATCH(item_number: int, crc16_text: str, question_text: str, answers_list: list, matching_list: list):
+	"""Create a Matching question where users match items from two lists."""
 	pass
 
-def FIB_PLUS(question_text: str, answer_map: dict) -> str:
+#==============================================================
+def NUM(item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
+	"""Create a Numerical question with an accepted tolerance range."""
 	pass
 
-def NUM(question_text: str,  answer, tolerance, tol_message=True):
+#==============================================================
+def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
+	"""Create a Fill-in-the-Blank (Single Blank) question."""
 	pass
 
-def MATCH(question_text: str,  answers_list, matching_list):
+#==============================================================
+def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
+	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
 	pass
 
-def ORDER(question_text: str,  ordered_answers_list):
+#==============================================================
+def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
+	"""Create an Ordered List question where users arrange items in a correct sequence."""
 	pass

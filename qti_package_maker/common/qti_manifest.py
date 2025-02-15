@@ -31,11 +31,9 @@ def generate_manifest(
 
 	manifest = create_manifest_header()
 	metadata = create_metadata_section(package_name, version)
-	#organizations = etree.Element("organizations")
+	organizations = etree.Element("organizations")
 	sorted_file_list = sorted(assessment_file_name_list)
 	resources = create_resources_section(sorted_file_list, version)
-
-
 
 	# Add sections to the manifest
 	manifest.append(metadata)
@@ -92,13 +90,15 @@ def create_metadata_section(package_name: str, version: str = "1.2") -> etree.El
 
 	# Add schema and schemaversion
 	schema = etree.SubElement(metadata, "schema")
-	schema.text = f"QTIv{version}"
 
 	schema_version = etree.SubElement(metadata, "schemaversion")
 	if version.startswith("2"):
 		schema_version.text = "2.0"
+		schema.text = f"QTIv{version}"
 	else:
 		schema_version.text ="1.1.3"
+		#schema.text = f"QTIv{version}"
+		schema.text = "IMS Content"
 
 	# Create the <imsmd:lom> structure
 	lom = etree.SubElement(metadata, f"{{{ns_imsmd}}}lom", nsmap={"imsmd": ns_imsmd})
@@ -146,8 +146,10 @@ def create_resources_section(assessment_file_name_list: list[str], version: str 
 		meta_type = "imsqti_test_xmlv2p1"
 		item_type = "imsqti_item_xmlv2p1"
 	else:
-		meta_type = "imsqti_xmlv1p2"
-		item_type = "imsqti_item_xmlv1p2"
+		item_type = "imsqti_xmlv1p2"
+		#item_type = "imsqti_item_xmlv1p2"
+		meta_type = "associatedcontent/imscc_xmlv1p1/learning-application-resource"
+		#meta_type = "imsqti_xmlv1p2"
 
 	dir_name = os.path.dirname(assessment_file_name_list[0])
 	meta_file_path = f"{dir_name}/assessment_meta.xml"
@@ -157,7 +159,7 @@ def create_resources_section(assessment_file_name_list: list[str], version: str 
 		"resource",
 		identifier="assessment_meta",
 		type=meta_type,
-		#href=meta_file_path,
+		href=meta_file_path,
 	)
 	etree.SubElement(assessment_meta_resource, "file", href=meta_file_path)
 

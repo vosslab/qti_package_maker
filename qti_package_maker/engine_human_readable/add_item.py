@@ -5,16 +5,10 @@ from qti_package_maker.common import string_functions
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 #letters = 'abcdefghijklmnopqrstuvwxyz'
 
-#==============
-def MC(question_text: str, choices_list: list, answer_text: str):
-	"""
-	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
 
-	Args:
-	question_text (str): The question text.
-	choices_list (list): List of possible choices.
-	answer_text (str): The correct answer.
-	"""
+#==============================================================
+def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
+	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -28,16 +22,9 @@ def MC(question_text: str, choices_list: list, answer_text: str):
 	assessment_text += '\n\n'
 	return assessment_text
 
-#==============
-def MA(question_text: str, choices_list: list, answers_list: list):
-	"""
-	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
-
-	Args:
-	question_text (str): The question text.
-	choices_list (list): List of possible choices.
-	answers_list (list): List of correct answers.
-	"""
+#==============================================================
+def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
+	"""Create a Multiple Answer (Checkboxes) question."""
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -51,8 +38,9 @@ def MA(question_text: str, choices_list: list, answers_list: list):
 	assessment_text += '\n\n'
 	return assessment_text
 
-#=====================
-def MATCH(question_text: str, answers_list: list, matching_list: list):
+#==============================================================
+def MATCH(item_number: int, crc16_text: str, question_text: str, answers_list: list, matching_list: list):
+	"""Create a Matching question where users match items from two lists."""
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
@@ -64,3 +52,23 @@ def MATCH(question_text: str, answers_list: list, matching_list: list):
 		assessment_text += f"- {letters[i]}. {answer_text} / {match_text}\n"
 	assessment_text += '\n\n'
 	return assessment_text
+
+#==============================================================
+def NUM(item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
+	"""Create a Numerical question with an accepted tolerance range."""
+	pass
+
+#==============================================================
+def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
+	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	pass
+
+#==============================================================
+def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
+	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	pass
+
+#==============================================================
+def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
+	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	pass
