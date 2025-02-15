@@ -47,10 +47,10 @@ class BaseEngine:
 		crc16question = string_functions.get_crc16_from_string(question_text)
 		choices_str = '|'.join(choices_list)
 		crc16choice = string_functions.get_crc16_from_string(choices_str)
-		crc16 = f"{crc16question}_{crc16choice}"
-		assessment_item_data = self.add_item.MC(question_text, choices_list, answer_text)
+		crc16merge = f"{crc16question}_{crc16choice}"
+		assessment_item_data = self.add_item.MC(crc16merge, question_text, choices_list, answer_text)
 		function_name = inspect.currentframe().f_code.co_name
-		self.add_assessment_item(title, crc16, function_name, assessment_item_data)
+		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 
 	#==============
 	def MA(self, question_text: str, choices_list: list, answers_list: list):
@@ -60,7 +60,7 @@ class BaseEngine:
 		choices_str = '|'.join(choices_list)
 		crc16choices = string_functions.get_crc16_from_string(choices_str)
 		crc16merge = f"{crc16question}_{crc16choices}"
-		assessment_item_data = self.add_item.MA(question_text, choices_list, answers_list)
+		assessment_item_data = self.add_item.MA(crc16merge, question_text, choices_list, answers_list)
 		function_name = inspect.currentframe().f_code.co_name
 		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 
@@ -72,7 +72,7 @@ class BaseEngine:
 		answers_str = '|'.join(answers_list)
 		crc16answers = string_functions.get_crc16_from_string(answers_str)
 		crc16merge = f"{crc16question}_{crc16answers}"
-		assessment_item_data = self.add_item.MATCH(question_text, answers_list, matching_list)
+		assessment_item_data = self.add_item.MATCH(crc16merge, question_text, answers_list, matching_list)
 		function_name = inspect.currentframe().f_code.co_name
 		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 

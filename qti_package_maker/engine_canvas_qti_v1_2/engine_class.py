@@ -11,7 +11,9 @@ from qti_package_maker.common import qti_manifest
 from qti_package_maker.common import base_package_maker
 from qti_package_maker.engine_canvas_qti_v1_2 import add_item
 from qti_package_maker.engine_canvas_qti_v1_2 import assessment_meta
+from qti_package_maker.engine_canvas_qti_v1_2 import item_xml_helpers
 
+#==============
 
 class QTIv1Engine(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str):
@@ -28,50 +30,71 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		self.assessment_base_name = "canvas_qti12_questions"
 		self.assessment_dir = os.path.join(self.output_dir, self.assessment_base_name)
 		os.makedirs(self.assessment_dir, exist_ok=True)
-		self.assessment_file_name = self.assessment_base_name + ".xml"
-		self.assessment_file_path = os.path.join(self.assessment_dir, assessment_file_name)
+		self.assessment_items_file_name = self.assessment_base_name + ".xml"
+		self.assessment_items_base_path = os.path.join(self.assessment_base_name, self.assessment_items_file_name)
+		self.assessment_items_file_path = os.path.join(self.output_dir, self.assessment_items_base_path)
+		self.assessment_meta_file_path = os.path.join(self.assessment_dir, 'assessment_meta.xml')
+		self.manifest_file_path = os.path.join(self.output_dir, "imsmanifest.xml")
 
 	#==============
 
 	def write_assessment_items(self):
+		"""
+		Write all assessment items into a structured QTI 1.2 XML file.
 
+		Returns:
+			str: The name of the saved XML file.
+		"""
+		# Step 1: Create <section> to hold assessment items
+		section_level_etree = lxml.etree.Element("section", ident="root_section")
+
+		# Step 2: Append each <item> (assessment item) to <section>
 		save_count = 0
-		### take each assessment item and merge into the XML etree
-		#assessment_items_etree = ??? # create XML header be ready to add assessment items
-		for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
+		for assessment_item_dict in self.assessment_items_tree:
 			save_count += 1
-			# generate XML for the assessment item
 			assessment_item_etree = assessment_item_dict['assessment_item_data']
+			section_level_etree.append(assessment_item_etree)
 
-		# save final XML to self.assessment_file_path
-		with open(self.assessment_file_path, "w") as f:
-			assessment_xml_string = lxml.etree.tostring(assessment_item_etree,
-				pretty_print=True, xml_declaration=True, encoding="UTF-8")
-			f.write(assessment_xml_string.decode("utf-8"))
-		print(f"Saved {len(assessment_file_name_list)} assessment items to {self.package_name}/qti21/")
-		return assessment_file_name
+		# Step 3: Create <assessment> and append <section>
+		assessment_level_etree = lxml.etree.Element("assessment", ident="root_assessment")
+		assessment_level_etree.append(section_level_etree)
 
-	#==============
+		# Step 4: Create XML root <questestinterop> and append <assessment>
+		assessment_items_file_xml_root = item_xml_helpers.create_assessment_items_file_xml_header()
+		assessment_items_file_xml_root.append(assessment_level_etree)
 
-	def write_assessment_meta(self, assessment_file_name_list):
-		# Generate imsmanifest.xml
-		question_bank_etree = assessment_meta.generate_assessment_meta(self.package_name)
-		question_bank_xml_string = lxml.etree.tostring(question_bank_etree,
-			pretty_print=True, xml_declaration=True, encoding="UTF-8")
-		question_bank_path = os.path.join(self.output_dir, "qti21/question_bank00001.xml")
-		with open(question_bank_path, "w", encoding="utf-8") as f:
-			f.write(question_bank_xml_string.decode("utf-8"))
+		# Step 5: Save final XML to file
+		assessment_items_xml_string = lxml.etree.tostring(
+			assessment_items_file_xml_root, pretty_print=True, xml_declaration=True, encoding="UTF-8"
+		)
+
+		with open(self.assessment_items_file_path, "w", encoding="utf-8") as f:
+			f.write(assessment_items_xml_string.decode("utf-8"))
+
+		# Step 6: Log & return filename
+		print(f"Saved {save_count} assessment items to {self.assessment_items_base_path}")
 		return
 
 	#==============
 
-	def write_manifest(self, assessment_file_name_list):
+	def write_assessment_meta(self):
 		# Generate imsmanifest.xml
-		manifest_etree = manifest.generate_manifest(assessment_file_name_list)
+		assessment_meta_etree = assessment_meta.generate_assessment_meta(self.package_name)
+		assessment_meta_xml_string = lxml.etree.tostring(assessment_meta_etree,
+			pretty_print=True, xml_declaration=True, encoding="UTF-8")
+		with open(self.assessment_meta_file_path, "w", encoding="utf-8") as f:
+			f.write(assessment_meta_xml_string.decode("utf-8"))
+		return
+
+	#==============
+
+	def write_manifest(self):
+		# Generate imsmanifest.xml
+		file_list = [self.assessment_items_base_path, ]
+		manifest_etree = qti_manifest.generate_manifest(self.package_name, file_list, version="1.2")
 		manifest_xml_string = lxml.etree.tostring(manifest_etree, pretty_print=True,
 			xml_declaration=True, encoding="UTF-8")
-		manifest_path = os.path.join(self.output_dir, "imsmanifest.xml")
-		with open(manifest_path, "w", encoding="utf-8") as f:
+		with open(self.manifest_file_path, "w", encoding="utf-8") as f:
 			f.write(manifest_xml_string.decode("utf-8"))
 		return
 
@@ -81,9 +104,9 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
-		assessment_file_name = self.write_assessment_items()
+		self.write_manifest()
 		self.write_assessment_meta()
-		self.write_manifest(assessment_file_name_list)
+		self.write_assessment_items()
 
 		# Write the package to a ZIP file
 		zip_path = f"{self.package_name}.zip"

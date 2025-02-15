@@ -3,13 +3,14 @@ ENGINE_NAME = "canvas_qti_v1_2"
 # Standard Library
 
 # Pip3 Library
+import lxml.etree
 
 # QTI Package Maker
 from qti_package_maker.common import string_functions
 from qti_package_maker.engine_canvas_qti_v1_2 import item_xml_helpers
 
 #==============
-def MC(question_text: str, choices_list: list, answer_text: str, crc_code: str=None) -> str:
+def MC(crc16_text: str, question_text: str, choices_list: list, answer_text: str) -> str:
 	"""
 	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
 
@@ -21,13 +22,13 @@ def MC(question_text: str, choices_list: list, answer_text: str, crc_code: str=N
 	Returns:
 		lxml.etree.Element: XML element for the question.
 	"""
-	assessment_item_etree = xml_helpers.create_assessment_item_header(crc_merge)
+	assessment_item_etree = lxml.etree.Element("item", ident=crc16_text)
 	answer_id = f"answer_{choices_list.index(answer_text) + 1}"
 	# takes a list as input
-	response_declaration = xml_helpers.create_response_declaration([answer_id, ])
-	outcome_declarations = xml_helpers.create_outcome_declarations()
-	item_body = xml_helpers.create_item_body(question_text, choices_list, max_choices=1)
-	response_processing = xml_helpers.create_response_processing()
+	response_declaration = item_xml_helpers.create_response_declaration([answer_id, ])
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body(question_text, choices_list, max_choices=1)
+	response_processing = item_xml_helpers.create_response_processing()
 
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
@@ -39,7 +40,7 @@ def MC(question_text: str, choices_list: list, answer_text: str, crc_code: str=N
 	return assessment_item_etree
 
 
-def MA(question_text: str, choices_list: list, answers_list: list):
+def MA(crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""
 	Create a Multiple Answer question in QTI-compliant XML format.
 
@@ -51,35 +52,6 @@ def MA(question_text: str, choices_list: list, answers_list: list):
 	Returns:
 		lxml.etree.Element: XML element for the question.
 	"""
-	# Check for a minimum number of choices and duplicates
-	if len(choices_list) < 3:
-		raise ValueError("You need at least three choices for a multiple answer question.")
-
-	choices_set = set(choices_list)
-	if len(choices_list) > len(choices_set):
-		raise ValueError("Duplicate choices are not allowed.")
-
-	# Check for multiple answers and duplicates in answers
-	if len(answers_list) < 2:
-		raise ValueError("You need at least two correct answers for a multiple answer question.")
-
-	answers_set = set(answers_list)
-	if len(answers_list) > len(answers_set):
-		raise ValueError("Duplicate answers are not allowed.")
-
-	# Check that there is at least one non-answer (choice that is not in answers_set)
-	if choices_set == answers_set:
-		raise ValueError("There must be at least one non-answer choice.")
-
-	# Ensure all answers are valid choices
-	if not answers_set.issubset(choices_set):
-		raise ValueError("One or more correct answers are not in the list of choices.")
-
-	crc16question = string_functions.get_crc16_from_string(question_text)
-	choices_str = '|'.join(choices_list)
-	crc16choice = string_functions.get_crc16_from_string(choices_str)
-	crc_merge = f"{crc16question}_{crc16choice}"
-
 	assessment_item_etree = xml_helpers.create_assessment_item_header(crc_merge)
 
 	answer_id_list = []
@@ -102,17 +74,17 @@ def MA(question_text: str, choices_list: list, answers_list: list):
 	return assessment_item_etree
 
 
-def FIB(question_text: str,  answers_list):
+def FIB(crc16_text: str, question_text: str,  answers_list):
 	raise NotImplementedError
 
-def FIB_PLUS(question_text: str, answer_map: dict) -> str:
+def FIB_PLUS(crc16_text: str, question_text: str, answer_map: dict) -> str:
 	raise NotImplementedError
 
-def NUM(question_text: str,  answer, tolerance, tol_message=True):
+def NUM(crc16_text: str, question_text: str,  answer, tolerance, tol_message=True):
 	raise NotImplementedError
 
-def MATCH(question_text: str,  answers_list, matching_list):
+def MATCH(crc16_text: str, question_text: str,  answers_list, matching_list):
 	raise NotImplementedError
 
-def ORDER(question_text: str,  ordered_answers_list):
+def ORDER(crc16_text: str, question_text: str,  ordered_answers_list):
 	raise NotImplementedError

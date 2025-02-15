@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 # PIP3 modules
 import lxml
@@ -5,38 +6,43 @@ import lxml.etree
 import random
 
 #==============
-def create_assessment_item_header(orig_crc16: str):
+def create_assessment_items_file_xml_header() -> lxml.etree.Element:
 	"""
-	Create the root <assessmentItem> element with common namespaces and attributes.
+	Create the root <questestinterop> element with common namespaces and attributes.
+	Also adds <assessment> and <section> elements.
 
 	Args:
-		N (int): Question ID.
-		title (str): Title of the question.
+		assessment_id (str): Unique identifier for the assessment.
+		assessment_title (str): Title of the assessment.
+		section_id (str): Unique identifier for the root section.
 
 	Returns:
-		lxml.etree.Element: The root <assessmentItem> element.
+		lxml.etree.Element: The root <questestinterop> element with <assessment> and <section>.
 	"""
-	rand_crc16 = f"{random.randrange(16**4):04x}"
-	identifier = f"QUE__{orig_crc16}_{rand_crc16}"
 	nsmap = {
-		None: "http://www.imsglobal.org/xsd/imsqti_v2p1",
+		None: "http://www.imsglobal.org/xsd/ims_qtiasiv1p2",
 		"xsi": "http://www.w3.org/2001/XMLSchema-instance",
 	}
-	item_tree = lxml.etree.Element(
-		"assessmentItem",
+
+	# Create the root element <questestinterop>
+	assessment_items_file_xml_root = lxml.etree.Element(
+		"questestinterop",
 		nsmap=nsmap,
 		attrib={
 			"{http://www.w3.org/2001/XMLSchema-instance}schemaLocation": (
-				"http://www.imsglobal.org/xsd/imsqti_v2p1 "
-				"http://www.imsglobal.org/xsd/qti/qtiv2p1/imsqti_v2p1.xsd"
+				"http://www.imsglobal.org/xsd/ims_qtiasiv1p2 "
+				"http://www.imsglobal.org/xsd/ims_qtiasiv1p2p1.xsd"
 			),
-			"title": orig_crc16,
-			"adaptive": "false",
-			"timeDependent": "false",
-			"identifier": identifier,
 		},
 	)
-	return item_tree
+
+	# Add <assessment>
+	#assessment = lxml.etree.SubElement(questestinterop, "assessment", ident=assessment_id, title=assessment_title)
+
+	# Add <section>
+	#section = lxml.etree.SubElement(assessment, "section", ident=section_id)
+
+	return assessment_items_file_xml_root
 
 #==============
 def create_response_declaration(correct_values: list) -> lxml.etree.Element:
@@ -137,3 +143,27 @@ def create_response_processing() -> lxml.etree.Element:
 
 	return response_processing
 
+
+#==============
+def dummy_test_run():
+	"""
+	Run a test generation of assessment XML.
+	"""
+	assessment_xml = create_assessment_xml_header(
+		assessment_id="qti12_questions",
+		assessment_title="minimal_qti_1.2_sample",
+		section_id="root_section"
+	)
+
+	# Pretty print XML
+	assessment_xml_string = lxml.etree.tostring(
+		assessment_xml, pretty_print=True, xml_declaration=True, encoding="UTF-8"
+	)
+
+	# Save to file
+	with open("assessment.xml", "w", encoding="utf-8") as f:
+		f.write(assessment_xml_string.decode("utf-8"))
+
+#==============
+if __name__ == "__main__":
+	dummy_test_run()
