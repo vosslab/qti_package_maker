@@ -5,7 +5,7 @@
 
 # QTI Package Maker
 from qti_package_maker.common import string_functions
-from qti_package_maker.engine_blackboard_qti_v2_1 import item_xml_helpers
+from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
 #==============================================================
 def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):

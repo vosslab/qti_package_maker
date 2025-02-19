@@ -10,9 +10,9 @@ import lxml
 # QTI Package Maker
 from qti_package_maker.common import qti_manifest
 from qti_package_maker.common import base_package_maker
-from qti_package_maker.engine_canvas_qti_v1_2 import add_item
-from qti_package_maker.engine_canvas_qti_v1_2 import assessment_meta
-from qti_package_maker.engine_canvas_qti_v1_2 import item_xml_helpers
+from qti_package_maker.engines.canvas_qti_v1_2 import add_item
+from qti_package_maker.engines.canvas_qti_v1_2 import assessment_meta
+from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 
 #==============
 

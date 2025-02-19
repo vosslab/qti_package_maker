@@ -11,7 +11,7 @@ sys.path.insert(0, project_root)
 print("\n")
 
 # Now you can import your modules
-from qti_package_maker.engine_qti_v1_2.engine_class import QTIv1Engine
+from qti_package_maker.engines.qti_v1_2.engine_class import QTIv1Engine
 
 def main():
     engine = QTIv1Engine("example_package")

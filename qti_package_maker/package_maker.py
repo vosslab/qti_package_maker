@@ -5,10 +5,10 @@
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.engine_human_readable.engine_class import HumanReadable
-from qti_package_maker.engine_canvas_qti_v1_2.engine_class import QTIv1Engine
-from qti_package_maker.engine_blackboard_qti_v2_1.engine_class import QTIv2Engine
-from qti_package_maker.engine_blackboard_text_upload.engine_class import BBQTextEngine
+from qti_package_maker.engines.human_readable.engine_class import HumanReadable
+from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
+from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
+from qti_package_maker.engines.blackboard_text_upload.engine_class import BBQTextEngine
 
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str):
