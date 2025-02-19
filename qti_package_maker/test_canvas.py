@@ -14,7 +14,7 @@ print("\n")
 from qti_package_maker.package_maker import MasterQTIPackage
 
 def main():
-	qti_packer = MasterQTIPackage('dump_canvas_qti_v1', 'QTI_v1')
+	qti_packer = MasterQTIPackage('dummy_canvas_qti_v1', 'QTI_v1')
 	#qti_packer = MasterQTIPackage('pool_human_readable', 'HumanRead')
 	qti_packer.show_available_question_types()
 	question_text = 'What is your favorite color?'
