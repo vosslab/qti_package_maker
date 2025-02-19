@@ -23,7 +23,7 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	return assessment_text
 
 #==============================================================
-def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
+def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""Create a Multiple Answer (Checkboxes) question."""
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
