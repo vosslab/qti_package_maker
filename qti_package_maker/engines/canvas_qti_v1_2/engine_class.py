@@ -113,12 +113,14 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		self.write_assessment_items()
 
 		# Write the package to a ZIP file
+		#zip_path = f"{self.package_name}-qti_v1_2.zip"
 		zip_path = f"{self.package_name}.zip"
 		with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
 			for root, _, files in os.walk(self.output_dir):
 				for file in files:
 					full_path = os.path.join(root, file)
-					relative_path = os.path.relpath(full_path, self.output_dir)  # Path relative to the output directory
+					# Path relative to the output directory
+					relative_path = os.path.relpath(full_path, self.output_dir)
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
 		self.clean_temp_files()
 
