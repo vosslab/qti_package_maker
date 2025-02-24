@@ -139,7 +139,7 @@ def validate_MULTI_FIB(question_text: str, answer_map: dict) -> str:
 				raise ValueError(f"All values for key '{key_text}' must be non-empty strings.")
 	return True
 test_answer_map = {'colors': ['red', 'blue'], 'cities': ['Chicago', 'New York']}
-assert validate_FIB_PLUS("What [colors] is which [cities]?", test_answer_map) == True
+assert validate_MULTI_FIB("What [colors] is which [cities]?", test_answer_map) == True
 
 #========================================================
 def validate_NUM(question_text: str, answer_float: float, tolerance_float: float, tol_message: bool=True):
