@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Standard Library
+import re
 
 # Pip3 Library
 
@@ -13,6 +14,9 @@ from qti_package_maker.engines.blackboard_text_upload.engine_class import BBQTex
 
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str):
+		package_name = package_name.strip()
+		if not package_name:
+			raise ValueError("package_name not defined")
 		# Convert to lowercase
 		engine_name = engine_name.lower()
 		# Remove non-alphanumeric characters
