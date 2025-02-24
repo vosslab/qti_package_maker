@@ -4,7 +4,7 @@ import os
 from lxml import etree
 
 #==============
-def generate_assessment_meta(package_name: str, assessment_file_name_list: list[str]) -> etree.ElementTree:
+def generate_assessment_meta(package_name: str, assessment_file_name_list: list) -> etree.ElementTree:
 	"""
 	Generates the XML for the question bank (assessment_meta.xml).
 
@@ -15,7 +15,6 @@ def generate_assessment_meta(package_name: str, assessment_file_name_list: list[
 	Returns:
 		etree.ElementTree: The generated XML tree for assessment_meta.xml.
 	"""
-	assessment_file_name_list.sort()
 	assessment_meta = create_assessment_meta_header(package_name)
 	assessment_section = create_assessment_section(assessment_file_name_list)
 	assessment_meta.append(assessment_section)
@@ -55,12 +54,12 @@ def create_assessment_meta_header(package_name: str) -> etree.Element:
 	return assessment_test
 
 #==============
-def create_assessment_section(assessment_file_name_list: list[str]) -> etree.Element:
+def create_assessment_section(assessment_file_name_list: list) -> etree.Element:
 	"""
 	Creates the assessment section, which references all assessment items.
 
 	Args:
-		assessment_file_name_list (list[str]): List of assessment item file names.
+		assessment_file_name_list (list): List of assessment item file names.
 
 	Returns:
 		etree.Element: The 'testPart' element containing assessment item references.
@@ -71,11 +70,12 @@ def create_assessment_section(assessment_file_name_list: list[str]) -> etree.Ele
 	# Add an assessment section referencing each assessment item file
 	assessment_ref = etree.Element("assessmentSection",
 		identifier="section_part", visible="false", title="Question Pool")
-	for file_name in assessment_file_name_list:
-		base_name = os.path.splitext(file_name)[0]
+	for assessment_file_name in assessment_file_name_list:
+		assessment_base_name = os.path.basename(assessment_file_name)
+		assessment_core_name = os.path.splitext(assessment_base_name)[0]
 		item_ref = etree.SubElement(assessment_ref, "assessmentItemRef",
-			identifier=base_name,
-			href=f"{file_name}")
+			identifier=assessment_core_name,
+			href=assessment_base_name)
 		#assessment_ref.append(item_ref)
 	test_part.append(assessment_ref)
 

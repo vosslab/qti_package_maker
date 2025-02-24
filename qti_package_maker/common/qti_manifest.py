@@ -130,7 +130,7 @@ def create_metadata_section(package_name: str, version: str = "1.2") -> etree.El
 	return metadata
 
 #========================================================
-def create_resources_section(assessment_file_name_list: list[str], version: str = "1.2") -> etree.Element:
+def create_resources_section(assessment_file_name_list: list, version: str = "1.2") -> etree.Element:
 	"""
 	Creates the resources section of the manifest, adding each assessment item.
 
@@ -157,9 +157,9 @@ def create_resources_section(assessment_file_name_list: list[str], version: str 
 	# Create the assessment meta resource (we will add dependencies later)
 	assessment_meta_resource = etree.Element(
 		"resource",
+		href=meta_file_path,
 		identifier="assessment_meta",
 		type=meta_type,
-		href=meta_file_path,
 	)
 	etree.SubElement(assessment_meta_resource, "file", href=meta_file_path)
 
@@ -168,6 +168,7 @@ def create_resources_section(assessment_file_name_list: list[str], version: str 
 		base_name = os.path.splitext(os.path.basename(file_name))[0]
 		resource = etree.Element(
 			"resource",
+			href=file_name,
 			identifier=base_name,
 			type=item_type,
 		)

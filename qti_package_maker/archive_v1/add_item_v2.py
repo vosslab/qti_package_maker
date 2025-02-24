@@ -11,29 +11,9 @@ import string_functions
 def MC(question_text: str, choices_list: list, answer_text: str):
 	"""
 	Create a Multiple Choice (Single Answer) question in QTI-compliant XML format.
-
-	Args:
-		question_text (str): The question text.
-		choices_list (list): List of answer choices.
-		answer (str): The correct answer.
-
 	Returns:
 		lxml.etree.Element: XML element for the question.
 	"""
-	if len(choices_list) <= 1:
-		raise ValueError("not enough choices to choose from, you need two choices for multiple choice")
-	if answer_text not in choices_list:
-		raise ValueError("Error: The correct answer is not in the list of choices.")
-	if choices_list.count(answer_text) > 1:
-		raise ValueError("Error: The correct answer appears more than once in list of choices.")
-	if len(choices_list) > len(set(choices_list)):
-		raise ValueError("Error: Duplicate choices.")
-
-	crc16question = string_functions.get_crc16_from_string(question_text)
-	choices_str = '|'.join(choices_list)
-	crc16choice = string_functions.get_crc16_from_string(choices_str)
-	crc_merge = f"{crc16question}_{crc16choice}"
-
 	assessment_item_etree = item_helpers.create_assessment_item_header(crc_merge)
 	answer_id = f"answer_{choices_list.index(answer_text) + 1}"
 	# takes a list as input
