@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
 import os
+import re
 import sys
 import argparse
+
+# Set sys.path to the directory containing the 'qti_package_maker' folder
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
 from qti_package_maker.package_maker import MasterQTIPackage
 
@@ -10,7 +15,7 @@ from qti_package_maker.package_maker import MasterQTIPackage
 def read_MC(parts):
 	question_text = parts[1].strip()
 	choices_list = parts[2::2]
-	correct_status = lower_parts[3::2]
+	correct_status = [element.lower() for element in parts[3::2]]
 	answer_index = correct_status.index('correct')
 	answer_text = choices_list[answer_index]
 	return question_text, choices_list, answer_text
@@ -21,16 +26,16 @@ def indices(lst, element):
 	offset = -1
 	while True:
 		try:
-				offset = lst.index(element, offset+1)
+			offset = lst.index(element, offset+1)
 		except ValueError:
-				return result
+			return result
 		result.append(offset)
 
 #=====================================================
 def read_MA(parts):
 	question_text = parts[1].strip()
 	choices_list = parts[2::2]
-	correct_status = lower_parts[3::2]
+	correct_status = [element.lower() for element in parts[3::2]]
 	answers_indices = indices(correct_status, 'correct')
 	answers_list = choices_list[answers_indices]
 	return question_text, choices_list, answer_text
@@ -67,7 +72,7 @@ def parse_args() -> argparse.Namespace:
 		('-2', '--qtiv2', 'blackboard_qti_v2_1', "Set output format to Blackboard QTI v2.1"),
 		('-r', '--human', 'human_readable',      "Set output format to human-readable text"),
 		('-b', '--bbq',   'bbq_text_upload',     "Set output format to (B)lack(B)oard (Q)uestions"),
-		('-h', '--html',  'html_selftest',       "Set output format to HTML self-test"),
+		('-s', '--html',  'html_selftest',       "Set output format to HTML self-test"),
 	]
 
 	# Generate the list of all formats from format_shortcuts
@@ -85,7 +90,7 @@ def parse_args() -> argparse.Namespace:
 	# Register format shortcut options
 	for short_opt, long_opt, value_text, desc_text in format_shortcuts:
 		parser.add_argument(short_opt, long_opt, dest="output_format", action="append",
-				const=value_text, help=desc_text)
+				const=value_text, nargs='?', help=desc_text)
 
 	args = parser.parse_args()
 
@@ -167,17 +172,26 @@ def main():
 	# https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
 
 	# general format of input_file = "bbq-(content_name)-questions.txt"
-	content_name = ""
 
-	package_name = 'dummy'
+	filename = "bbq-which_hydrophobic-simple-questions.txt"
+
+	match = re.match(r"bbq-(.+)-questions\.txt", filename)
+	if match:
+		content_name = match.group(1)
+		print(f"content_name = {content_name}")
+	else:
+		print("Invalid filename format")
+
 	engine_list = []
 	for output_format in args.output_format:
-		qti_packer = MasterQTIPackage(content_name, output_format)
+		package_name = f"{output_format}-{content_name}"
+		qti_packer = MasterQTIPackage(package_name, output_format)
 		engine_list.append(qti_packer)
 
 	input_file = args.input_file
 	process_questions(args.input_file, engine_list, args.allow_mixed)
-
+	for engine in engine_list:
+		engine.save_package()
 
 #==============
 
