@@ -80,13 +80,23 @@ class BaseEngine:
 		self.add_assessment_item(title, crc16merge, function_name, assessment_item_data)
 
 	#==============
-	def show_available_question_types(self):
-		# Get all callable functions from the add_item module
-		if self.add_item:
-			functions = []
-			for name in dir(self.add_item):
-				if callable(getattr(self.add_item, name)) and not name.startswith("__"):
-					functions.append(name)
-			print(f"Available question types: {', '.join(functions)}")
-		else:
+	def get_available_question_types(self) -> list:
+		""" Returns a list of available question types based on callable methods in `add_item`. """
+		if not self.add_item:
 			print(f"No add_item module assigned for engine {self.engine_name}.")
+			return []
+		# Extract function names dynamically
+		functions = [
+			name for name in dir(self.add_item)
+			if callable(getattr(self.add_item, name)) and not name.startswith("__")
+		]
+		return functions
+
+	#==============
+	def show_available_question_types(self):
+		""" Displays the available question types. """
+		available_types = self.get_available_question_types()
+		if available_types:
+			print(f"Available question types: {', '.join(available_types)}")
+		else:
+			print(f"No available question types found for engine {self.engine_name}.")
