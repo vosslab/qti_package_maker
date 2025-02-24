@@ -31,7 +31,6 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)
 		self.assessment_base_name = "canvas_qti12_questions"
-		#self.assessment_base_name = "ge1a7f64501d4a867d63bc368d5af4ba1"
 		self.assessment_dir = os.path.join(self.output_dir, self.assessment_base_name)
 		os.makedirs(self.assessment_dir, exist_ok=True)
 		self.assessment_items_file_name = self.assessment_base_name + ".xml"
@@ -43,12 +42,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 	#==============
 
 	def write_assessment_items(self):
-		"""
-		Write all assessment items into a structured QTI 1.2 XML file.
-
-		Returns:
-			str: The name of the saved XML file.
-		"""
+		""" Write all assessment items into a structured Canvas QTI 1.2 XML file."""
 		# Step 1: Create <section> to hold assessment items
 		section_level_etree = lxml.etree.Element("section", ident="root_section")
 
