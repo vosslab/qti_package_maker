@@ -119,7 +119,7 @@ def validate_FIB(question_text: str,  answers_list: list):
 assert validate_FIB("What color are bananas at the store?", ["green", "yellow"]) == True
 
 #========================================================
-def validate_FIB_PLUS(question_text: str, answer_map: dict) -> str:
+def validate_MULTI_FIB(question_text: str, answer_map: dict) -> str:
 	"""
 	Validate a Fill-in-the-Blank-Plus question.
 	"""
