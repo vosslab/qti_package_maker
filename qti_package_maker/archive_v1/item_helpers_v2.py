@@ -90,13 +90,6 @@ def create_outcome_declarations() -> list:
 def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
 	"""
 	Create the <itemBody> element with the question text and choices.
-
-	Args:
-		question (str): The question text.
-		choices (list): List of choices.
-
-	Returns:
-		lxml.etree.Element: The <itemBody> element.
 	"""
 	item_body = lxml.etree.Element("itemBody")
 	div = lxml.etree.SubElement(item_body, "div")

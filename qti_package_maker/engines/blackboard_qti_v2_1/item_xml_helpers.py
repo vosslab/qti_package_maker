@@ -1,8 +1,10 @@
 
+import html
 import random
 
 # PIP3 modules
 import lxml
+import lxml.html
 import lxml.etree
 
 #==============
@@ -141,7 +143,12 @@ def create_item_body(question_html_text: str, choices_list: list, max_choices: i
 	Create the <itemBody> element with the question text and choices.
 	"""
 	item_body = lxml.etree.Element("itemBody")
-	lxml.etree.SubElement(item_body, "div").text = question_html_text
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	if len(parsed_html.getchildren()) > 1:
+		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
+	item_body.append(parsed_html)
 
 	# Create <choiceInteraction> with proper attributes
 	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
@@ -158,13 +165,18 @@ def create_item_body(question_html_text: str, choices_list: list, max_choices: i
 				"identifier": f"answer_{idx}",
 			}
 		)
-		# Parse choice text directly as XML to avoid extra tags
-		lxml.etree.SubElement(simple_choice, "p").text = choice_html_text
+		# Unescape choice text
+		unescaped_text = html.unescape(choice_html_text)
+		# Ensure choice text is wrapped in <p>
+		parsed_choice_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='p')
+		# Ensure the parsed choice has only one top-level <p> element
+		if len(parsed_choice_html.getchildren()) > 1:
+			raise ValueError(f"Choice text contains multiple elements: {choice_html_text}")
+		# Append the single <p> element inside <simpleChoice>
+		simple_choice.append(parsed_choice_html)
 	return item_body
 
 #==============
-import lxml.etree
-
 def create_response_processing() -> lxml.etree.Element:
 	"""
 	Create a <responseProcessing> element with correct feedback and scoring.

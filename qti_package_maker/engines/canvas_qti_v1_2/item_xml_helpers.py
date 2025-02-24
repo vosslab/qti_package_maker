@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # Standard Library
+import html
 import random
 
 # PIP3 modules
