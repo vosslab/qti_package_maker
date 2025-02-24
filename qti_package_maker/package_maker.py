@@ -9,31 +9,76 @@ from qti_package_maker.engines.human_readable.engine_class import HumanReadable
 from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
 from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
 from qti_package_maker.engines.blackboard_text_upload.engine_class import BBQTextEngine
+#from qti_package_maker.engines.html_selftest.engine_class import HTMLSelfTest
 
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str):
+		# Convert to lowercase
 		engine_name = engine_name.lower()
-		if engine_name.startswith('qti_v1') or engine_name.startswith('canvas'):
+		# Remove non-alphanumeric characters
+		engine_name = re.sub("[^a-z0-9]", "", engine_name)
+		if engine_name.startswith('qtiv1') or engine_name.startswith('canvas'):
+			# canvas_qti_v1_2
 			self.engine = QTIv1Engine(package_name)
-		elif engine_name.startswith('qti_v2'):
+		elif engine_name.startswith('qtiv2') or engine_name.startswith('blackboardqti'):
+			# blackboard_qti_v2_1
 			self.engine = QTIv2Engine(package_name)
 		elif engine_name.startswith('human'):
+			# human_readable
 			self.engine = HumanReadable(package_name)
-		elif engine_name.startswith('bbq'):
+		elif engine_name.startswith('bbq') or engine_name.startswith('blackboardtext'):
+			# blackboard_text_upload
 			self.engine = BBQText(package_name)
+		elif engine_name.startswith('html'):
+			# blackboard_text_upload
+			self.engine = HTMLSelfTest(package_name)
 		else:
 			raise ValueError(f"Unknown engine: {engine_name}")
 		print(f"Initialized Engine: {self.engine.engine_name}")
 
+	#=====================================================================
+	def add_question(self, question_type: str, question_tuple: tuple):
+		""" General method to add a question to the engine. """
+		supported_types = self.engine.get_available_question_types()
+		if question_type not in supported_types:
+			self.show_available_question_types()
+			raise NotImplementedError(f"Error: Unsupported question type '{question_type}'")
+		add_method = getattr(self, f"add_{question_type}", None)
+		if add_method is None:
+			self.show_available_question_types()
+			raise NotImplementedError(f"Error: No method found for question type '{question_type}'")
+		add_method(*question_tuple)
+
 	def add_MC(self, question_text: str, choices_list: list, answer_text: str):
+		"""Handles adding a Multiple-Choice (MC) question."""
 		self.engine.MC(question_text, choices_list, answer_text)
 
 	def add_MA(self, question_text: str, choices_list: list, answers_list: list):
+		"""Handles adding a Multiple-Answer (MA) question."""
 		self.engine.MA(question_text, choices_list, answers_list)
 
-	def add_MATCH(self, question_text: str, answers_list: list, matching_list: list):
+	def add_MATCH(self, question_text: str, prompts_list: list, choices_list: list):
+		"""Handles adding a Matching (MATCH) question."""
 		self.engine.MATCH(question_text, answers_list, matching_list)
 
+	def add_FIB(self, question_text: str,  answers_list: list):
+		"""Handles adding a Multiple-Choice (MC) question."""
+		self.engine.FIB(question_text, choices_list, answer_text)
+
+	def add_MULTI_FIB(self, question_text: str, answer_map: dict):
+		"""Handles adding a Multiple-Choice (MC) question."""
+		self.engine.MULTI_FIB(question_text, choices_list, answer_text)
+
+	def add_NUM(self, question_text: str, answer_float: float,
+				 tolerance_float: float, tol_message: bool=True):
+		"""Handles adding a Multiple-Answer (MA) question."""
+		self.engine.NUM(question_text, choices_list, answers_list)
+
+	def add_ORDER(self, question_text: str,  ordered_answers_list: list):
+		"""Handles adding a Matching (MATCH) question."""
+		self.engine.ORDER(question_text, answers_list, matching_list)
+
+	#=====================================================================
 	def save_package(self):
 		print(
 			f"Saving package {self.engine.package_name}\n"
@@ -42,6 +87,7 @@ class MasterQTIPackage:
 		)
 		self.engine.save_package()
 
+	#=====================================================================
 	def show_available_question_types(self):
 		self.engine.show_available_question_types()
 
