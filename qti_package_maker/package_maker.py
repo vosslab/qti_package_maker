@@ -9,7 +9,7 @@ import re
 from qti_package_maker.engines.human_readable.engine_class import HumanReadable
 from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
 from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
-from qti_package_maker.engines.blackboard_text_upload.engine_class import BBQTextEngine
+from qti_package_maker.engines.bbq_text_upload.engine_class import BBQTextEngine
 #from qti_package_maker.engines.html_selftest.engine_class import HTMLSelfTest
 
 class MasterQTIPackage:
