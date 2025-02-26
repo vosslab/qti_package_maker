@@ -64,6 +64,22 @@ def NUM(item_number: int, crc16_text: str, question_text: str, answer: float, to
 #==============================================================
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(crc16_text)
+	# takes a list as input
+	response_declaration = item_xml_helpers.create_response_declaration_FIB(answers_list)
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body_FIB(question_text, answers_list)
+	response_processing = item_xml_helpers.create_response_processing()
+
+	# Assemble the XML tree
+	assessment_item_etree.append(response_declaration)
+	for outcome in outcome_declarations:
+		assessment_item_etree.append(outcome)
+	assessment_item_etree.append(item_body)
+	assessment_item_etree.append(response_processing)
+
+	return assessment_item_etree
+
 	pass
 
 #==============================================================

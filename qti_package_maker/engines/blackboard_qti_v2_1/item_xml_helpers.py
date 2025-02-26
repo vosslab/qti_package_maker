@@ -48,13 +48,9 @@ def create_assessment_item_header(question_crc16: str):
 
 #==============
 def create_response_declaration(correct_values: list) -> lxml.etree.Element:
+	## IMPORTANT !!!
 	"""
 	Create a <responseDeclaration> element.
-
-	Args:
-		response_id (str): Identifier for the response.
-		correct_values (list): List of correct response values.
-
 	Returns:
 		lxml.etree.Element: The <responseDeclaration> element.
   <responseDeclaration cardinality="multiple" baseType="identifier" identifier="RESPONSE">
@@ -63,9 +59,8 @@ def create_response_declaration(correct_values: list) -> lxml.etree.Element:
       <value>answer_2</value>
     </correctResponse>
   </responseDeclaration>
-
 	"""
-	element = lxml.etree.Element(
+	responseDeclaration = lxml.etree.Element(
 		"responseDeclaration",
 		attrib={
 			"baseType": "identifier",
@@ -73,12 +68,136 @@ def create_response_declaration(correct_values: list) -> lxml.etree.Element:
 			"identifier": "RESPONSE",
 		},
 	)
-	correct_response = lxml.etree.SubElement(element, "correctResponse")
+	correct_response = lxml.etree.SubElement(responseDeclaration, "correctResponse")
 	for value in correct_values:
 		lxml.etree.SubElement(correct_response, "value").text = value
-	return element
+	return responseDeclaration
 
+#==============
+def create_response_declaration_FIB(answers_list: list) -> lxml.etree.Element:
+	## IMPORTANT !!!
+	"""
+	Create a <responseDeclaration> element.
+	Returns:
+		lxml.etree.Element: The <responseDeclaration> element.
+  <responseDeclaration cardinality="single" baseType="string" identifier="RESPONSE">
+    <correctResponse>
+      <value>uno</value>
+      <value>dos</value>
+    </correctResponse>
+    <mapping>
+      <mapEntry mapKey="uno" caseSensitive="false" mappedValue="100.0"/>
+      <mapEntry mapKey="dos" caseSensitive="false" mappedValue="100.0"/>
+    </mapping>
+  </responseDeclaration>
+	"""
+	responseDeclaration = lxml.etree.Element(
+		"responseDeclaration",
+		attrib={
+			"baseType": "string",
+			"cardinality": "single",
+			"identifier": "RESPONSE",
+		},
+	)
+	# Create <correctResponse> and <mapping>
+	correct_response = lxml.etree.SubElement(responseDeclaration, "correctResponse")
+	mapping = lxml.etree.SubElement(responseDeclaration, "mapping")
+
+	# Iterate once to create both <value> and <mapEntry>
+	for value in answers_list:
+		lxml.etree.SubElement(correct_response, "value").text = value
+		lxml.etree.SubElement(mapping, "mapEntry", {
+			"mapKey": value,
+			"caseSensitive": "false",
+			"mappedValue": "100.0",
+		})
+	return responseDeclaration
+
+#==============
+def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
+	## IMPORTANT !!!
+	"""
+	Create the <itemBody> element with the question text and choices.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	if len(parsed_html.getchildren()) > 1:
+		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
+	item_body.append(parsed_html)
+
+	# Create <choiceInteraction> with proper attributes
+	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
+		"maxChoices": f"{max_choices:d}",
+		"responseIdentifier": "RESPONSE",
+		"shuffle": str(shuffle).lower(),
+	})
+	# Add choices without extra <p> tags
+	for idx, choice_html_text in enumerate(choices_list, start=1):
+		simple_choice = lxml.etree.SubElement(
+			choice_interaction, "simpleChoice",
+			{
+				"fixed": "true",
+				"identifier": f"answer_{idx}",
+			}
+		)
+		# Unescape choice text
+		unescaped_text = html.unescape(choice_html_text)
+		# Ensure choice text is wrapped in <p>
+		parsed_choice_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='p')
+		# Ensure the parsed choice has only one top-level <p> element
+		if len(parsed_choice_html.getchildren()) > 1:
+			raise ValueError(f"Choice text contains multiple elements: {choice_html_text}")
+		# Append the single <p> element inside <simpleChoice>
+		simple_choice.append(parsed_choice_html)
+	return item_body
+
+#==============
+def create_item_body_FIB(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
+	## IMPORTANT !!!
+	"""
+	Create the <itemBody> element with the question text and choices.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	if len(parsed_html.getchildren()) > 1:
+		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
+	item_body.append(parsed_html)
+
+	# Create a <p> wrapper for the <textEntryInteraction> field
+	text_entry_p = lxml.etree.SubElement(item_body, "p")
+	# Create the <textEntryInteraction> element inside <p>
+	lxml.etree.SubElement(text_entry_p, "textEntryInteraction", {
+		"responseIdentifier": "RESPONSE"
+	})
+
+	return item_body
+
+#==============
 def create_outcome_declarations() -> list:
+	"""
+	Create a minimal list of <outcomeDeclaration> elements.
+
+	Returns:
+		list: A list of <outcomeDeclaration> elements.
+	"""
+	outcome_declare_tree = [
+		lxml.etree.Element(
+			"outcomeDeclaration",
+			attrib={
+				"baseType": "float",
+				"cardinality": "single",
+				"identifier": "SCORE",
+			},
+		)
+	]
+	return outcome_declare_tree
+
+#==============
+def create_outcome_declarations_big() -> list:
 	"""
 	Create a list of <outcomeDeclaration> elements for SCORE, FEEDBACKBASIC, and MAXSCORE.
 
@@ -118,66 +237,29 @@ def create_outcome_declarations() -> list:
 	return outcome_declare_tree
 
 #==============
-def create_outcome_declarations2() -> list:
+def create_response_processing() -> lxml.etree.Element:
 	"""
-	Create a minimal list of <outcomeDeclaration> elements.
+	Create a minimal <responseProcessing> element compatible with Canvas and Blackboard.
+
+	Args:
+		response_id (str): Identifier for the response.
 
 	Returns:
-		list: A list of <outcomeDeclaration> elements.
+		lxml.etree.Element: The minimal <responseProcessing> element.
 	"""
-	outcome_declare_tree = [
-		lxml.etree.Element(
-			"outcomeDeclaration",
-			attrib={
-				"baseType": "float",
-				"cardinality": "single",
-				"identifier": "SCORE",
-			},
-		)
-	]
-	return outcome_declare_tree
+	response_processing = lxml.etree.Element("responseProcessing")
+	response_condition = lxml.etree.SubElement(response_processing, "responseCondition")
+	response_if = lxml.etree.SubElement(response_condition, "responseIf")
+
+	# Match correct response
+	match = lxml.etree.SubElement(response_if, "match")
+	lxml.etree.SubElement(match, "variable", {"identifier": "RESPONSE"})
+	lxml.etree.SubElement(match, "correct", {"identifier": "RESPONSE"})
+
+	return response_processings
 
 #==============
-def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
-	"""
-	Create the <itemBody> element with the question text and choices.
-	"""
-	item_body = lxml.etree.Element("itemBody")
-
-	unescaped_text = html.unescape(question_html_text)
-	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
-	if len(parsed_html.getchildren()) > 1:
-		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
-	item_body.append(parsed_html)
-
-	# Create <choiceInteraction> with proper attributes
-	choice_interaction = lxml.etree.SubElement(item_body, "choiceInteraction", {
-		"maxChoices": f"{max_choices:d}",
-		"responseIdentifier": "RESPONSE",
-		"shuffle": str(shuffle).lower(),
-	})
-	# Add choices without extra <p> tags
-	for idx, choice_html_text in enumerate(choices_list, start=1):
-		simple_choice = lxml.etree.SubElement(
-			choice_interaction, "simpleChoice",
-			{
-				"fixed": "true",
-				"identifier": f"answer_{idx}",
-			}
-		)
-		# Unescape choice text
-		unescaped_text = html.unescape(choice_html_text)
-		# Ensure choice text is wrapped in <p>
-		parsed_choice_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='p')
-		# Ensure the parsed choice has only one top-level <p> element
-		if len(parsed_choice_html.getchildren()) > 1:
-			raise ValueError(f"Choice text contains multiple elements: {choice_html_text}")
-		# Append the single <p> element inside <simpleChoice>
-		simple_choice.append(parsed_choice_html)
-	return item_body
-
-#==============
-def create_response_processing() -> lxml.etree.Element:
+def create_response_processing_big() -> lxml.etree.Element:
 	"""
 	Create a <responseProcessing> element with correct feedback and scoring.
 	"""
