@@ -28,6 +28,27 @@ crc16_dict = {}
 #==========================
 #==========================
 #==========================
+def number_to_letter(integer):
+	"""
+	Convert a number to its alphabetical representation.
+	"""
+	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
+	#letters = 'abcdefghijklmnopqrstuvwxyz'
+	letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	return letters[integer]
+assert number_to_letter(3) == 'C'
+
+#==========================
+def number_to_lowercase(integer):
+	"""
+	Convert a number to its alphabetical representation.
+	"""
+	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
+	lowercase_letters = 'abcdefghijklmnopqrstuvwxyz'
+	return lowercase_letters[integer]
+assert number_to_letter(3) == 'c'
+
+#==========================
 def number_to_ordinal(integer):
 	"""
 	Convert a number to its ordinal representation.
@@ -50,6 +71,43 @@ def number_to_cardinal(integer):
 	"""
 	return num2words.num2words(integer, to='cardinal', lang='en_US')
 assert number_to_cardinal(3) == 'three'
+
+#==============================================================
+# Convert a number to its Roman numeral representation.
+def number_to_roman(integer: int) -> str:
+	"""Convert a number to its Roman numeral representation."""
+	val_map = [
+		(1000, 'M'), (900, 'CM'), (500, 'D'), (400, 'CD'),
+		(100, 'C'), (90, 'XC'), (50, 'L'), (40, 'XL'),
+		(10, 'X'), (9, 'IX'), (5, 'V'), (4, 'IV'), (1, 'I')
+	]
+	roman_numeral = ''
+	for value, numeral in val_map:
+		while integer >= value:
+			roman_numeral += numeral
+			integer -= value
+	return roman_numeral
+assert number_to_roman(3) == 'III'
+assert number_to_roman(9) == 'IX'
+assert number_to_roman(44) == 'XLIV'
+assert number_to_roman(1999) == 'MCMXCIX'
+
+#==============================================================
+# Check if choices in choices_list start with a prefix pattern.
+def has_prefix(choices_list: list) -> bool:
+	"""Determine if items in choices_list start with a common prefix using regex."""
+	# Define regex pattern to match common prefixes such as letters, numbers, and symbols.
+	prefix_pattern = re.compile(r'^[A-Za-z0-9][\.\:\)]\s*')
+	# Define regex pattern to properly remove HTML tags
+	html_tag_pattern = re.compile(r'<[^>]+>')
+	# Iterate through choices to check for the presence of prefixes
+	for choice in choices_list:
+		# Remove proper HTML tags before checking for prefix
+		cleaned_choice = re.sub(html_tag_pattern, '', choice)
+		if not prefix_pattern.match(cleaned_choice):
+			return False  # If any choice does not match, return False
+	# If all choices have a recognized prefix, return True
+	return True
 
 #==========================
 def get_crc16_from_string(mystr):

@@ -26,12 +26,16 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	# Append the question text with a unique identifier (crc16_text)
 	bb_question += f'<p>{crc16_text}</p> {question_text}'
 	# Shuffle choices if shuffle is enabled
-	if shuffle:
+	already_has_prefix = string_functions.has_prefix(choices_list)
+	if shuffle and not already_has_prefix:
 		random.shuffle(choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(choices_list):
-		labeled_choice_text = f'{letters[i]}. {choice_text}&nbsp;'
-		bb_question += '\t' + labeled_choice_text
+		if already_has_prefix:
+			bb_question += f'\t{choice_text}&nbsp;'
+		else:
+			letter_prefix = string_functions.number_to_letter[i]
+			bb_question += f'\t{letter_prefix}. {choice_text}&nbsp;'
 		# Check if the current choice is the correct answer
 		if choice_text == answer_text:
 			bb_question += '\tCorrect'
@@ -48,10 +52,16 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	bb_question = 'MC\t'
 	# Append the question text with a unique identifier (crc16_text)
 	bb_question += f'<p>{crc16_text}</p> {question_text}'
+	already_has_prefix = string_functions.has_prefix(choices_list)
+	if shuffle and not already_has_prefix:
+		random.shuffle(choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(choices_list):
-		labeled_choice_text = f'{letters[i]}. {choice_text}&nbsp;'
-		bb_question += '\t' + labeled_choice_text
+		if already_has_prefix:
+			bb_question += f'\t{choice_text}&nbsp;'
+		else:
+			letter_prefix = string_functions.number_to_letter[i]
+			bb_question += f'\t{letter_prefix}. {choice_text}&nbsp;'
 		# Check if the current choice is in the correct answer list
 		if choice_text in answer_list:
 			bb_question += '\tCorrect'
@@ -68,12 +78,17 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 	bb_question = 'MAT\t'
 	# Append the question text with a unique identifier (crc16_text)
 	bb_question += f'<p>{crc16_text}</p> {question_text}'
+	already_has_prefix = string_functions.has_prefix(prompts_list) or string_functions.has_prefix(choices_list)
 	# Ensure prompts and choices are the same length
-	if len(prompts_list) != len(choices_list):
+	if len(prompts_list) < len(choices_list):
 		print("Warning: bbq upload format does not allow extra distractors")
 	# Loop through prompts and their matching choices
 	for i in range(len(prompts_list)):
-		bb_question += f'\t{prompts_list[i]}&nbsp;\t{choices_list[i]}&nbsp;'
+		if already_has_prefix:
+			bb_question += f'\t{prompts_list[i]}&nbsp;\t{choices_list[i]}&nbsp;'
+		else:
+			letter_prefix = string_functions.number_to_letter[i]
+			bb_question += f"- {letter_prefix}. {prompts_list[i]}&nbsp;\t{i+1}. {choices_list[i]}&nbsp;"
 	# Return the formatted question
 	return bb_question + '\n'
 
@@ -141,6 +156,6 @@ def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers
 	bb_question += f'<p>{crc16_text}</p> {question_text}'
 	# Append answers in correct order
 	for answer_text in ordered_answers_list:
-		bb_question += '\t' + answer_text
+		bb_question += f'\t{answer_text}'
 	# Return the formatted question
 	return bb_question + '\n'
