@@ -13,7 +13,7 @@ class BBQTextEngine(base_package_maker.BaseEngine):
 		super().__init__(package_name)
 		# Verify that the correct add_item module is imported
 		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "bbq_text_upload":
-			raise ImportError("Incorrect add_item module imported for HumanReadable engine")
+			raise ImportError("Incorrect add_item module imported for BBQTextEngine engine")
 		self.add_item = add_item
 
 	#==============
