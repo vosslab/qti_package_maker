@@ -33,6 +33,7 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction resetGame_{crc16_text}() {{\n"
+
 	# Reset all dropzones
 	javascript_text += '\t\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
 	javascript_text += '\t\t\tzone.innerHTML = "Drop Your Choice Here";\n'
@@ -42,8 +43,13 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text += '\t\t\tzone.style.color = "black";\n'
 	javascript_text += '\t\t\tzone.style.fontWeight = "normal";\n'
 	javascript_text += "\t\t});\n\n"
-	# Clear the feedback column
-	javascript_text += '\t\tdocument.querySelectorAll(".feedback").forEach(cell => cell.innerHTML = "");\n'
+
+	# Clear the feedback column AND reset its color
+	javascript_text += '\t\tdocument.querySelectorAll(".feedback").forEach(cell => {\n'
+	javascript_text += '\t\t\tcell.innerHTML = "";\n'
+	javascript_text += '\t\t\tcell.style.backgroundColor = "white";\n'
+	javascript_text += "\t\t});\n"
+
 	# Close function
 	javascript_text += "\t}\n"
 	# Close script tag

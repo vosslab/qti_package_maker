@@ -6,7 +6,6 @@
 from qti_package_maker.common import string_functions
 from qti_package_maker.engines.html_selftest import html_functions
 from qti_package_maker.engines.html_selftest import javascript_functions
-
 #============================================
 def generate_drag_and_drop_js():
 	"""
@@ -20,6 +19,7 @@ def generate_drag_and_drop_js():
 	js_content += "<script>\n"
 	# Define the dragged item
 	js_content += "\tlet draggedItem = null;\n\n"
+
 	# Enable drag functionality for each choice
 	js_content += '\tdocument.querySelectorAll(".draggable").forEach(item => {\n'
 	js_content += '\t\titem.addEventListener("dragstart", function() {\n'
@@ -34,17 +34,11 @@ def generate_drag_and_drop_js():
 
 	# Enable drop functionality for each drop zone
 	js_content += '\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
-	js_content += '\t\tzone.addEventListener("dragover", function(e) {\n'
-	js_content += "\t\t\te.preventDefault();\n"  # Allow drop action
-	js_content += '\t\t\tthis.style.backgroundColor = "#e6e6e6";\n'  # Highlight drop zone
-	js_content += "\t\t});\n\n"
 
-	js_content += '\t\tzone.addEventListener("dragleave", function() {\n'
-	js_content += '\t\t\tthis.style.backgroundColor = "#f8f8f8";\n'  # Restore background
-	js_content += "\t\t});\n\n"
-
+	#  Store the original background color when an item is dropped
 	js_content += '\t\tzone.addEventListener("drop", function() {\n'
-	js_content += "\t\t\tthis.style.backgroundColor = draggedItem.style.backgroundColor;\n"  # Match choice background color
+	js_content += "\t\t\tthis.dataset.originalBgColor = draggedItem.style.backgroundColor;\n"  # Store choice color
+	js_content += "\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n"  # Maintain color
 	js_content += '\t\t\tthis.style.border = "2px solid gray";\n'  # Change border to solid
 	js_content += "\t\t\tthis.style.color = draggedItem.querySelector(\"span\").style.color;\n"  # Match letter color
 	js_content += '\t\t\tthis.style.fontWeight = "bold";\n\n'
@@ -54,9 +48,24 @@ def generate_drag_and_drop_js():
 	js_content += '\t\t\tthis.innerHTML = choiceText.length > 30 ? choiceText.substring(0, 27) + "..." : choiceText;\n'
 	js_content += "\t\t\tthis.dataset.value = draggedItem.dataset.value;\n"
 	js_content += '\t\t\tthis.title = draggedItem.getAttribute("title");\n'  # Add tooltip with full text
-	js_content += "\t\t});\n"
-	js_content += "\t});\n"
+	js_content += "\t\t});\n\n"
 
+	#  Restore the stored background color on drag leave
+	js_content += '\t\tzone.addEventListener("dragleave", function() {\n'
+	js_content += '\t\t\tif (!this.dataset.value) {\n'
+	js_content += '\t\t\t\tthis.style.backgroundColor = "#f8f8f8";\n'  # Default if empty
+	js_content += '\t\t\t} else {\n'
+	js_content += '\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n'  # Restore previous color
+	js_content += '\t\t\t}\n'
+	js_content += "\t\t});\n\n"
+
+	#  Prevents accidental clearing when dragging over a filled drop zone
+	js_content += '\t\tzone.addEventListener("dragover", function(e) {\n'
+	js_content += "\t\t\te.preventDefault();\n"  # Allow drop action
+	js_content += '\t\t\tthis.style.backgroundColor = "#e6e6e6";\n'  # Temporary highlight
+	js_content += "\t\t});\n"
+
+	js_content += "\t});\n"
 	# Close script tag
 	js_content += "</script>\n"
 	return js_content
@@ -100,7 +109,27 @@ def generate_check_answers_js(crc16_text: str):
 
 	# Update feedback text
 	js_content += "\t\tfeedbackText += `Total Score: ${score} out of ${possible}`;\n"
-	js_content += f"\t\tdocument.getElementById('result_{crc16_text}').innerHTML = feedbackText;\n"
+
+	js_content += "\t\tfeedbackText = `Total Score: ${score} out of ${possible}`;\n";
+	js_content += "\t\tconst resultDiv = document.getElementById('result_"+crc16_text+"');\n";
+
+	# If 100% correct, make feedback green
+	js_content += "\t\tif (score === possible) {\n";
+	js_content += "\t\t\tresultDiv.style.color = 'green';\n";
+	js_content += "\t\t}\n";
+
+	# If score is less than 50%, make feedback red
+	js_content += "\t\telse if (score <= Math.floor(possible / 2)) {\n";
+	js_content += "\t\t\tresultDiv.style.color = 'red';\n";
+	js_content += "\t\t}\n";
+
+	# Otherwise, use the default text color (inherit from theme)
+	js_content += "\t\telse {\n";
+	js_content += "\t\t\tresultDiv.style.color = 'inherit';\n";
+	js_content += "\t\t}\n";
+
+	# Update the result div
+	js_content += "\t\tresultDiv.innerHTML = feedbackText;\n";
 
 	# Close function
 	js_content += "\t}\n"
