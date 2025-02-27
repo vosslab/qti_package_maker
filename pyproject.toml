@@ -4,17 +4,30 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qti_package_maker"
-version = "0.9"
+version = "0.9.0.1"
 description = "A package to create and manage QTI packages for quizzes and assessments"
 readme = "README.md"
 authors = [{ name = "Dr. Neil Voss", email = "nvoss@roosevelt.edu" }]
-license = { file = "LICENSE" }
+# License issue references (kept for notes but not included in metadata)
+# None of these work:
+# https://github.com/pypa/twine/issues/1216
+# license = { text = "GPL-3.0-or-later" }
+# license = "GPL-3.0-or-later"
+# license = { file = "LICENSE" }
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
 
 dependencies = [
     "crcmod",
     "lxml",
     "num2words"
 ]
+
+[tool.setuptools]
+license-files = []
 
 # This will include all sub-packages
 [tool.setuptools.packages.find]
