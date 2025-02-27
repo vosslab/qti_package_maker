@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qti_package_maker"
-version = "0.9.0.1"
+version = "0.9.0.2"
 description = "A package to create and manage QTI packages for quizzes and assessments"
 readme = "README.md"
-authors = [{ name = "Dr. Neil Voss", email = "nvoss@roosevelt.edu" }]
+authors = [{ name = "Dr. Neil Voss"}]
 # License issue references (kept for notes but not included in metadata)
 # None of these work:
 # https://github.com/pypa/twine/issues/1216
@@ -34,5 +34,5 @@ license-files = []
 include = ["qti_package_maker*"]
 
 [project.urls]
-Homepage = "https://github.com/vosslab/qti_package_maker"
+Homepage = "https://biologyproblems.org"
 Repository = "https://github.com/vosslab/qti_package_maker"
