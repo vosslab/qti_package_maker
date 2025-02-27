@@ -5,8 +5,8 @@ import inspect
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.common import string_functions
 from qti_package_maker.common import validator
+from qti_package_maker.common import string_functions
 
 # engine_base.py (shared base for all engines)
 class BaseEngine:
@@ -38,7 +38,7 @@ class BaseEngine:
 			}
 		self.assessment_items_tree.append(assessment_item_dict)
 		self.number_of_assessment_items += 1
-		print(f"added assessment_item number {self.number_of_assessment_items} of type {item_type}")
+		#print(f"added assessment_item number {self.number_of_assessment_items} of type {item_type}")
 
 	#==============
 	def MC(self, question_text: str, choices_list: list, answer_text: str):

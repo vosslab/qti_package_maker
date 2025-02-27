@@ -28,7 +28,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"{package_name}_package_{current_time}")
-		print(f"OUTPUT directory: {self.output_dir}")
+		#print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)
 		#self.assessment_base_name = "blackboard_qti21_items"
@@ -51,7 +51,13 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		Returns:
 			list: A list of relative paths to the saved assessment item XML files.
 		"""
-		assessment_file_name_list = []  # Stores the list of assessment item file paths
+		if len(self.assessment_items_tree) == 0:
+			print("No items to write out skipping")
+			return
+
+		# Stores the list of assessment item file paths
+		assessment_file_name_list = []
+
 		# Iterate through all assessment items and assign a unique filename
 		for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
 			# Generate a unique filename for each assessment item XML
@@ -66,6 +72,10 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 			# Step 1: Retrieve the assessment item XML tree
 			assessment_item_etree = assessment_item_dict['assessment_item_data']
+
+			if assessment_item_etree is None:
+				print("No data to write out skipping")
+				continue
 
 			# The QTI 2.1 <assessmentItem> consists of four key parts:
 			# - responseDeclaration: Defines expected answers

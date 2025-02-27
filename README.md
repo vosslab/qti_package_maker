@@ -76,12 +76,10 @@ qti_package_maker/
 │-- NOTES/               # Archive and notes (Not included in the package)
 │-- examples/            # Sample QTI ZIP files (Not included in the package)
 │-- qti_package_maker/   # Main package directory (Included in the package)
+│   ├── __init__.py     # Package initialization
 │   ├── common/         # Common utilities
 │   ├── engines/        # QTI Engines for different platforms
-│   ├── __init__.py     # Package initialization
 │   ├── package_maker.py # Main package script
-│   ├── test_canvas.py  # Test script
-│   ├── test_human.py   # Test script
 │-- tools/              # Useful scripts (Not included in the package)
 │-- unit_tests/         # Unit tests (Not included in the package)
 │-- LICENSE             # License file

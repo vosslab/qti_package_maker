@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "qti_package_maker"
+version = "0.9"
+description = "A package to create and manage QTI packages for quizzes and assessments"
+readme = "README.md"
+authors = [{ name = "Dr. Neil Voss", email = "nvoss@roosevelt.edu" }]
+license = { file = "LICENSE" }
+
+dependencies = [
+    "crcmod",
+    "lxml",
+    "num2words"
+]
+
+# This will include all sub-packages
+[tool.setuptools.packages.find]
+include = ["qti_package_maker*"]
+
+[project.urls]
+Homepage = "https://github.com/vosslab/qti_package_maker"
+Repository = "https://github.com/vosslab/qti_package_maker"

@@ -28,7 +28,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"{package_name}_package_{current_time}")
-		print(f"OUTPUT directory: {self.output_dir}")
+		#print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)
 		self.assessment_base_name = "canvas_qti12_questions"
@@ -43,6 +43,10 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 	#==============
 
 	def write_assessment_items(self):
+		if len(self.assessment_items_tree) == 0:
+			print("No items to write out skipping")
+			return
+
 		""" Write all assessment items into a structured Canvas QTI 1.2 XML file."""
 		# Step 1: Create <section> to hold assessment items
 		section_level_etree = lxml.etree.Element("section", ident="root_section")
