@@ -63,9 +63,6 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 			# Store the relative path of the item file for reference
 			assessment_file_name_list.append(item_relative_path)
 
-			# Extract the CRC16 hash for uniqueness in title generation
-			crc16 = assessment_item_dict['crc16']
-
 			# Step 1: Retrieve the assessment item XML tree
 			assessment_item_etree = assessment_item_dict['assessment_item_data']
 

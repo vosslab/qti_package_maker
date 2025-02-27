@@ -67,7 +67,7 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 	return assessment_text
 
 #==============================================================
-def NUM(item_number: int, crc16_text: str, question_text: str, answer_float:: float,
+def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: float,
 		  tolerance_float: float, tolerance_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
 	assessment_text = ''

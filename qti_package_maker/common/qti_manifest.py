@@ -31,7 +31,7 @@ def generate_manifest(
 
 	manifest = create_manifest_header()
 	metadata = create_metadata_section(package_name, version)
-	organizations = etree.Element("organizations")
+	#organizations = etree.Element("organizations")
 	sorted_file_list = sorted(assessment_file_name_list)
 	resources = create_resources_section(sorted_file_list, version)
 

@@ -8,6 +8,7 @@ import subprocess
 
 # Pip3 Library
 #import lxml
+import num2words
 import crcmod.predefined #pip
 
 #anticheating measures

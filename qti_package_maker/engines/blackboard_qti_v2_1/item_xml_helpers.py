@@ -256,7 +256,7 @@ def create_response_processing() -> lxml.etree.Element:
 	lxml.etree.SubElement(match, "variable", {"identifier": "RESPONSE"})
 	lxml.etree.SubElement(match, "correct", {"identifier": "RESPONSE"})
 
-	return response_processings
+	return response_processing
 
 #==============
 def create_response_processing_big() -> lxml.etree.Element:

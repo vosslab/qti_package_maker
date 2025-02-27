@@ -7,7 +7,7 @@ import random
 # Pip3 Library (if applicable, add specific imports here)
 
 # QTI Package Maker (if applicable, add specific imports here)
-# from qti_package_maker.common import string_functions
+from qti_package_maker.common import string_functions
 
 shuffle = True
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'

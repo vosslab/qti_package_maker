@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import html
-import random
+#import html
+#import random
 
 # PIP3 modules
 import lxml.etree
@@ -195,7 +195,7 @@ def dummy_test_run():
 	"""
 	Run a test generation of assessment XML.
 	"""
-	assessment_xml = create_assessment_xml_header(
+	assessment_xml = create_assessment_items_file_xml_header(
 		assessment_id="qti12_questions",
 		assessment_title="minimal_qti_1.2_sample",
 		section_id="root_section"
