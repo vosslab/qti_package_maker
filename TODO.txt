@@ -1,7 +1,35 @@
-* keep histogram of choices used
-* clean up choice_text, answer_text, and question_text
+* ADD/keep track of histogram of choices used
+* ADD clean up choice_text, answer_text, and question_text
  - remove leading and trailing &nbsp;
  - remove extra crc16 sums at begining of question_text
-* offer shuffle mechanism
-* expand QTI question types, order, fib, numeric
+* ADD shuffle mechanism
+* ADD general read engine capabilities
+* ADD BBQ read of ORDER, NUM, FIB, MUTLI_FIB
+* EDIT text in the README.md file
 
+DONE Full write capable:
+* human_readable
+* bbq_text_upload
+
+ADD current unimplemented functions:
+* blackboard_qti_v2_1/add_item.py:def MATCH()
+* blackboard_qti_v2_1/add_item.py:def NUM()
+* blackboard_qti_v2_1/add_item.py:def MULTI_FIB()
+* blackboard_qti_v2_1/add_item.py:def ORDER()
+* canvas_qti_v1_2/add_item.py:def NUM()
+* canvas_qti_v1_2/add_item.py:def FIB()
+* canvas_qti_v1_2/add_item.py:def MULTI_FIB()
+* canvas_qti_v1_2/add_item.py:def ORDER()
+* html_selftest/add_item.py:def NUM()
+* html_selftest/add_item.py:def FIB()
+* html_selftest/add_item.py:def MULTI_FIB()
+* html_selftest/add_item.py:def ORDER()
+
+Function Types:
+def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
+def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
+def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
+def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: float,
+def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
+def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict):
+def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
