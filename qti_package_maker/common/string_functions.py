@@ -39,7 +39,7 @@ def number_to_letter(integer):
 	#letters = 'abcdefghijklmnopqrstuvwxyz'
 	letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	if integer < 1 or integer > len(letters):
-		raise ValueError
+		raise ValueError(f"Invalid input: {integer}. Must be between 1 and {len(letters)}.")
 	return letters[integer-1]
 assert number_to_letter(3) == 'C'
 
@@ -217,10 +217,8 @@ def format_html_lxml(html_string):
 	"""
 	# Create an HTML parser that removes blank text nodes
 	parser = lxml.html.HTMLParser(remove_blank_text=True)
-
 	# Parse the input HTML string into an HTML tree
 	tree = lxml.html.fromstring(html_string, parser=parser)
-
 	# Convert the parsed HTML tree to a formatted string with indentation and line breaks
 	formatted_html = lxml.etree.tostring(tree, pretty_print=True, encoding="unicode").strip()
 	# Ensure the string is formatted for HTML output

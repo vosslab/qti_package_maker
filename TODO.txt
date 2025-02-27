@@ -1,0 +1,7 @@
+* keep histogram of choices used
+* clean up choice_text, answer_text, and question_text
+ - remove leading and trailing &nbsp;
+ - remove extra crc16 sums at begining of question_text
+* offer shuffle mechanism
+* expand QTI question types, order, fib, numeric
+

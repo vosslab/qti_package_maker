@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 .DS_Store
+*.html
+*.zip
+human-*.txt
+bbq-*.txt
+new_bbq-*.txt
+*.xml
 
 # C extensions
 *.so
