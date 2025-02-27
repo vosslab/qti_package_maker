@@ -36,7 +36,9 @@ def number_to_letter(integer):
 	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	#letters = 'abcdefghijklmnopqrstuvwxyz'
 	letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	return letters[integer]
+	if integer < 1 or integer > len(letters):
+		raise ValueError
+	return letters[integer-1]
 assert number_to_letter(3) == 'C'
 
 #==========================
@@ -46,8 +48,10 @@ def number_to_lowercase(integer):
 	"""
 	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	lowercase_letters = 'abcdefghijklmnopqrstuvwxyz'
-	return lowercase_letters[integer]
-assert number_to_letter(3) == 'c'
+	if integer < 1 or integer > len(lowercase_letters):
+		raise ValueError
+	return lowercase_letters[integer-1]
+assert number_to_lowercase(3) == 'c'
 
 #==========================
 def number_to_ordinal(integer):

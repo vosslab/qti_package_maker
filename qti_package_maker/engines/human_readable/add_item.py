@@ -19,7 +19,7 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 		if already_has_prefix:
 			assessment_text += f"- [{prefix}] {pretty_choice}\n"
 		else:
-			letter_prefix = string_functions.number_to_letter[i]
+			letter_prefix = string_functions.number_to_letter(i+1)
 			assessment_text += f"- [{prefix}] {letter_prefix}. {pretty_choice}\n"
 	assessment_text += '\n\n'
 	return assessment_text
@@ -40,7 +40,7 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 		if already_has_prefix:
 			assessment_text += f"- [{prefix}] {pretty_choice}\n"
 		else:
-			letter_prefix = string_functions.number_to_letter[i]
+			letter_prefix = string_functions.number_to_letter(i+1)
 			assessment_text += f"- [{prefix}] {letter_prefix}. {pretty_choice}\n"
 	assessment_text += '\n\n'
 	return assessment_text
@@ -61,7 +61,7 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 		if already_has_prefix:
 			assessment_text += f"- {prompt_text.rjust(max_prompt_length)} / {choice_text}\n"
 		else:
-			letter_prefix = string_functions.number_to_letter[i]
+			letter_prefix = string_functions.number_to_letter(i+1)
 			assessment_text += f"- {letter_prefix}. {prompt_text.rjust(max_prompt_length)} / {i+1}. {choice_text}\n"
 	assessment_text += '\n\n'
 	return assessment_text
@@ -87,7 +87,7 @@ def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: lis
 	assessment_text = assessment_text.replace("____", "[____]")  # Ensure consistent blank formatting
 	assessment_text += '\n'
 	for i, answer_text in enumerate(answers_list):
-		letter_prefix = string_functions.number_to_lowercase(i)
+		letter_prefix = string_functions.number_to_lowercase(i+1)
 		pretty_answer_text = string_functions.make_question_pretty(answer_text)
 		assessment_text += f"- Answer: [{letter_prefix}] {pretty_answer_text}\n"
 	assessment_text += '\n\n'
@@ -104,7 +104,7 @@ def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map:
 		assessment_text += f"Blank {i+1}. {fib_variable_name}:\n"
 		answers_list = answer_map[fib_variable_name]
 		for j, answer_text in enumerate(answers_list):
-			letter_prefix = string_functions.number_to_lowercase(j)
+			letter_prefix = string_functions.number_to_lowercase(j+1)
 			pretty_answer_text = string_functions.make_question_pretty(answer_text)
 			# Show correct answers per blank
 			assessment_text += f"- [{letter_prefix}] {pretty_answer_text}\n"
