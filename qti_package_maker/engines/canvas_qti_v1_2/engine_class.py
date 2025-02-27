@@ -2,6 +2,7 @@
 # Standard Library
 import os
 import time
+import shutil
 import zipfile
 
 # Pip3 Library
@@ -126,6 +127,5 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		"""
 		Delete temporary files created during package generation.
 		"""
-		import shutil
 		if os.path.exists(self.output_dir):
 			shutil.rmtree(self.output_dir)
