@@ -19,13 +19,29 @@ class HumanReadable(base_package_maker.BaseEngine):
 		self.add_item = add_item
 
 	#==============
+	def get_outfile_name(self, outfile: str = None):
+		# Use package_name if outfile is None
+		if not outfile:
+			outfile = self.package_name
+		# Ensure outfile starts with 'bbq-' unless it's already 'new_bbq-'
+		if not outfile.startswith('human-'):
+			outfile = f'human-{outfile}'  # Removed redundant .lstrip("bbq-")
+		# Remove outfile ends with '-questions.txt'
+		outfile_root, ext = os.path.splitext(outfile)
+		if outfile_root.endswith('-questions'):
+			outfile = outfile_root.rstrip('-questions')
+		# Ensure the extension is '.txt'
+		if not outfile.endswith('.txt'):
+			outfile += '.txt'
+		return outfile
+
+	#==============
 	def save_package(self, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
-		if not outfile:
-			outfile = f"{self.package_name}.txt"
-
+		outfile = self.get_outfile_name(outfile)
+		# Write assessment items to the file
 		with open(outfile, "w") as f:
 			count = 0
 			for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):

@@ -133,7 +133,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 					relative_path = os.path.relpath(full_path, self.output_dir)
 					# No need to add package_name prefix
 					zipf.write(full_path, relative_path)
-		#self.clean_temp_files()
+		self.clean_temp_files()
 		print(f"Package saved to {zip_path}")
 
 	#==============

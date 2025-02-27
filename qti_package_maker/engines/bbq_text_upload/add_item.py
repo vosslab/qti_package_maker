@@ -32,10 +32,10 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(choices_list):
 		if already_has_prefix:
-			bb_question += f'\t{choice_text}&nbsp;'
+			bb_question += f'\t{choice_text}'
 		else:
 			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f'\t{letter_prefix}. {choice_text}&nbsp;'
+			bb_question += f'\t{letter_prefix}. {choice_text}'
 		# Check if the current choice is the correct answer
 		if choice_text == answer_text:
 			bb_question += '\tCorrect'
@@ -58,10 +58,10 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(choices_list):
 		if already_has_prefix:
-			bb_question += f'\t{choice_text}&nbsp;'
+			bb_question += f'\t{choice_text}'
 		else:
 			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f'\t{letter_prefix}. {choice_text}&nbsp;'
+			bb_question += f'\t{letter_prefix}. {choice_text}'
 		# Check if the current choice is in the correct answer list
 		if choice_text in answer_list:
 			bb_question += '\tCorrect'
@@ -85,10 +85,10 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 	# Loop through prompts and their matching choices
 	for i in range(len(prompts_list)):
 		if already_has_prefix:
-			bb_question += f'\t{prompts_list[i]}&nbsp;\t{choices_list[i]}&nbsp;'
+			bb_question += f'\t{prompts_list[i]}\t{choices_list[i]}'
 		else:
 			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f"- {letter_prefix}. {prompts_list[i]}&nbsp;\t{i+1}. {choices_list[i]}&nbsp;"
+			bb_question += f"- {letter_prefix}. {prompts_list[i]}\t{i+1}. {choices_list[i]}"
 	# Return the formatted question
 	return bb_question + '\n'
 

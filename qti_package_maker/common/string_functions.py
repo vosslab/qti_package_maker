@@ -3,11 +3,13 @@
 import re
 import os
 import copy
+import html
 import random
 import subprocess
 
 # Pip3 Library
-#import lxml
+import lxml.etree
+import lxml.html
 import num2words
 import crcmod.predefined #pip
 
@@ -157,11 +159,12 @@ def make_question_pretty(question):
 		pass
 	#print(len(pretty_question))
 	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
-	pretty_question = re.sub(r'h[0-9]\>', 'p>', pretty_question)
+	pretty_question = re.sub(r'<h[0-9]\>', '<p>', pretty_question)
 	pretty_question = re.sub('<br/>', '\n', pretty_question)
 	pretty_question = re.sub('<li>', '\n* ', pretty_question)
 	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
 	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
+	pretty_question = re.sub(r'<\/?[bi]>', ' ', pretty_question)
 	pretty_question = re.sub('</span>', '', pretty_question)
 	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
 	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
@@ -171,8 +174,60 @@ def make_question_pretty(question):
 	pretty_question = re.sub('\n\n', '\n', pretty_question)
 	pretty_question = re.sub('  *', ' ', pretty_question)
 
+	# Define subscript and superscript mappings
+	pretty_question = convert_sub_sup(pretty_question)
+
+	pretty_question = html.unescape(pretty_question)
 	#print(len(pretty_question))
 	return pretty_question
+
+#=====================
+def convert_sub_sup(pretty_question):
+	"""Replace <sub> and <sup> HTML tags with Unicode equivalents using regex."""
+
+	# Define subscript and superscript mappings
+	subscript_map = str.maketrans("0123456789+-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎")
+	superscript_map = str.maketrans("0123456789+-=()", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾")
+
+	# Convert <sub> tags
+	def subscript_replace(match):
+		return match.group(1).translate(subscript_map)
+
+	# Convert <sup> tags
+	def superscript_replace(match):
+		return match.group(1).translate(superscript_map)
+
+	# Replace <sub> and <sup> content using regex
+	pretty_question = re.sub(r'<sub>(.*?)</sub>', subscript_replace, pretty_question)
+	pretty_question = re.sub(r'<sup>(.*?)</sup>', superscript_replace, pretty_question)
+
+	return pretty_question
+
+#==============
+# This function formats HTML content using the lxml library.
+def format_html_lxml(html_string):
+	"""
+	Format an HTML string using lxml library for cleaner output.
+
+	Args:
+		html_string (str): The HTML content to be formatted.
+
+	Returns:
+		str: The formatted HTML string.
+	"""
+	# Create an HTML parser that removes blank text nodes
+	parser = lxml.html.HTMLParser(remove_blank_text=True)
+
+	# Parse the input HTML string into an HTML tree
+	tree = lxml.html.fromstring(html_string, parser=parser)
+
+	# Convert the parsed HTML tree to a formatted string with indentation and line breaks
+	formatted_html = lxml.etree.tostring(tree, pretty_print=True, encoding="unicode").strip()
+	# Ensure the string is formatted for HTML output
+	formatted_html = lxml.etree.tostring(tree, pretty_print=True, encoding="unicode", method="html").strip()
+	formatted_html = formatted_html.replace("&amp;", "&")
+	# Return the formatted HTML string
+	return formatted_html
 
 #=====================
 def question_header(question: str, N: int, crc16: str = None) -> str:
@@ -225,7 +280,6 @@ def choice_header(choice_text: str, index: int) -> str:
 
 	# Wrap in a div or any other required format
 	return add_no_click_div(f"{label}. {noisy_choice_text}")
-
 
 #==========================
 def insert_hidden_terms(text_content):

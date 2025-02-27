@@ -123,8 +123,8 @@ def create_item_body(question_html_text: str, choices_list: list, max_choices: i
 
 	unescaped_text = html.unescape(question_html_text)
 	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
-	if len(parsed_html.getchildren()) > 1:
-		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
+	#if len(parsed_html.getchildren()) > 1:
+	#	raise ValueError(f"Question text contains multiple elements: {unescaped_text}")
 	item_body.append(parsed_html)
 
 	# Create <choiceInteraction> with proper attributes
@@ -147,8 +147,8 @@ def create_item_body(question_html_text: str, choices_list: list, max_choices: i
 		# Ensure choice text is wrapped in <p>
 		parsed_choice_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='p')
 		# Ensure the parsed choice has only one top-level <p> element
-		if len(parsed_choice_html.getchildren()) > 1:
-			raise ValueError(f"Choice text contains multiple elements: {choice_html_text}")
+		#if len(parsed_choice_html.getchildren()) > 1:
+		#	raise ValueError(f"Choice text contains multiple elements: {choice_html_text}")
 		# Append the single <p> element inside <simpleChoice>
 		simple_choice.append(parsed_choice_html)
 	return item_body
@@ -163,8 +163,8 @@ def create_item_body_FIB(question_html_text: str, choices_list: list, max_choice
 
 	unescaped_text = html.unescape(question_html_text)
 	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
-	if len(parsed_html.getchildren()) > 1:
-		raise ValueError(f"Question text contains multiple elements: {question_html_text}")
+	#if len(parsed_html.getchildren()) > 1:
+	#	raise ValueError(f"Question text contains multiple elements: {question_html_text}")
 	item_body.append(parsed_html)
 
 	# Create a <p> wrapper for the <textEntryInteraction> field
