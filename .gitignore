@@ -9,7 +9,6 @@ human-*.txt
 bbq-*.txt
 new_bbq-*.txt
 *.xml
-api_token.txt
 bptools.py
 
 # C extensions
