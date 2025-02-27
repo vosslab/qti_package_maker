@@ -118,7 +118,6 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 					relative_path = os.path.relpath(full_path, self.output_dir)
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
 		self.clean_temp_files()
-
 		print(f"Package saved to {zip_path}")
 
 	#==============

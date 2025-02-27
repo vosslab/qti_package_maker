@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 # Standard Library
-import html
-import random
+#import html
+#import random
 
 # PIP3 modules
 import lxml.etree
@@ -63,13 +63,12 @@ def create_choice_response_lid(choices_list: list, cardinality: str="Single"):
 	render_choice = lxml.etree.SubElement(response_lid, "render_choice")
 
 	# Create choices
-	for index, choice in enumerate(choices_list, start=1):
+	for index, choice_text in enumerate(choices_list, start=1):
 		choice_id = f"choice_{index}"
 		response_label = lxml.etree.SubElement(render_choice, "response_label", ident=choice_id)
 		material = lxml.etree.SubElement(response_label, "material")
-		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/plain")
-		mattext.text = choice  # Set choice text
-
+		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/html")
+		mattext.text = choice_text  # Set choice text
 	return response_lid
 
 #==============================================================
@@ -83,7 +82,7 @@ def create_matching_response_lid(prompts_list: list, choices_list: list):
 
 		# Add the main item (left-side term)
 		material = lxml.etree.SubElement(response_lid, "material")
-		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/plain")
+		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/html")
 		mattext.text = prompt_text  # Example: "orange", "banana", "lettuce"
 
 		# Create <render_choice> section for match options
@@ -195,7 +194,7 @@ def dummy_test_run():
 	"""
 	Run a test generation of assessment XML.
 	"""
-	assessment_xml = create_assessment_xml_header(
+	assessment_xml = create_assessment_items_file_xml_header(
 		assessment_id="qti12_questions",
 		assessment_title="minimal_qti_1.2_sample",
 		section_id="root_section"

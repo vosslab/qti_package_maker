@@ -73,6 +73,7 @@ def create_assessment_section(assessment_file_name_list: list) -> etree.Element:
 	for assessment_file_name in assessment_file_name_list:
 		assessment_base_name = os.path.basename(assessment_file_name)
 		assessment_core_name = os.path.splitext(assessment_base_name)[0]
+		# do I need item_ref? or not?
 		item_ref = etree.SubElement(assessment_ref, "assessmentItemRef",
 			identifier=assessment_core_name,
 			href=assessment_base_name)

@@ -6,11 +6,11 @@ import re
 # Pip3 Library
 
 # QTI Package Maker
+from qti_package_maker.engines.bbq_text_upload.engine_class import BBQTextEngine
+from qti_package_maker.engines.html_selftest.engine_class import HTMLSelfTest
 from qti_package_maker.engines.human_readable.engine_class import HumanReadable
 from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
 from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
-from qti_package_maker.engines.blackboard_text_upload.engine_class import BBQTextEngine
-#from qti_package_maker.engines.html_selftest.engine_class import HTMLSelfTest
 
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str):
@@ -21,21 +21,21 @@ class MasterQTIPackage:
 		engine_name = engine_name.lower()
 		# Remove non-alphanumeric characters
 		engine_name = re.sub("[^a-z0-9]", "", engine_name)
-		if engine_name.startswith('qtiv1') or engine_name.startswith('canvas'):
+		if engine_name.startswith('bbq') or engine_name.startswith('blackboardtext'):
+			# blackboard_text_upload
+			self.engine = BBQTextEngine(package_name)
+		elif engine_name.startswith('html'):
+			# blackboard_text_upload
+			self.engine = HTMLSelfTest(package_name)
+		elif engine_name.startswith('human'):
+			# human_readable
+			self.engine = HumanReadable(package_name)
+		elif engine_name.startswith('qtiv1') or engine_name.startswith('canvas'):
 			# canvas_qti_v1_2
 			self.engine = QTIv1Engine(package_name)
 		elif engine_name.startswith('qtiv2') or engine_name.startswith('blackboardqti'):
 			# blackboard_qti_v2_1
 			self.engine = QTIv2Engine(package_name)
-		elif engine_name.startswith('human'):
-			# human_readable
-			self.engine = HumanReadable(package_name)
-		elif engine_name.startswith('bbq') or engine_name.startswith('blackboardtext'):
-			# blackboard_text_upload
-			self.engine = BBQText(package_name)
-		elif engine_name.startswith('html'):
-			# blackboard_text_upload
-			self.engine = HTMLSelfTest(package_name)
 		else:
 			raise ValueError(f"Unknown engine: {engine_name}")
 		print(f"Initialized Engine: {self.engine.engine_name}")
@@ -63,24 +63,24 @@ class MasterQTIPackage:
 
 	def add_MATCH(self, question_text: str, prompts_list: list, choices_list: list):
 		"""Handles adding a Matching (MATCH) question."""
-		self.engine.MATCH(question_text, answers_list, matching_list)
+		self.engine.MATCH(question_text, prompts_list, choices_list)
 
 	def add_FIB(self, question_text: str,  answers_list: list):
 		"""Handles adding a Multiple-Choice (MC) question."""
-		self.engine.FIB(question_text, choices_list, answer_text)
+		self.engine.FIB(question_text, answers_list)
 
 	def add_MULTI_FIB(self, question_text: str, answer_map: dict):
 		"""Handles adding a Multiple-Choice (MC) question."""
-		self.engine.MULTI_FIB(question_text, choices_list, answer_text)
+		self.engine.MULTI_FIB(question_text, answer_map)
 
 	def add_NUM(self, question_text: str, answer_float: float,
-				 tolerance_float: float, tol_message: bool=True):
+				 tolerance_float: float, tolerance_message: bool=True):
 		"""Handles adding a Multiple-Answer (MA) question."""
-		self.engine.NUM(question_text, choices_list, answers_list)
+		self.engine.NUM(question_text, answer_float, tolerance_float, tolerance_message)
 
 	def add_ORDER(self, question_text: str,  ordered_answers_list: list):
 		"""Handles adding a Matching (MATCH) question."""
-		self.engine.ORDER(question_text, answers_list, matching_list)
+		self.engine.ORDER(question_text, ordered_answers_list)
 
 	#=====================================================================
 	def save_package(self):
