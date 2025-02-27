@@ -6,7 +6,7 @@ import shutil
 import zipfile
 
 # Pip3 Library
-import lxml
+import lxml.etree
 
 # QTI Package Maker
 from qti_package_maker.common import qti_manifest

@@ -2,7 +2,7 @@
 
 import os
 import datetime
-from lxml import etree
+import lxml.etree
 
 #========================================================
 def generate_manifest(
@@ -10,13 +10,13 @@ def generate_manifest(
 			assessment_file_name_list: list,
 			version: str = "1.2"):
 	"""
-	Generates the imsmanifest.xml file as an lxml ElementTree.
+	Generates the imsmanifest.xml file as an lxml.etree ElementTree.
 
 	Args:
 		assessment_file_name_list (list[str]): List of assessment item file names.
 
 	Returns:
-		etree.ElementTree: The generated XML tree for imsmanifest.xml.
+		lxml.etree.ElementTree: The generated XML tree for imsmanifest.xml.
 	"""
 	if not assessment_file_name_list:
 		raise ValueError("no assessment files provided")
@@ -31,7 +31,7 @@ def generate_manifest(
 
 	manifest = create_manifest_header()
 	metadata = create_metadata_section(package_name, version)
-	#organizations = etree.Element("organizations")
+	#organizations = lxml.etree.Element("organizations")
 	sorted_file_list = sorted(assessment_file_name_list)
 	resources = create_resources_section(sorted_file_list, version)
 
@@ -40,15 +40,15 @@ def generate_manifest(
 	#manifest.append(organizations)
 	manifest.append(resources)
 
-	return etree.ElementTree(manifest)
+	return lxml.etree.ElementTree(manifest)
 
 #========================================================
-def create_manifest_header() -> etree.Element:
+def create_manifest_header() -> lxml.etree.Element:
 	"""
 	Creates the header element for the manifest, including namespaces and identifiers.
 
 	Returns:
-		etree.Element: The root 'manifest' element with attributes.
+		lxml.etree.Element: The root 'manifest' element with attributes.
 	"""
 	# Define namespaces
 	nsmap = {
@@ -59,7 +59,7 @@ def create_manifest_header() -> etree.Element:
 	}
 
 	# Create the root element with namespaces and identifier attribute
-	manifest = etree.Element("manifest", nsmap=nsmap, identifier="main manifest")
+	manifest = lxml.etree.Element("manifest", nsmap=nsmap, identifier="main manifest")
 
 	# Define the xsi:schemaLocation attribute with correct values
 	manifest.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
@@ -71,7 +71,7 @@ def create_manifest_header() -> etree.Element:
 	return manifest
 
 #========================================================
-def create_metadata_section(package_name: str, version: str = "1.2") -> etree.Element:
+def create_metadata_section(package_name: str, version: str = "1.2") -> lxml.etree.Element:
 	"""
 	Creates the metadata section of the manifest.
 
@@ -80,18 +80,18 @@ def create_metadata_section(package_name: str, version: str = "1.2") -> etree.El
 		version (str): The version of QTI (default is "1.2").
 
 	Returns:
-		etree.Element: The 'metadata' element with its child elements.
+		lxml.etree.Element: The 'metadata' element with its child elements.
 	"""
 	# Define the IMSMD namespace
 	ns_imsmd = "http://www.imsglobal.org/xsd/imsmd_v1p2"
 
 	# Create the root metadata element
-	metadata = etree.Element("metadata")
+	metadata = lxml.etree.Element("metadata")
 
 	# Add schema and schemaversion
-	schema = etree.SubElement(metadata, "schema")
+	schema = lxml.etree.SubElement(metadata, "schema")
 
-	schema_version = etree.SubElement(metadata, "schemaversion")
+	schema_version = lxml.etree.SubElement(metadata, "schemaversion")
 	if version.startswith("2"):
 		schema_version.text = "2.0"
 		schema.text = f"QTIv{version}"
@@ -101,36 +101,36 @@ def create_metadata_section(package_name: str, version: str = "1.2") -> etree.El
 		schema.text = "IMS Content"
 
 	# Create the <imsmd:lom> structure
-	lom = etree.SubElement(metadata, f"{{{ns_imsmd}}}lom", nsmap={"imsmd": ns_imsmd})
+	lom = lxml.etree.SubElement(metadata, f"{{{ns_imsmd}}}lom", nsmap={"imsmd": ns_imsmd})
 
 	# <imsmd:general> section
-	general = etree.SubElement(lom, f"{{{ns_imsmd}}}general")
-	title = etree.SubElement(general, f"{{{ns_imsmd}}}title")
-	title_string = etree.SubElement(title, f"{{{ns_imsmd}}}string")
+	general = lxml.etree.SubElement(lom, f"{{{ns_imsmd}}}general")
+	title = lxml.etree.SubElement(general, f"{{{ns_imsmd}}}title")
+	title_string = lxml.etree.SubElement(title, f"{{{ns_imsmd}}}string")
 	title_string.text = package_name
 
 	# <imsmd:lifeCycle> section
-	life_cycle = etree.SubElement(lom, f"{{{ns_imsmd}}}lifeCycle")
-	contribute = etree.SubElement(life_cycle, f"{{{ns_imsmd}}}contribute")
+	life_cycle = lxml.etree.SubElement(lom, f"{{{ns_imsmd}}}lifeCycle")
+	contribute = lxml.etree.SubElement(life_cycle, f"{{{ns_imsmd}}}contribute")
 
 	# Get the current date in ISO format (YYYY-MM-DD)
 	current_date = datetime.date.today().isoformat()
-	date = etree.SubElement(contribute, f"{{{ns_imsmd}}}date")
-	date_time = etree.SubElement(date, f"{{{ns_imsmd}}}dateTime")
+	date = lxml.etree.SubElement(contribute, f"{{{ns_imsmd}}}date")
+	date_time = lxml.etree.SubElement(date, f"{{{ns_imsmd}}}dateTime")
 	date_time.text = current_date
 
 	# <imsmd:rights> section
-	rights = etree.SubElement(lom, f"{{{ns_imsmd}}}rights")
+	rights = lxml.etree.SubElement(lom, f"{{{ns_imsmd}}}rights")
 
 	# CC BY 4.0 License
-	description = etree.SubElement(rights, f"{{{ns_imsmd}}}description")
-	license_string = etree.SubElement(description, f"{{{ns_imsmd}}}string")
+	description = lxml.etree.SubElement(rights, f"{{{ns_imsmd}}}description")
+	license_string = lxml.etree.SubElement(description, f"{{{ns_imsmd}}}string")
 	license_string.text = "CC Attribution - http://creativecommons.org/licenses/by/4.0"
 
 	return metadata
 
 #========================================================
-def create_resources_section(assessment_file_name_list: list, version: str = "1.2") -> etree.Element:
+def create_resources_section(assessment_file_name_list: list, version: str = "1.2") -> lxml.etree.Element:
 	"""
 	Creates the resources section of the manifest, adding each assessment item.
 
@@ -138,9 +138,9 @@ def create_resources_section(assessment_file_name_list: list, version: str = "1.
 		assessment_file_name_list (list[str]): List of assessment item file names.
 
 	Returns:
-		etree.Element: The 'resources' element containing resource elements.
+		lxml.etree.Element: The 'resources' element containing resource elements.
 	"""
-	resources = etree.Element("resources")
+	resources = lxml.etree.Element("resources")
 
 	if version.startswith("2"):
 		meta_type = "imsqti_test_xmlv2p1"
@@ -155,30 +155,30 @@ def create_resources_section(assessment_file_name_list: list, version: str = "1.
 	meta_file_path = f"{dir_name}/assessment_meta.xml"
 
 	# Create the assessment meta resource (we will add dependencies later)
-	assessment_meta_resource = etree.Element(
+	assessment_meta_resource = lxml.etree.Element(
 		"resource",
 		href=meta_file_path,
 		identifier="assessment_meta",
 		type=meta_type,
 	)
-	etree.SubElement(assessment_meta_resource, "file", href=meta_file_path)
+	lxml.etree.SubElement(assessment_meta_resource, "file", href=meta_file_path)
 
 	# Create individual assessment item resources
 	for file_name in assessment_file_name_list:
 		base_name = os.path.splitext(os.path.basename(file_name))[0]
-		resource = etree.Element(
+		resource = lxml.etree.Element(
 			"resource",
 			href=file_name,
 			identifier=base_name,
 			type=item_type,
 		)
-		etree.SubElement(resource, "file", href=file_name)
+		lxml.etree.SubElement(resource, "file", href=file_name)
 
 		# Add dependency to assessment_meta
-		etree.SubElement(resource, "dependency", identifierref="assessment_meta")
+		lxml.etree.SubElement(resource, "dependency", identifierref="assessment_meta")
 
 		# Also add reverse dependency in assessment_meta
-		etree.SubElement(assessment_meta_resource, "dependency", identifierref=base_name)
+		lxml.etree.SubElement(assessment_meta_resource, "dependency", identifierref=base_name)
 
 		resources.append(resource)
 
@@ -196,7 +196,7 @@ def dummy_test_run():
 		#'qti21_items/assessmentItem00003.xml',
 	]
 	manifest_etree = generate_manifest("dummy set", assessment_file_name_list, version="2.1")
-	manifest_xml_string = etree.tostring(manifest_etree, pretty_print=True,
+	manifest_xml_string = lxml.etree.tostring(manifest_etree, pretty_print=True,
 		xml_declaration=True, encoding="UTF-8")
 	manifest_path = "imsmanifest_v2_1.xml"
 	with open(manifest_path, "w", encoding="utf-8") as f:
@@ -207,7 +207,7 @@ def dummy_test_run():
 		'qti12_items/qti12_items.xml',
 	]
 	manifest_etree = generate_manifest("dummy set", assessment_file_name_list, version="1.2")
-	manifest_xml_string = etree.tostring(manifest_etree, pretty_print=True,
+	manifest_xml_string = lxml.etree.tostring(manifest_etree, pretty_print=True,
 		xml_declaration=True, encoding="UTF-8")
 	manifest_path = "imsmanifest_v1_2.xml"
 	with open(manifest_path, "w", encoding="utf-8") as f:

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 import os
-from lxml import etree
+import lxml.etree
 
 #==============
-def generate_assessment_meta(package_name: str, assessment_file_name_list: list) -> etree.ElementTree:
+def generate_assessment_meta(package_name: str, assessment_file_name_list: list) -> lxml.etree.ElementTree:
 	"""
 	Generates the XML for the question bank (assessment_meta.xml).
 
@@ -13,16 +13,16 @@ def generate_assessment_meta(package_name: str, assessment_file_name_list: list)
 		assessment_file_name_list (list[str]): List of assessment item file names.
 
 	Returns:
-		etree.ElementTree: The generated XML tree for assessment_meta.xml.
+		lxml.etree.ElementTree: The generated XML tree for assessment_meta.xml.
 	"""
 	assessment_meta = create_assessment_meta_header(package_name)
 	assessment_section = create_assessment_section(assessment_file_name_list)
 	assessment_meta.append(assessment_section)
 
-	return etree.ElementTree(assessment_meta)
+	return lxml.etree.ElementTree(assessment_meta)
 
 #==============
-def create_assessment_meta_header(package_name: str) -> etree.Element:
+def create_assessment_meta_header(package_name: str) -> lxml.etree.Element:
 	"""
 	Creates the root element for the question bank XML, including namespaces and custom attribute order.
 
@@ -30,7 +30,7 @@ def create_assessment_meta_header(package_name: str) -> etree.Element:
 		package_name (str): The title for the set of assessments.
 
 	Returns:
-		etree.Element: The root 'assessmentTest' element with attributes in the desired order.
+		lxml.etree.Element: The root 'assessmentTest' element with attributes in the desired order.
 	"""
 	# Define namespaces
 	nsmap = {
@@ -39,7 +39,7 @@ def create_assessment_meta_header(package_name: str) -> etree.Element:
 	}
 
 	# Create the root element with namespaces
-	assessment_test = etree.Element("assessmentTest", nsmap=nsmap)
+	assessment_test = lxml.etree.Element("assessmentTest", nsmap=nsmap)
 
 	# Add the xsi:schemaLocation attribute first
 	assessment_test.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
@@ -54,7 +54,7 @@ def create_assessment_meta_header(package_name: str) -> etree.Element:
 	return assessment_test
 
 #==============
-def create_assessment_section(assessment_file_name_list: list) -> etree.Element:
+def create_assessment_section(assessment_file_name_list: list) -> lxml.etree.Element:
 	"""
 	Creates the assessment section, which references all assessment items.
 
@@ -62,19 +62,19 @@ def create_assessment_section(assessment_file_name_list: list) -> etree.Element:
 		assessment_file_name_list (list): List of assessment item file names.
 
 	Returns:
-		etree.Element: The 'testPart' element containing assessment item references.
+		lxml.etree.Element: The 'testPart' element containing assessment item references.
 	"""
-	test_part = etree.Element("testPart", identifier="test_part",
+	test_part = lxml.etree.Element("testPart", identifier="test_part",
 		navigationMode="nonlinear", submissionMode="simultaneous")
 
 	# Add an assessment section referencing each assessment item file
-	assessment_ref = etree.Element("assessmentSection",
+	assessment_ref = lxml.etree.Element("assessmentSection",
 		identifier="section_part", visible="false", title="Question Pool")
 	for assessment_file_name in assessment_file_name_list:
 		assessment_base_name = os.path.basename(assessment_file_name)
 		assessment_core_name = os.path.splitext(assessment_base_name)[0]
 		# do I need item_ref? or not?
-		item_ref = etree.SubElement(assessment_ref, "assessmentItemRef",
+		item_ref = lxml.etree.SubElement(assessment_ref, "assessmentItemRef",
 			identifier=assessment_core_name,
 			href=assessment_base_name)
 		#assessment_ref.append(item_ref)
@@ -95,7 +95,7 @@ def dummy_test_run():
 	assessment_meta_etree = generate_assessment_meta(package_name, assessment_file_name_list)
 
 	#write to file
-	assessment_meta_xml_string = etree.tostring(assessment_meta_etree, pretty_print=True,
+	assessment_meta_xml_string = lxml.etree.tostring(assessment_meta_etree, pretty_print=True,
 		xml_declaration=True, encoding="UTF-8")
 	assessment_meta_path = "assessment_meta.xml"
 	with open(assessment_meta_path, "w", encoding="utf-8") as f:

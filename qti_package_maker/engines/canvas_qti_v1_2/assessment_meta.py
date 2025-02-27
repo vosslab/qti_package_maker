@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 #import os
-from lxml import etree
+import lxml.etree
 
 #==============
-def generate_assessment_meta(package_name: str) -> etree.ElementTree:
+def generate_assessment_meta(package_name: str) -> lxml.etree.ElementTree:
 	"""
 	Generates the XML for the question bank (assessment_meta.xml).
 
@@ -12,7 +12,7 @@ def generate_assessment_meta(package_name: str) -> etree.ElementTree:
 		package_name (str): The title for the set of assessments.
 
 	Returns:
-		etree.ElementTree: The generated XML tree for assessment_meta.xml.
+		lxml.etree.ElementTree: The generated XML tree for assessment_meta.xml.
 	"""
 	# Define namespaces
 	nsmap = {
@@ -21,7 +21,7 @@ def generate_assessment_meta(package_name: str) -> etree.ElementTree:
 	}
 
 	# Create the root element <quiz> with namespaces
-	quiz = etree.Element("quiz", nsmap=nsmap)
+	quiz = lxml.etree.Element("quiz", nsmap=nsmap)
 
 	# Add the xsi:schemaLocation attribute
 	quiz.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = (
@@ -33,17 +33,17 @@ def generate_assessment_meta(package_name: str) -> etree.ElementTree:
 	quiz.set("identifier", "assessment_meta")
 
 	# Add <title>
-	title_element = etree.SubElement(quiz, "title")
+	title_element = lxml.etree.SubElement(quiz, "title")
 	title_element.text = package_name
 
 	# Add <assignment>
-	assignment_element = etree.SubElement(quiz, "assignment", identifier="assignment_name")
+	assignment_element = lxml.etree.SubElement(quiz, "assignment", identifier="assignment_name")
 
 	# Add <title> inside <assignment>
-	assignment_title = etree.SubElement(assignment_element, "title")
+	assignment_title = lxml.etree.SubElement(assignment_element, "title")
 	assignment_title.text = package_name
 
-	return etree.ElementTree(quiz)
+	return lxml.etree.ElementTree(quiz)
 
 #==============
 def dummy_test_run():
@@ -54,7 +54,7 @@ def dummy_test_run():
 	assessment_meta_etree = generate_assessment_meta(package_name)
 
 	# Write to file
-	assessment_meta_xml_string = etree.tostring(
+	assessment_meta_xml_string = lxml.etree.tostring(
 		assessment_meta_etree, pretty_print=True, xml_declaration=True, encoding="UTF-8"
 	)
 	assessment_meta_path = "assessment_meta.xml"

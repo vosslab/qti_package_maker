@@ -1,7 +1,7 @@
 
 # Standard Library
 import re
-import xml.etree.ElementTree as ET
+import lxml.etree
 
 # Pip3 Library
 
@@ -12,18 +12,20 @@ import xml.etree.ElementTree as ET
 def validate_html(html_str: str) -> bool:
 	"""
 	Validates if the input HTML string is well-formed by removing entities
-	and wrapping the content in a root element for XML parsing.
+	and wrapping the content in a root element for XML parsing using lxml.
 	"""
 	html_str = html_str.replace('<', '\n<')
 	# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
 	cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
 	# Wrap in a root tag for XML parsing as XML requires a single root element
 	wrapped_html = f"<root>{cleaned_html}</root>"
-	# Parse the cleaned and wrapped HTML with XML parser
-	ET.fromstring(wrapped_html)
+	# Parse the cleaned and wrapped HTML using lxml.etree
+	lxml.etree.fromstring(wrapped_html)
 	return True
+# Assertions to test the function
 assert validate_html('simple string') == True
 assert validate_html('<p>simple html paragraph</p>') == True
+
 
 #========================================================
 def validate_string_text(string_text: str, name: str, min_length: int = 3):

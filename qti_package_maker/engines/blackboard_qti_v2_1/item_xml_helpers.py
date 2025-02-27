@@ -3,7 +3,6 @@ import html
 import random
 
 # PIP3 modules
-import lxml
 import lxml.html
 import lxml.etree
 
