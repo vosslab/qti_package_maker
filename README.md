@@ -67,6 +67,32 @@ manager.save_package()
 
 ---
 
+## Project Structure
+
+The project is structured as follows:
+
+```
+qti_package_maker/
+│-- NOTES/               # Archive and notes (Not included in the package)
+│-- examples/            # Sample QTI ZIP files (Not included in the package)
+│-- qti_package_maker/   # Main package directory (Included in the package)
+│   ├── common/         # Common utilities
+│   ├── engines/        # QTI Engines for different platforms
+│   ├── __init__.py     # Package initialization
+│   ├── package_maker.py # Main package script
+│   ├── test_canvas.py  # Test script
+│   ├── test_human.py   # Test script
+│-- tools/              # Useful scripts (Not included in the package)
+│-- unit_tests/         # Unit tests (Not included in the package)
+│-- LICENSE             # License file
+│-- README.md           # Project documentation
+│-- TODO.txt            # To-do list
+│-- pyproject.toml      # Build configuration
+│-- requirements.txt    # Dependencies
+```
+
+---
+
 ## License
 
 This project is licensed under the **GPL v3.0**. See the [LICENSE](LICENSE) file for details.
@@ -84,4 +110,3 @@ Contributions are welcome! Please submit a pull request or file an issue for any
 ## Acknowledgments
 
 This library adheres to the IMS Global QTI specification. Learn more at [IMS Global](https://www.imsglobal.org/question/).
-```
