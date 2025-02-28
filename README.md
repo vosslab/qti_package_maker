@@ -15,7 +15,7 @@ The package allows users to:
 
 This tool is primarily intended for educators, LMS administrators, and developers who need to convert, migrate, and generate structured assessments across different learning platforms.
 
-# Table of Contents
+## Table of Contents
 * [Introduction](#Introduction)
 * [Features](#Features)
 * [Installation](#Installation)
@@ -24,10 +24,15 @@ This tool is primarily intended for educators, LMS administrators, and developer
 	* [Installing from Source](#Installing-from-Source)
 * [Question Types](#Question-Types)
 * [Output Engines](#Output-Engines)
+	* [1. QTI v1.2 Engine (Canvas QTI v1.2)](#1.-QTI-v1.2-Engine-(Canvas-QTI-v1.2))
+	* [2. QTI v2.1 Engine (Blackboard QTI v2.1)](#2.-QTI-v2.1-Engine-(Blackboard-QTI-v2.1))
+	* [3. Human-Readable Engine](#3.-Human-Readable-Engine)
+	* [4. Blackboard Question Upload Engine](#4.-Blackboard-Question-Upload-Engine)
+	* [5. HTML Self-Test Engine](#5.-HTML-Self-Test-Engine)
 * [Usage](#Usage)
-	* [Primary Supported Input Format: BBQ Text Format](#Primary-Supported-Input-Format:-BBQ-Text-Format)
-	* [**BBQ File Format Guidelines**](#**BBQ-File-Format-Guidelines**)
-	* [**Supported BBQ Question Formats**](#**Supported-BBQ-Question-Formats**)
+	* [Primary Supported Input Format](#Primary-Supported-Input-Format)
+	* [BBQ File Format Guidelines](#BBQ-File-Format-Guidelines)
+	* [Supported BBQ Question Formats](#Supported-BBQ-Question-Formats)
 * [BBQ Converter Command Options](#BBQ-Converter-Command-Options)
 	* [Complete BBQ Converter Options](#Complete-BBQ-Converter-Options)
 	* [Python API Usage](#Python-API-Usage)
@@ -141,19 +146,20 @@ The package supports multiple output formats via engines. Each engine correspond
 
 ## Usage
 
-### Primary Supported Input Format: BBQ Text Format
+### Primary Supported Input Format
 
 The **Blackboard Question Upload (BBQ) text format** is currently the only supported input format for `qti_package_maker`. This format allows users to write questions in a plain text file and upload them into tests, surveys, and question pools on Blackboard. Once uploaded, the questions can be edited and used like those created directly within the LMS.
 
-### **BBQ File Format Guidelines**
+### BBQ File Format Guidelines
 - Must be a **tab-delimited TXT file**.
 - Should **not include a header row**.
 - Should **not contain blank lines**.
+- New lines characters cannot exist within the question.
 - Each row must contain **one question**.
 - The **first field in each row** defines the question type.
 - Fields in a row are **separated by a TAB**.
 
-### **Supported BBQ Question Formats**
+### Supported BBQ Question Formats
 
 | Question Type        | Format |
 |----------------------|--------|
