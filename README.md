@@ -6,7 +6,6 @@
 
 This package is developed for educators, instructional designers, and e-learning professionals who work with LMS platforms like Canvas, Blackboard, and Moodle.
 
-
 This package provides a unified interface to create and manage assessments that can be imported into learning management systems (LMS) such as Canvas, Blackboard, and LibreTexts' ADAPT.
 
 The package allows users to:
@@ -44,30 +43,6 @@ git clone https://github.com/vosslab/qti_package_maker.git
 cd qti_package_maker
 pip install -r requirements.txt
 ```
-
-## Usage
-
-### Command-Line Usage
-Convert a Blackboard Question Upload file (BBQ) to a QTI v1.2 package:
-```sh
-python3 process_bbq.py -i my_questions.txt -f qti12
-```
-This generates a Canvas-compatible QTI v1.2 ZIP package.
-
-### Python API Usage
-```python
-from qti_package_maker.package_maker import MasterQTIPackage
-
-# Initialize the package with the desired format engine
-qti_packer = MasterQTIPackage("example_pool", engine="qti_v2")
-
-# Add a multiple-choice question
-qti_packer.add_MC("What is your favorite color?", ["blue", "red", "yellow"], "blue")
-
-# Save the package
-qti_packer.save_package()
-```
-This will create a Blackboard-compatible QTI v2.1 ZIP file.
 
 ## Question Types
 
@@ -148,6 +123,23 @@ The package supports multiple output formats via engines. Each engine correspond
 - **File Output:** A self-contained HTML file
 - **Use Case:** Used for creating self-assessment quizzes without LMS integration
 
+## Usage
+
+### Python API Usage
+```python
+from qti_package_maker.package_maker import MasterQTIPackage
+
+# Initialize the package with the desired format engine
+qti_packer = MasterQTIPackage("example_pool", engine="qti_v2")
+
+# Add a multiple-choice question
+qti_packer.add_MC("What is your favorite color?", ["blue", "red", "yellow"], "blue")
+
+# Save the package
+qti_packer.save_package()
+```
+This will create a Blackboard-compatible QTI v2.1 ZIP file.
+
 ### How to Specify an Engine
 When using the package, select the desired engine name as a parameter:
 ```python
@@ -155,10 +147,11 @@ qti_packer = MasterQTIPackage("example_test", engine="canvas_qti_v1_2")
 ```
 Or via CLI:
 ```sh
-python3 process_bbq.py -i input_file.txt -f qti12
+python3 tools/bbq_converter.py -i bbq-my_questions.txt -f qti12
+python3 tools/bbq_converter.py -i bbq-my_questions.txt -f html_selftest
 ```
 
-## Supported Input Format: BBQ Text Format
+### Primary Supported Input Format: BBQ Text Format
 
 The **Blackboard Question Upload (BBQ) text format** is currently the only supported input format for `qti_package_maker`. This format allows users to write questions in a plain text file and upload them into tests, surveys, and question pools on Blackboard. Once uploaded, the questions can be edited and used like those created directly within the LMS.
 
@@ -224,11 +217,6 @@ options:
 
 ## Development & Contribution
 
-### Run Unit Tests
-```sh
-python -m unittest discover unit_tests/
-```
-
 ### Contribution Guidelines
 1. Fork the repository
 2. Clone the Repository
@@ -243,10 +231,9 @@ cd qti_package_maker
 ```
 
 ## Roadmap and Planned Features
-- Implement additional LMS export formats
 - Improve error handling and validation
 - Add question randomization and shuffling
-- Expand unit test coverage
+- Add unit tests
 
 ## License
 This project is licensed under the GPL v3.0 License.
@@ -258,4 +245,4 @@ See [LICENSE](LICENSE) for details.
 - Developed to improve e-learning content interoperability
 - Funding for production from Illinois Library OER grant
 
-This package is developed for educators, instructional designers, and e-learning professionals who work with LMS platforms like Canvas, Blackboard, and Moodle.
+This package is developed for educators, instructional designers, and e-learning professionals who work with LMS platforms like LibreTexts ADAPT, Canvas, Blackboard, and Moodle.
