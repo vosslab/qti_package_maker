@@ -7,7 +7,7 @@ import random
 import argparse
 
 # Set sys.path to the directory containing the 'qti_package_maker' folder
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 sys.path.insert(0, project_root)
 
 from qti_package_maker.package_maker import MasterQTIPackage
@@ -166,7 +166,10 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 	"""
 	parser = argparse.ArgumentParser(description="Convert BBQ file to other formats.")
 	parser.add_argument("-i", "--input", "--input_file", required=True,
-			dest="input_file", help="Path to the input unformatted XML file.")
+			dest="input_file", help="Path to the input BBQ text file.")
+
+	parser.add_argument("-o", "--output", "--output_file", required=False,
+			dest="output_file", help="Path to the output file, only works with one output engine.")
 
 	parser.add_argument("-n", "--limit", "--question_limit", type=int,
 			dest="question_limit", help="Limit the number of input items.")
@@ -205,7 +208,22 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 	else:
 		parser.error("At least one output format must be specified. Use -f, -a, or a shortcut.")
 
+	if args.output_file and len(args.output_format) > 1:
+		parser.error("Output file, only works with one output engine.")
+
 	return args
+
+def extract_core_name(bbq_file_name):
+	# Regular expression to match the core part
+	if '/' in bbq_file_name:
+		bbq_file_basename = os.path.basename(bbq_file_name)
+	else:
+		bbq_file_basename = bbq_file_name
+	match = re.search(r'^bbq-(.+?)-questions\.txt$', bbq_file_basename)
+	if not match:
+		raise ValueError
+	bbq_core_name = match.group(1)
+	return bbq_core_name
 
 #=====================================================
 #=====================================================
@@ -227,18 +245,17 @@ def main():
 	# https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
 
 	# general format of input_file = "bbq-(content_name)-questions.txt"
-	match = re.match(r"bbq-(.+)(-questions)?\.txt", args.input_file)
-	if match:
-		content_name = match.group(1)
-		print(f"content_name = {content_name}")
-	else:
+	content_name = extract_core_name(args.input_file)
+	if not content_name:
 		print("Invalid input filename format")
+		raise ValueError
+	print(f"Content Name: {content_name}")
 
 	engine_list = []
 	for output_format in args.output_format:
 		short_name = format_shortcuts[output_format][1]
-		package_name = f"{short_name}-{content_name}"
-		#package_name = f"{content_name}"
+		#package_name = f"{short_name}-{content_name}"
+		package_name = f"{content_name}"
 		qti_packer = MasterQTIPackage(package_name, output_format)
 		engine_list.append(qti_packer)
 
@@ -252,7 +269,7 @@ def main():
 	process_questions(question_items, engine_list)
 
 	for engine in engine_list:
-		engine.save_package()
+		engine.save_package(args.output_file)
 
 #==============
 
