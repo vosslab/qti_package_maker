@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qti_package_maker"
-version = "0.9.0.2"
+version = "0.7.1"
 description = "A package to create and manage QTI packages for quizzes and assessments"
 readme = "README.md"
 authors = [{ name = "Dr. Neil Voss"}]
