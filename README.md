@@ -48,6 +48,8 @@ This tool is primarily intended for educators and developers who need to convert
 - [Development & Contribution](#development--contribution)
 - [Roadmap and Planned Features](#roadmap-and-planned-features)
 - [License](#license)
+- [Support this project](#support-this-project)
+- [Social Media links](#social-media-links)
 - [Acknowledgments](#acknowledgments)
 
 ## Features
@@ -279,7 +281,7 @@ Contributions are welcome! Follow these steps to contribute:
 
 ## License
 
-Copyright &copy; 2025 Dr. Neil Voss
+Copyright &copy; 2025, Dr. Neil Voss
 
 qti_package_maker is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free
@@ -297,22 +299,23 @@ If not, see <http://www.gnu.org/licenses/>.
 ## Support this project
 
 <!-- setup on Feb 28, 2025 -->
-- Bitcoin: bc1qdexkqwzyet93ret40akqmms2jv99wvsgzdshu8
-- Dash: XdDmwBVecEy9yyXKeD7hScLp7oN8rd4XNV
-- Patreon: https://www.patreon.com/vosslab
-- Paypal: https://paypal.me/vosslab
+- **Bitcoin:** [Donate with Bitcoin](bitcoin:bc1qdexkqwzyet93ret40akqmms2jv99wvsgzdshu8?message=support%20qti_package_maker)
+- **Dash:** [Donate with Dash](dash:XdDmwBVecEy9yyXKeD7hScLp7oN8rd4XNV?message=support%20qti_package_maker)
+- **Patreon:** [Support on Patreon](https://www.patreon.com/vosslab)
+- **Paypal:** [Donate via PayPal](https://paypal.me/vosslab)
 
 ## Social Media links
 
-- YouTube: https://www.youtube.com/neilvosslab
-- Github: https://github.com/vosslab
-- Bluesky: https://bsky.app/profile/neilvosslab.bsky.social
-- Facebook: https://fb.me/neilvosslab
-- LinkedIn: https://www.linkedin.com/in/neilvoss/
+- [YouTube](https://www.youtube.com/neilvosslab)
+- [Github](https://github.com/vosslab)
+- [Bluesky](https://bsky.app/profile/neilvosslab.bsky.social)
+- [Facebook](https://fb.me/neilvosslab)
+- [LinkedIn](https://www.linkedin.com/in/neilvoss/)
 
 ## Acknowledgments
 - Based on the IMS Global QTI specification
 - Inspired by the need for cross-platform assessment portability
 - Developed to improve e-learning content interoperability
 - Funding for production from Illinois Library OER grant
+
 
