@@ -184,13 +184,45 @@ The **Blackboard Question Upload (BBQ) text format** is currently the only suppo
 
 For more details, refer to the official **[Blackboard documentation](https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions)**.
 
-## Development & Contribution
-
-### Clone the Repository
+### Command-Line Usage
+Convert a Blackboard Question Upload file (BBQ) to any other or all other packages using the `bbq_converter.py` tool:
 ```sh
-git clone https://github.com/YOUR_USERNAME/qti_package_maker.git
-cd qti_package_maker
+python3 tools/bbq_converter.py -i bbq-my_questions.txt --all
 ```
+This generates a Canvas-compatible QTI v1.2 ZIP package.
+
+### BBQ Converter Options
+The `bbq_converter.py` tool supports multiple output formats and options for processing question files:
+```sh
+usage: bbq_converter.py [-h] -i INPUT_FILE [-n QUESTION_LIMIT] [--allow-mixed]
+                        [-f {canvas_qti_v1_2,blackboard_qti_v2_1,human_readable,bbq_text_upload,html_selftest}] [-a]
+                        [-1 [OUTPUT_FORMAT]] [-2 [OUTPUT_FORMAT]] [-r [OUTPUT_FORMAT]] [-b [OUTPUT_FORMAT]] [-s [OUTPUT_FORMAT]]
+
+Convert BBQ file to other formats.
+
+options:
+  -h, --help            show this help message and exit
+  -i INPUT_FILE, --input INPUT_FILE, --input_file INPUT_FILE
+                        Path to the input BBQ text file.
+  -n QUESTION_LIMIT, --limit QUESTION_LIMIT, --question_limit QUESTION_LIMIT
+                        Limit the number of input items.
+  --allow-mixed         Allow mixed question types.
+  -f {canvas_qti_v1_2,blackboard_qti_v2_1,human_readable,bbq_text_upload,html_selftest}, --format {canvas_qti_v1_2,blackboard_qti_v2_1,human_readable,bbq_text_upload,html_selftest}
+                        Set output format (multiple allowed).
+  -a, --all             Enable all output formats.
+  -1 [OUTPUT_FORMAT], --qti12 [OUTPUT_FORMAT]
+                        Set output format to Canvas QTI v1.2.
+  -2 [OUTPUT_FORMAT], --qti21 [OUTPUT_FORMAT]
+                        Set output format to Blackboard QTI v2.1.
+  -r [OUTPUT_FORMAT], --human [OUTPUT_FORMAT]
+                        Set output format to human-readable text.
+  -b [OUTPUT_FORMAT], --bbq [OUTPUT_FORMAT]
+                        Set output format to Blackboard Question Upload format.
+  -s [OUTPUT_FORMAT], --html [OUTPUT_FORMAT]
+                        Set output format to HTML self-test.
+```
+
+## Development & Contribution
 
 ### Run Unit Tests
 ```sh
@@ -199,9 +231,16 @@ python -m unittest discover unit_tests/
 
 ### Contribution Guidelines
 1. Fork the repository
-2. Create a feature branch (`feature-my-update`)
-3. Commit changes and push to GitHub
-4. Open a Pull Request
+2. Clone the Repository
+3. Create a feature branch (`feature-my-update`)
+4. Commit changes and push to GitHub
+5. Open a Pull Request
+
+### Clone the Repository
+```sh
+git clone https://github.com/YOUR_USERNAME/qti_package_maker.git
+cd qti_package_maker
+```
 
 ## Roadmap and Planned Features
 - Implement additional LMS export formats
