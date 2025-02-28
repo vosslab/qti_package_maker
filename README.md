@@ -4,9 +4,7 @@
 
 `qti_package_maker` is a Python package designed for generating and converting question and test packages in various formats, including IMS QTI (Question & Test Interoperability) v1.2 and v2.1, Blackboard Question Upload format, human-readable text, and HTML self-test formats.
 
-This package is developed for educators, instructional designers, and e-learning professionals who work with LMS platforms like Canvas, Blackboard, and Moodle.
-
-This package provides a unified interface to create and manage assessments that can be imported into learning management systems (LMS) such as Canvas, Blackboard, and LibreTexts' ADAPT.
+This package is developed for educators, instructional designers, and e-learning professionals working with LMS platforms such as LibreTexts' ADAPT, Canvas, and Blackboard. It provides a unified interface to create and manage assessments that can be imported into these learning management systems.
 
 The package allows users to:
 - Convert and generate question packages in multiple formats, including QTI v1.2 for Canvas/ADAPT and QTI v2.1 for Blackboard.
@@ -21,10 +19,7 @@ This tool is primarily intended for educators, LMS administrators, and developer
 - Supports Multiple QTI Versions – Generates valid QTI v1.2 (Canvas) and QTI v2.1 (Blackboard).
 - Multiple Question Types – MC, MA, FIB, NUM, MATCH, ORDER, and MULTI_FIB.
 - Modular Engine System – Easily swap between different export formats.
-- Cleans Question Text – Removes extra metadata, leading/trailing spaces, and non-printable characters.
-- Randomization and Shuffling – Allows question randomization while keeping the correct answers linked.
 - Command-line and Python API Support – Use it in scripts or from the command line.
-- Histogram Tracking – Keeps track of the frequency of answer choices.
 
 ## Installation
 
@@ -125,32 +120,6 @@ The package supports multiple output formats via engines. Each engine correspond
 
 ## Usage
 
-### Python API Usage
-```python
-from qti_package_maker.package_maker import MasterQTIPackage
-
-# Initialize the package with the desired format engine
-qti_packer = MasterQTIPackage("example_pool", engine="qti_v2")
-
-# Add a multiple-choice question
-qti_packer.add_MC("What is your favorite color?", ["blue", "red", "yellow"], "blue")
-
-# Save the package
-qti_packer.save_package()
-```
-This will create a Blackboard-compatible QTI v2.1 ZIP file.
-
-### How to Specify an Engine
-When using the package, select the desired engine name as a parameter:
-```python
-qti_packer = MasterQTIPackage("example_test", engine="canvas_qti_v1_2")
-```
-Or via CLI:
-```sh
-python3 tools/bbq_converter.py -i bbq-my_questions.txt -f qti12
-python3 tools/bbq_converter.py -i bbq-my_questions.txt -f html_selftest
-```
-
 ### Primary Supported Input Format: BBQ Text Format
 
 The **Blackboard Question Upload (BBQ) text format** is currently the only supported input format for `qti_package_maker`. This format allows users to write questions in a plain text file and upload them into tests, surveys, and question pools on Blackboard. Once uploaded, the questions can be edited and used like those created directly within the LMS.
@@ -177,15 +146,23 @@ The **Blackboard Question Upload (BBQ) text format** is currently the only suppo
 
 For more details, refer to the official **[Blackboard documentation](https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions)**.
 
-### Command-Line Usage
-Convert a Blackboard Question Upload file (BBQ) to any other or all other packages using the `bbq_converter.py` tool:
+## BBQ Converter Command Options
+
+The `bbq_converter.py` tool allows converting BBQ text files into multiple output formats. Example usage:
+```sh
+python3 tools/bbq_converter.py -i bbq-my_questions.txt -f qti12
+```
+To convert into all available formats:
 ```sh
 python3 tools/bbq_converter.py -i bbq-my_questions.txt --all
 ```
-This generates a Canvas-compatible QTI v1.2 ZIP package.
 
-### BBQ Converter Options
-The `bbq_converter.py` tool supports multiple output formats and options for processing question files:
+For available options, use:
+```sh
+python3 tools/bbq_converter.py -h
+```
+
+### Complete BBQ Converter Options
 ```sh
 usage: bbq_converter.py [-h] -i INPUT_FILE [-n QUESTION_LIMIT] [--allow-mixed]
                         [-f {canvas_qti_v1_2,blackboard_qti_v2_1,human_readable,bbq_text_upload,html_selftest}] [-a]
@@ -214,6 +191,21 @@ options:
   -s [OUTPUT_FORMAT], --html [OUTPUT_FORMAT]
                         Set output format to HTML self-test.
 ```
+
+### Python API Usage
+```python
+from qti_package_maker.package_maker import MasterQTIPackage
+
+# Initialize the package with the desired format engine
+qti_packer = MasterQTIPackage("example_pool", engine="qti_v2")
+
+# Add a multiple-choice question
+qti_packer.add_MC("What is your favorite color?", ["blue", "red", "yellow"], "blue")
+
+# Save the package
+qti_packer.save_package()
+```
+This will create a Blackboard-compatible QTI v2.1 ZIP file.
 
 ## Development & Contribution
 
