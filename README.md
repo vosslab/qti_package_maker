@@ -310,7 +310,7 @@ If not, see <http://www.gnu.org/licenses/>.
 - [Github](https://github.com/vosslab)
 - [Bluesky](https://bsky.app/profile/neilvosslab.bsky.social)
 - [Facebook](https://fb.me/neilvosslab)
-- [LinkedIn](https://www.linkedin.com/in/neilvoss/)
+- [LinkedIn](https://www.linkedin.com/in/vosslab) 
 
 ## Acknowledgments
 - Based on the IMS Global QTI specification
