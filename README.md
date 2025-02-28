@@ -278,8 +278,37 @@ Contributions are welcome! Follow these steps to contribute:
 - Add unit tests
 
 ## License
-This project is licensed under the GPL v3.0 License.
-See the full license details in the [LICENSE file](https://github.com/vosslab/qti_package_maker/blob/main/LICENSE).
+
+Copyright &copy; 2025 Dr. Neil Voss
+
+qti_package_maker is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free
+Software Foundation, either version 3 of the License, or any later version.
+
+qti_package_maker is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+more details.
+
+See the full license details in the 
+[LICENSE file](https://github.com/vosslab/qti_package_maker/blob/main/LICENSE).
+If not, see <http://www.gnu.org/licenses/>.
+
+## Support this project
+
+<!-- setup on Feb 28, 2025 -->
+- Bitcoin: bc1qdexkqwzyet93ret40akqmms2jv99wvsgzdshu8
+- Dash: XdDmwBVecEy9yyXKeD7hScLp7oN8rd4XNV
+- Patreon: https://www.patreon.com/vosslab
+- Paypal: https://paypal.me/vosslab
+
+## Social Media links
+
+- YouTube: https://www.youtube.com/neilvosslab
+- Github: https://github.com/vosslab
+- Bluesky: https://bsky.app/profile/neilvosslab.bsky.social
+- Facebook: https://fb.me/neilvosslab
+- LinkedIn: https://www.linkedin.com/in/neilvoss/
 
 ## Acknowledgments
 - Based on the IMS Global QTI specification
@@ -287,4 +316,3 @@ See the full license details in the [LICENSE file](https://github.com/vosslab/qt
 - Developed to improve e-learning content interoperability
 - Funding for production from Illinois Library OER grant
 
-This package is developed for educators, instructional designers, and e-learning professionals who work with LMS platforms like LibreTexts ADAPT, Canvas, Blackboard, and Moodle.
