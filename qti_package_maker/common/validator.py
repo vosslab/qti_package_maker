@@ -8,6 +8,13 @@ import lxml.etree
 # QTI Package Maker
 # none allowed here!!
 
+def is_valid_crc16_code_string(code_string: str) -> bool:
+	pattern = r"\b([0-9a-f]{4})(?:_[0-9a-f]{4})*\b"
+	# Store the result in a variable
+	is_valid = bool(re.fullmatch(pattern, code_string))
+	# Return the variable
+	return is_valid
+
 #========================================================
 def clean_html_for_xml(html_str: str) -> str:
 	"""
