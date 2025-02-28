@@ -50,8 +50,4 @@ include = ["qti_package_maker*"]
 [project.urls]
 Homepage = "https://biologyproblems.org"
 Repository = "https://github.com/vosslab/qti_package_maker"
-
-[project.urls]
-Homepage = "https://biologyproblems.org"
-Repository = "https://github.com/vosslab/qti_package_maker"
 PyPI = "https://pypi.org/project/qti-package-maker/"
