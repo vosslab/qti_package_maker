@@ -15,6 +15,27 @@ The package allows users to:
 
 This tool is primarily intended for educators, LMS administrators, and developers who need to convert, migrate, and generate structured assessments across different learning platforms.
 
+# Table of Contents
+* [Introduction](#Introduction)
+* [Features](#Features)
+* [Installation](#Installation)
+	* [Prerequisites](#Prerequisites)
+	* [Installing from PyPI](#Installing-from-PyPI)
+	* [Installing from Source](#Installing-from-Source)
+* [Question Types](#Question-Types)
+* [Output Engines](#Output-Engines)
+* [Usage](#Usage)
+	* [Primary Supported Input Format: BBQ Text Format](#Primary-Supported-Input-Format:-BBQ-Text-Format)
+	* [**BBQ File Format Guidelines**](#**BBQ-File-Format-Guidelines**)
+	* [**Supported BBQ Question Formats**](#**Supported-BBQ-Question-Formats**)
+* [BBQ Converter Command Options](#BBQ-Converter-Command-Options)
+	* [Complete BBQ Converter Options](#Complete-BBQ-Converter-Options)
+	* [Python API Usage](#Python-API-Usage)
+* [Development & Contribution](#Development-&-Contribution)
+* [Roadmap and Planned Features](#Roadmap-and-Planned-Features)
+* [License](#License)
+* [Acknowledgments](#Acknowledgments)
+
 ## Features
 - Supports Multiple QTI Versions – Generates valid QTI v1.2 (Canvas) and QTI v2.1 (Blackboard).
 - Multiple Question Types – MC, MA, FIB, NUM, MATCH, ORDER, and MULTI_FIB.
