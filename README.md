@@ -213,15 +213,26 @@ Contributions are welcome! Follow these steps to contribute:
 
 1. **Fork** the repository on GitHub.
 2. **Clone** your forked repository:
-```sh
-git clone https://github.com/YOUR_USERNAME/qti_package_maker.git
-cd qti_package_maker
-```
-3. **Create a feature branch** (`feature-my-update`).
-4. **Make your changes** and commit them.
-5. **Push** to your fork and open a **Pull Request**.
-
-This version keeps it simple while making it more streamlined. Let me know if you want further refinements! 🚀
+   ```sh
+   git clone https://github.com/YOUR_USERNAME/qti_package_maker.git
+   cd qti_package_maker
+   ```
+3. **Create a feature branch** (`feature-my-update`):
+   ```sh
+   git checkout -b feature-my-update
+   ```
+4. **Make your changes** and commit them:
+   ```sh
+   git add .
+   git commit -m "Describe your changes here"
+   ```
+5. **Push** to your fork and open a **Pull Request**:
+   ```sh
+   git push origin feature-my-update
+   ```
+   - Navigate to the **Pull Requests** section of the original repository on GitHub.
+   - Click **New Pull Request** and select your branch.
+   - Provide a clear description of your changes and submit the request.
 
 ## Roadmap and Planned Features
 - Improve error handling and validation
