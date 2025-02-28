@@ -58,6 +58,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		# Stores the list of assessment item file paths
 		assessment_file_name_list = []
 
+		self.save_count = 0
 		# Iterate through all assessment items and assign a unique filename
 		for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
 			# Generate a unique filename for each assessment item XML
@@ -95,9 +96,11 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 			# Open the file in write mode and save the XML data
 			with open(item_global_path, "w", encoding="utf-8") as f:
 				f.write(assessment_item_xml_string.decode("utf-8"))
+				self.save_count += 1
+
 
 		# Step 5: Log the number of saved items and return the file list
-		print(f"Saved {len(assessment_file_name_list)} assessment items for {self.package_name}")
+		#print(f"Saved {self.save_count} assessment items for {self.package_name}")
 		return assessment_file_name_list
 
 	#==============
@@ -135,8 +138,9 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		self.write_manifest(assessment_file_name_list)
 
 		# Write the package to a ZIP file
-		zip_path = f"{self.package_name}.zip"
-		with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+		#zip_path = f"{self.package_name}.zip"
+		outfile = self.get_outfile_name('qti12', 'zip', outfile)
+		with zipfile.ZipFile(outfile, "w", zipfile.ZIP_DEFLATED) as zipf:
 			for root, _, files in os.walk(self.output_dir):
 				for file in files:
 					full_path = os.path.join(root, file)
@@ -145,7 +149,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 					# No need to add package_name prefix
 					zipf.write(full_path, relative_path)
 		self.clean_temp_files()
-		print(f"Package saved to {zip_path}")
+		print(f"Saved {self.save_count} assessment items to {outfile}")
 
 	#==============
 

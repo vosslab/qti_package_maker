@@ -52,9 +52,9 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		section_level_etree = lxml.etree.Element("section", ident="root_section")
 
 		# Step 2: Append each <item> (assessment item) to <section>
-		save_count = 0
+		self.save_count = 0
 		for assessment_item_dict in self.assessment_items_tree:
-			save_count += 1
+			self.save_count += 1
 			assessment_item_etree = assessment_item_dict['assessment_item_data']
 			section_level_etree.append(assessment_item_etree)
 
@@ -75,7 +75,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 			f.write(assessment_items_xml_string.decode("utf-8"))
 
 		# Step 6: Log & return filename
-		print(f"Saved {save_count} assessment items to {self.assessment_items_base_path}")
+		print(f"Saved {self.save_count} assessment items to {self.assessment_items_base_path}")
 		return
 
 	#==============
@@ -113,8 +113,9 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 
 		# Write the package to a ZIP file
 		#zip_path = f"{self.package_name}-qti_v1_2.zip"
-		zip_path = f"{self.package_name}.zip"
-		with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+		#zip_path = f"{self.package_name}.zip"
+		outfile = self.get_outfile_name('qti12', 'zip', outfile)
+		with zipfile.ZipFile(outfile, "w", zipfile.ZIP_DEFLATED) as zipf:
 			for root, _, files in os.walk(self.output_dir):
 				for file in files:
 					full_path = os.path.join(root, file)
@@ -122,7 +123,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 					relative_path = os.path.relpath(full_path, self.output_dir)
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
 		self.clean_temp_files()
-		print(f"Package saved to {zip_path}")
+		print(f"Saved {self.save_count} assessment items to {outfile}")
 
 	#==============
 

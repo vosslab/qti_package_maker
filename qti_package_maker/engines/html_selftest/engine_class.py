@@ -18,27 +18,11 @@ class HTMLSelfTest(base_package_maker.BaseEngine):
 		self.add_item = add_item
 
 	#==============
-	def get_outfile_name(self, outfile: str = None):
-		# Use package_name if outfile is None
-		if not outfile:
-			outfile = self.package_name
-		if not outfile.startswith('selftest-'):
-			outfile = f'selftest-{outfile}'
-		# Remove outfile ends with '-questions.txt'
-		outfile_root, ext = os.path.splitext(outfile)
-		if outfile_root.endswith('-questions'):
-			outfile = outfile_root.rstrip('-questions')
-		# Ensure the extension is '.txt'
-		if not outfile.endswith('.html'):
-			outfile += '.html'
-		return outfile
-
-	#==============
 	def save_package(self, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
-		outfile = self.get_outfile_name(outfile)
+		outfile = self.get_outfile_name('selftest', 'html', outfile)
 		# Write assessment items to the file
 		with open(outfile, "w") as f:
 			count = 0

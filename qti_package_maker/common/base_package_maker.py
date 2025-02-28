@@ -100,3 +100,19 @@ class BaseEngine:
 			print(f"Available question types: {', '.join(available_types)}")
 		else:
 			print(f"No available question types found for engine {self.engine_name}.")
+
+	#==============
+	def get_outfile_name(self, prefix: str, extension: str, outfile: str = None) -> str:
+		"""Generate an output filename based on prefix and extension unless the user specifies one."""
+		# If the user provides an outfile, return it unchanged
+		if outfile:
+			return outfile
+		# Default to self.package_name if no outfile is provided
+		outfile = self.package_name
+		# Ensure the prefix is added if it's missing
+		if not outfile.startswith(f"{prefix}-"):
+			outfile = f"{prefix}-{outfile}"
+		# Extract the root filename (remove existing extension)
+		outfile_root, _ = os.path.splitext(outfile)
+		# Construct the final filename with the correct extension
+		return f"{outfile_root}.{extension}"
