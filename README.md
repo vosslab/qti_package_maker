@@ -209,18 +209,19 @@ This will create a Blackboard-compatible QTI v2.1 ZIP file.
 
 ## Development & Contribution
 
-### Contribution Guidelines
-1. Fork the repository
-2. Clone the Repository
-3. Create a feature branch (`feature-my-update`)
-4. Commit changes and push to GitHub
-5. Open a Pull Request
+Contributions are welcome! Follow these steps to contribute:
 
-### Clone the Repository
+1. **Fork** the repository on GitHub.
+2. **Clone** your forked repository:
 ```sh
 git clone https://github.com/YOUR_USERNAME/qti_package_maker.git
 cd qti_package_maker
 ```
+3. **Create a feature branch** (`feature-my-update`).
+4. **Make your changes** and commit them.
+5. **Push** to your fork and open a **Pull Request**.
+
+This version keeps it simple while making it more streamlined. Let me know if you want further refinements! 🚀
 
 ## Roadmap and Planned Features
 - Improve error handling and validation
@@ -229,7 +230,7 @@ cd qti_package_maker
 
 ## License
 This project is licensed under the GPL v3.0 License.
-See [LICENSE](LICENSE) for details.
+See the full license details in the [LICENSE file](https://github.com/vosslab/qti_package_maker/blob/main/LICENSE).
 
 ## Acknowledgments
 - Based on the IMS Global QTI specification
