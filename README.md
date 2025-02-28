@@ -23,12 +23,19 @@ This tool is primarily intended for educators, LMS administrators, and developer
 	* [Installing from PyPI](#Installing-from-PyPI)
 	* [Installing from Source](#Installing-from-Source)
 * [Question Types](#Question-Types)
+	* [Multiple Choice (MC)](#Multiple-Choice-(MC))
+	* [Multiple Answer (MA)](#Multiple-Answer-(MA))
+	* [Matching (MATCH)](#Matching-(MATCH))
+	* [Numerical Entry (NUM)](#Numerical-Entry-(NUM))
+	* [Fill-in-the-Blank (FIB)](#Fill-in-the-Blank-(FIB))
+	* [Multi-Part Fill-in-the-Blank (MULTI_FIB)](#Multi-Part-Fill-in-the-Blank-(MULTI_FIB))
+	* [Ordered List (ORDER)](#Ordered-List-(ORDER))
 * [Output Engines](#Output-Engines)
-	* [1. QTI v1.2 Engine (Canvas QTI v1.2)](#1.-QTI-v1.2-Engine-(Canvas-QTI-v1.2))
-	* [2. QTI v2.1 Engine (Blackboard QTI v2.1)](#2.-QTI-v2.1-Engine-(Blackboard-QTI-v2.1))
-	* [3. Human-Readable Engine](#3.-Human-Readable-Engine)
-	* [4. Blackboard Question Upload Engine](#4.-Blackboard-Question-Upload-Engine)
-	* [5. HTML Self-Test Engine](#5.-HTML-Self-Test-Engine)
+	* [QTI v1.2 Engine (Canvas QTI v1.2)](#QTI-v1.2-Engine-(Canvas-QTI-v1.2))
+	* [QTI v2.1 Engine (Blackboard QTI v2.1)](#QTI-v2.1-Engine-(Blackboard-QTI-v2.1))
+	* [Human-Readable Engine](#Human-Readable-Engine)
+	* [Blackboard Question Upload Engine](#Blackboard-Question-Upload-Engine)
+	* [HTML Self-Test Engine](#HTML-Self-Test-Engine)
 * [Usage](#Usage)
 	* [Primary Supported Input Format](#Primary-Supported-Input-Format)
 	* [BBQ File Format Guidelines](#BBQ-File-Format-Guidelines)
@@ -67,42 +74,44 @@ pip install -r requirements.txt
 
 ## Question Types
 
-### 1. Multiple Choice (MC)
+QTI Package Maker supports seven essential question types commonly used in assessments. These include Multiple Choice (MC), Multiple Answer (MA), Matching (MATCH), Numerical Entry (NUM), Fill-in-the-Blank (FIB), Multi-Part Fill-in-the-Blank (MULTI_FIB), and Ordered Lists (ORDER). Below is an overview of each type and its required inputs.
+
+### Multiple Choice (MC)
 **Inputs:**
 - `question_text` (str): The question prompt.
 - `choices_list` (list): A list of answer choices.
 - `answer_text` (str): The correct answer.
 
-### 2. Multiple Answer (MA)
+### Multiple Answer (MA)
 **Inputs:**
 - `question_text` (str)
 - `choices_list` (list)
 - `answers_list` (list): A list of correct answers.
 
-### 3. Matching (MATCH)
+### Matching (MATCH)
 **Inputs:**
 - `question_text` (str)
 - `prompts_list` (list): Items to be matched.
 - `choices_list` (list): Possible matching answers.
 
-### 4. Numerical (NUM)
+### Numerical Entry (NUM)
 **Inputs:**
 - `question_text` (str)
 - `answer_float` (float): The correct numerical answer.
 - `tolerance_float` (float): Accepted tolerance range.
 - `tolerance_message` (bool, default=True): Message for tolerance handling.
 
-### 5. Fill-in-the-Blank (FIB)
+### Fill-in-the-Blank (FIB)
 **Inputs:**
 - `question_text` (str)
 - `answers_list` (list): List of acceptable answers.
 
-### 6. Multi-Part Fill-in-the-Blank (MULTI_FIB)
+### Multi-Part Fill-in-the-Blank (MULTI_FIB)
 **Inputs:**
 - `question_text` (str)
 - `answer_map` (dict): A dictionary mapping blank positions to correct answers.
 
-### 7. Ordered List (ORDER)
+### Ordered List (ORDER)
 **Inputs:**
 - `question_text` (str)
 - `ordered_answers_list` (list): The correct sequence of answers.
@@ -111,33 +120,33 @@ pip install -r requirements.txt
 
 The package supports multiple output formats via engines. Each engine corresponds to a specific QTI version or alternative export format.
 
-### 1. QTI v1.2 Engine (Canvas QTI v1.2)
+### QTI v1.2 Engine (Canvas QTI v1.2)
 - **Engine Name:** `canvas_qti_v1_2`
 - **Format Type:** QTI v1.2 (IMS XML format)
 - **Compatible LMS:** Canvas, LibreTexts ADAPT
 - **File Output:** ZIP file containing QTI v1.2 XML files
 
-### 2. QTI v2.1 Engine (Blackboard QTI v2.1)
+### QTI v2.1 Engine (Blackboard QTI v2.1)
 - **Engine Name:** `blackboard_qti_v2_1`
 - **Format Type:** QTI v2.1 (IMS XML format)
 - **Compatible LMS:** Blackboard
 - **File Output:** ZIP file containing QTI v2.1 XML files
 
-### 3. Human-Readable Engine
+### Human-Readable Engine
 - **Engine Name:** `human_readable`
 - **Format Type:** Simple text file
 - **Compatible LMS:** Any system that supports plain-text import
 - **File Output:** A structured text file listing the questions and answers in a human-readable format
 - **Use Case:** Used for reviewing questions before conversion to QTI
 
-### 4. Blackboard Question Upload Engine
+### Blackboard Question Upload Engine
 - **Engine Name:** `bbq_text_upload`
 - **Format Type:** Blackboard-specific TXT upload format
 - **Compatible LMS:** Blackboard (Original Course View)
 - **Documentation:** https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
 - **File Output:** A `.txt` file that Blackboard can directly upload
 
-### 5. HTML Self-Test Engine
+### HTML Self-Test Engine
 - **Engine Name:** `html_selftest`
 - **Format Type:** HTML-based self-assessment
 - **Compatible LMS:** Any web-based environment
