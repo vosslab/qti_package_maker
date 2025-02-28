@@ -102,8 +102,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		return
 
 	#==============
-
-	def save_package(self):
+	def save_package(self, outfile: str=None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""

@@ -19,7 +19,7 @@ class BaseEngine:
 		self.number_of_assessment_items = 0
 
 	#==============
-	def save_package(self):
+	def save_package(self, outfile: str=None):
 		raise NotImplementedError
 
 	#==============

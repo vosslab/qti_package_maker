@@ -194,8 +194,8 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 
 	# Register format shortcut options
 	for engine_name, (short_opt, short_name, desc_text) in format_shortcuts.items():
-		parser.add_argument(short_opt, f"--{short_name}", dest="output_format", action="append",
-				const=engine_name, nargs='?', help=desc_text)
+		parser.add_argument(short_opt, f"--{short_name}", f"--{engine_name}", dest="output_format",
+				action="append", const=engine_name, nargs='?', help=desc_text)
 
 	args = parser.parse_args()
 
@@ -237,7 +237,7 @@ def main():
 		'blackboard_qti_v2_1': ('-2', 'qti21', "Set output format to Blackboard QTI v2.1"),
 		'human_readable':      ('-r', 'human', "Set output format to human-readable text"),
 		'bbq_text_upload':     ('-b', 'bbq',   "Set output format to (B)lack(B)oard (Q)uestions"),
-		'html_selftest':       ('-s', 'html',  "Set output format to HTML self-test"),
+		'html_selftest':       ('-s', 'selftest',  "Set output format to HTML self-test"),
 	}
 
 	args = parse_args(format_shortcuts)

@@ -83,13 +83,13 @@ class MasterQTIPackage:
 		self.engine.ORDER(question_text, ordered_answers_list)
 
 	#=====================================================================
-	def save_package(self, output_file: str=None):
+	def save_package(self, outfile: str=None):
 		print(
 			f"Saving package {self.engine.package_name}\n"
 			f"  with engine {self.engine.engine_name} and\n"
 			f"  {len(self.engine.assessment_items_tree)} questions."
 		)
-		self.engine.save_package(output_file)
+		self.engine.save_package(outfile)
 
 	#=====================================================================
 	def show_available_question_types(self):
