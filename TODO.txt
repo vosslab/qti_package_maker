@@ -6,6 +6,7 @@
 * ADD general read engine capabilities
 * ADD BBQ read of ORDER, NUM, FIB, MUTLI_FIB
 * EDIT text in the README.md file
+* EDIT html_selftest needs to respect DARK MODE
 
 DONE Full write capable:
 * human_readable
