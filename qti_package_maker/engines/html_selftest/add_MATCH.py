@@ -150,7 +150,7 @@ def generate_prompts_table(crc16_text: str, prompts_list: list):
 	table_content += "<table style=\"border: 1px solid #999; border-collapse: collapse;\">\n"
 	table_content += "\t<thead>\n"
 	table_content += "\t\t<tr>\n"
-	table_content += "\t\t\t<th style=\"padding: 10px; width: 20px;\"></th>\n"  # Feedback Column
+	table_content += "\t\t\t<th style=\"width: 20px;\"></th>\n"  # Feedback Column
 	table_content += "\t\t\t<th style=\"padding: 10px; width: 180px; text-align: center;\">Your Choice</th>\n"
 	table_content += "\t\t\t<th style=\"padding: 10px;\">Prompt</th>\n"
 	table_content += "\t\t</tr>\n"
