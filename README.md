@@ -279,6 +279,32 @@ Contributions are welcome! Follow these steps to contribute:
 - Add question randomization and shuffling
 - Add unit tests
 
+## Related Projects
+
+- **Moodle Question Format: Canvas**  
+  A Moodle plugin that imports questions exported from the Canvas LMS as an XML file into Moodle.  
+  GitHub: https://github.com/jmvedrine/moodle-qformat_canvas
+
+- **text2qti**  
+  A Python tool that converts Markdown-based plain text files into quizzes in QTI format, compatible with Canvas and other educational software.  
+  PyPI: https://pypi.org/project/text2qti/
+
+- **Blackboard Test Question Generator**  
+  An online tool that assists in creating test questions for Blackboard by converting plain text into a format suitable for import.  
+  Website: https://ed.oc.edu/blackboardquizgenerator/
+
+- **amc2moodle**  
+  A Python package that facilitates the conversion of AMC (Auto Multiple Choice) formatted questions into Moodle XML format for easy import.  
+  PyPI: https://pypi.org/project/amc2moodle/
+
+- **moodle-questions**  
+  A Python library designed for manipulating questions in Moodle XML format, enabling programmatic creation and modification of Moodle quizzes.  
+  GitHub: https://github.com/gethvi/moodle-questions
+
+- **pyAssignment**  
+  A Python module for authoring and assessing homework assignments, with capabilities to output assignments to LaTeX and Blackboard quiz formats.  
+  PyPI: https://pypi.org/project/pyassignment/
+
 ## License
 
 Copyright &copy; 2025, Dr. Neil Voss
