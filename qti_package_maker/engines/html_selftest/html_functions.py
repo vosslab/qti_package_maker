@@ -57,12 +57,12 @@ def add_check_answer_button(crc16_text: str, button_text: str="Check Answer"):
 def add_clear_selection_button(crc16_text: str, button_text: str="Clear Selection"):
 	# "Clear Selection" button
 	js_function = f"clearSelection_{crc16_text}"
-	return make_button(button_text, js_function)
+	return make_button(button_text, js_function, "#e6eeff")
 
 #============================================
 def add_reset_game_button(crc16_text: str, button_text: str="Reset Game"):
 	# "Reset Game" button
 	js_function = f"resetGame_{crc16_text}"
-	return make_button(button_text, js_function, "#dc3545")
+	return make_button(button_text, js_function, "#fbe9eb")
 
 
