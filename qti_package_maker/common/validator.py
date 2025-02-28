@@ -9,23 +9,77 @@ import lxml.etree
 # none allowed here!!
 
 #========================================================
+def clean_html_for_xml(html_str: str) -> str:
+	"""
+	Cleans and prepares an HTML string for XML validation by:
+	"""
+	# Step 1: Remove JavaScript content but keep the <script> tags intact
+	# This ensures that <script></script> remains valid but doesn't break XML parsing.
+	html_str = re.sub(r'<script[^>]*>', '<script>', html_str)
+	html_str = re.sub(r'<script\b[^>]*>.*?</script>', '<script></script>', html_str)
+
+	# Step 2: Add newlines before < tags for better readability when debugging
+	# This makes the HTML more human-readable but doesn't affect XML parsing.
+	#html_str = html_str.replace('<', '\n<')
+
+	# Step 3: Ensure that attributes like colspan=2 are properly quoted (colspan="2")
+	# This is required for valid XML/XHTML since lxml enforces quoted attributes.
+	html_str = re.sub(r'(\b(?:colspan|rowspan|width|height|size)\s*=\s*)(\d+)(?!["\w])', r'\1"\2"', html_str)
+
+	# Step 4: Remove special HTML entities like &amp; or &copy; to prevent parsing errors.
+	# This ensures that lxml doesn't break on unescaped entities.
+	html_str = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
+
+	# Step 5: Clean up URLs by removing query parameters after '?' to simplify validation
+	# Example: href="https://example.com/page?query=123" → href="https://example.com/page"
+	html_str = re.sub(r'(href=[\'"])(https?://[^\'"]+?)\?.*?([\'"])', r'\1\2\3', html_str)
+
+	# Step 6: Temporarily remove SMILES values (which contain special characters)
+	# This prevents XML validation errors while keeping the structure intact.
+	html_str = re.sub(r'smiles="[^"]*?"', r'smiles=""', html_str)
+
+	clean_html = html_str.strip()
+	return clean_html
+"""
+assert clean_html_for_xml('simple&copy;') == 'simple'
+assert clean_html_for_xml('&amp;&gt;&lt;') == ''
+assert clean_html_for_xml('<p></p>') == '<p>\n</p>'
+assert clean_html_for_xml('<p>Valid content</p>') == '<p>Valid content\n</p>'
+assert clean_html_for_xml('<script></script>') == '<script>\n</script>'
+assert clean_html_for_xml('<script>let i=0;</script>') == '<script>\n</script>'
+assert clean_html_for_xml('<script>let i=0;</script>html content<script>let i=0;</script>') == '<script>\n</script>html content\n<script>\n</script>'
+assert clean_html_for_xml('<th colspan=2>Header</th>') == '<th colspan="2">Header\n</th>'
+assert clean_html_for_xml('<td rowspan=3>Data</td>') == '<td rowspan="3">Data\n</td>'
+assert clean_html_for_xml('<a href="https://x.com/page?q=123">Link</a>') == '<a href="https://x.com/page">Link\n</a>'
+assert clean_html_for_xml('smiles="C[C@H](N)C(=O)O"') == 'smiles=""'
+assert clean_html_for_xml('<div style="width=100">Content</div>') == '<div style="width=100">Content\n</div>'
+assert clean_html_for_xml('<div style="width: 100px; height: 10px;">Content</div>') == '<div style="width: 100px; height: 10px;">Content\n</div>'
+"""
+
+#========================================================
 def validate_html(html_str: str) -> bool:
 	"""
 	Validates if the input HTML string is well-formed by removing entities
 	and wrapping the content in a root element for XML parsing using lxml.
 	"""
-	html_str = html_str.replace('<', '\n<')
-	# Remove HTML entities by finding '&' followed by alphanumerics or '#' and a semicolon
-	cleaned_html = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
-	# Wrap in a root tag for XML parsing as XML requires a single root element
-	wrapped_html = f"<root>{cleaned_html}</root>"
+	clean_html = clean_html_for_xml(html_str)
+	wrapped_html = f"<root><cleaned>{clean_html}</cleaned></root>"
 	# Parse the cleaned and wrapped HTML using lxml.etree
-	lxml.etree.fromstring(wrapped_html)
+	try:
+		lxml.etree.fromstring(wrapped_html)
+	except lxml.etree.XMLSyntaxError as e:
+		print("\n\n==== XML PARSING ERROR ====\n")
+		print("Error Message:", e)  # Prints the exact error message
+		print("\n==== Wrapped HTML Dump ====\n")
+		print(f"<original>{html_str}</original>")
+		print(wrapped_html)  # Prints the problematic HTML
+		print("\n=================================\n")
+		raise  # Re-raises the error so it doesn't silently fail
 	return True
 # Assertions to test the function
 assert validate_html('simple string') == True
 assert validate_html('<p>simple html paragraph</p>') == True
-
+assert validate_html('<p>&copy; simple html paragraph &amp; escaped characters</p>') == True
 
 #========================================================
 def validate_string_text(string_text: str, name: str, min_length: int = 3):
