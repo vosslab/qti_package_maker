@@ -158,22 +158,31 @@ Or via CLI:
 python3 process_bbq.py -i input_file.txt -f qti12
 ```
 
-## Input File Format
+## Supported Input Format: BBQ Text Format
 
-### Example Blackboard Question Upload (BBQ) Format
-```
-MC	What is your favorite color?	blue	Correct	red	Incorrect	yellow	Incorrect
-MA	Which are fruits?	orange	Correct	banana	Correct	apple	Correct	lettuce	Incorrect	spinach	Incorrect
-FIB	What is 2+2?	4
-```
-This format is tab-separated and includes:
-- MC (Multiple Choice)
-- MA (Multiple Answer)
-- FIB (Fill in the Blank)
-- MATCH (Matching)
-- ORDER (Ordered List)
-- NUM (Numeric)
-- MULTI_FIB (Multi-Part Fill in the Blank)
+The **Blackboard Question Upload (BBQ) text format** is currently the only supported input format for `qti_package_maker`. This format allows users to write questions in a plain text file and upload them into tests, surveys, and question pools on Blackboard. Once uploaded, the questions can be edited and used like those created directly within the LMS.
+
+### **BBQ File Format Guidelines**
+- Must be a **tab-delimited TXT file**.
+- Should **not include a header row**.
+- Should **not contain blank lines**.
+- Each row must contain **one question**.
+- The **first field in each row** defines the question type.
+- Fields in a row are **separated by a TAB**.
+
+### **Supported BBQ Question Formats**
+
+| Question Type        | Format |
+|----------------------|--------|
+| **Multiple Choice (MC)** | `MC TAB question text TAB answer text TAB correct|incorrect TAB answer two text TAB correct|incorrect` |
+| **Multiple Answer (MA)** | `MA TAB question text TAB answer text TAB correct|incorrect TAB answer two text TAB correct|incorrect` |
+| **Ordering (ORD)** | `ORD TAB question text TAB answer text TAB answer two text` |
+| **Matching (MAT)** | `MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text` |
+| **Fill in the Blank (FIB)** | `FIB TAB question text TAB answer text TAB answer two text` |
+| **Fill in Multiple Blanks (FIB_PLUS)** | `FIB_PLUS TAB question text TAB variable1 TAB answer1 TAB answer2 TAB TAB variable2 TAB answer3` |
+| **Numeric Response (NUM)** | `NUM TAB question text TAB answer TAB [optional]tolerance` |
+
+For more details, refer to the official **[Blackboard documentation](https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions)**.
 
 ## Development & Contribution
 
