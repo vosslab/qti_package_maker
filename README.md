@@ -136,8 +136,8 @@ The **Blackboard Question Upload (BBQ) text format** is currently the only suppo
 
 | Question Type        | Format |
 |----------------------|--------|
-| **Multiple Choice (MC)** | `MC TAB question text TAB answer text TAB correct|incorrect TAB answer two text TAB correct|incorrect` |
-| **Multiple Answer (MA)** | `MA TAB question text TAB answer text TAB correct|incorrect TAB answer two text TAB correct|incorrect` |
+| **Multiple Choice (MC)** | ``MC TAB question text TAB answer text TAB correct\|incorrect TAB answer two text TAB correct\|incorrect`` |
+| **Multiple Answer (MA)** | ``MA TAB question text TAB answer text TAB correct\|incorrect TAB answer two text TAB correct\|incorrect`` |
 | **Ordering (ORD)** | `ORD TAB question text TAB answer text TAB answer two text` |
 | **Matching (MAT)** | `MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text` |
 | **Fill in the Blank (FIB)** | `FIB TAB question text TAB answer text TAB answer two text` |
