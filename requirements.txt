@@ -1,4 +1,5 @@
 lxml
 crcmod
 num2words
+pyyaml
 #BeautifulSoup4

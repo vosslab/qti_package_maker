@@ -22,7 +22,7 @@ keywords = [
     "online learning", "exam generator", "QTI exporter",
     "IMS Question and Test Interoperability specification",
     "Question and Test Interoperability", "XML",
-    "QTI v2.1", "QTI v1.2"
+    "QTI v2.1", "QTI v1.2",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -37,7 +37,8 @@ classifiers = [
 dependencies = [
     "crcmod",
     "lxml",
-    "num2words"
+    "num2words",
+    "pyyaml",
 ]
 
 [tool.setuptools]
