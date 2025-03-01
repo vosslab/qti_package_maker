@@ -1,11 +1,8 @@
-
 # Standard Library
 import re
-import os
 import copy
 import html
 import random
-import subprocess
 
 # Pip3 Library
 import lxml.etree
@@ -13,23 +10,9 @@ import lxml.html
 import num2words
 import crcmod.predefined #pip
 
-#anticheating measures
-use_nocopy_script = False
-use_insert_hidden_terms = False
-hidden_term_density = 0.7
-use_add_no_click_div = False
-noPrint = True
-noCopy = True
-noScreenshot = False
-autoBlur = True
+# QTI Package Maker
+# none allowed here!!
 
-hidden_term_bank = None
-answer_histogram = {}
-question_count = 0
-crc16_dict = {}
-
-#==========================
-#==========================
 #==========================
 def number_to_letter(integer):
 	"""
@@ -122,12 +105,12 @@ def get_crc16_from_string(mystr):
 	try:
 		crc16.update(mystr.encode('ascii', errors='strict'))
 	except UnicodeEncodeError:
-		checkAscii(mystr)
+		check_ascii(mystr)
 		raise ValueError
 	return crc16.hexdigest().lower()
 
 #==========================
-def checkAscii(mystr):
+def check_ascii(mystr):
 	#destructive function
 	mystr = mystr.replace('. ', '\n')
 	mystr = mystr.replace(', ', '\n')
@@ -227,125 +210,41 @@ def format_html_lxml(html_string):
 	# Return the formatted HTML string
 	return formatted_html
 
+#========================================
+def html_monospace(txt, use_nbsp=True):
+	local_txt = copy.copy(txt)
+	if use_nbsp is True:
+		local_txt = local_txt.replace(' ', '&nbsp;')
+	return f"<span style='font-family: monospace;'>{local_txt}</span>"
+
+#==========================
+def html_color_text(text, hex_code):
+	return f'<span style="color: #{hex_code};">{text}</span>'
+
 #=====================
-def question_header(question: str, N: int, crc16: str = None) -> str:
+def generate_gene_letters(num_genes: int, shift: int=-1, clear: bool=False) -> str:
 	"""
-	Generate a standardized header for a question.
-
-	Args:
-		question (str): The question text.
-		N (int): The question ID or number.
-		crc16 (str): Optional CRC16 checksum for uniqueness (default: None).
-
-	Returns:
-		str: Formatted question header.
+	Generate a string of unique gene letters based on deterministic or random selection.
 	"""
-	# Generate a CRC16 if not provided
-	if crc16 is None:
-		crc16 = get_crc16_from_string(question)
+	# Define alphabets
+	full_alphabet = "abcdefghijklmnopqrstuvwxyz"
+	ambiguous_letters = "giloqsuvz"  # Ambiguous or easily confused letters
+	clear_alphabet = ''.join(sorted(set(full_alphabet) - set(ambiguous_letters)))
 
-	# Log the question header
-	print(f"{N:03d}. {crc16} -- {make_question_pretty(question)}")
+	# Select alphabet based on the `clear` flag
+	alphabet = clear_alphabet if clear else full_alphabet
 
-	# Generate the header
-	header = f"<p>{crc16}</p>\n"
-	header +=  insert_hidden_terms(question)
+	# Validate input
+	if num_genes > len(alphabet):
+		raise ValueError(f"num_genes ({num_genes}) cannot exceed the length of the alphabet ({len(alphabet)}).")
 
-	return header
-
-#==============
-
-def choice_header(choice_text: str, index: int) -> str:
-	"""
-	Format a choice in a standardized way.
-
-	Args:
-		choice_text (str): The text of the choice.
-		index (int): The index of the choice (e.g., 0 for 'A', 1 for 'B').
-
-	Returns:
-		str: Formatted choice header.
-	"""
-	# Generate a label for the choice (e.g., A, B, C, ...)
-	letters = "ABCDEFGHJKLMNPQRSTUVWXYZ"
-	label = letters[index]
-
-	# Log the choice
-	print(f"- [{label}] {make_question_pretty(choice_text)}")
-
-	# Add hidden terms for obfuscation, if needed
-	noisy_choice_text = insert_hidden_terms(choice_text)
-
-	# Wrap in a div or any other required format
-	return add_no_click_div(f"{label}. {noisy_choice_text}")
-
-#==========================
-def insert_hidden_terms(text_content):
-	if use_insert_hidden_terms is False:
-		return text_content
-
-	global hidden_term_bank
-	if hidden_term_bank is None:
-		hidden_term_bank = load_hidden_term_bank()
-
-	# Separate table, code and non-table/non-code content
-	parts = re.split(r'(<table>.*?</table>|<code>.*?</code>)', text_content, flags=re.DOTALL)
-
-	# Process each part
-	new_parts = []
-	for part in parts:
-		if part.startswith('<table>') or part.startswith('<code>'):
-			# Keep table and code content unchanged
-			new_parts.append(part)
-		else:  # Apply the modified logic to non-table parts
-			# Replace spaces adjacent to words with '@'
-			#part = re.sub(r'([a-z]) +(?![^<>]*>)', r'\1@', part)
-			part = re.sub(r'([a-z]) +([a-z])(?![^<>]*>)', r'\1@\2', part)
-			#part = re.sub(r'([A-Za-z]) +(?![^<>]*>)', r'\1@', part)
-			#part = re.sub(r' +([A-Za-z])(?![^<>]*>)', r'@\1', part)
-			words = part.split('@')
-			new_words = []
-			for word in words:
-				new_words.append(word)
-				if random.random() < hidden_term_density:
-					hidden_term = random.choice(hidden_term_bank)
-					new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
-				else:
-					new_words.append(" ")
-			new_parts.append(''.join(new_words))
-	return ''.join(new_parts)
-
-#==========================
-def get_git_root(path=None):
-	"""Return the absolute path of the repository root."""
-	if path is None:
-		# Use the path of the script
-		path = os.path.dirname(os.path.abspath(__file__))
-	try:
-		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
-		return base
-	except subprocess.CalledProcessError:
-		# Not inside a git repository
-		return None
-
-#==========================
-def load_hidden_term_bank():
-	git_root = get_git_root()
-	data_file_path = os.path.join(git_root, 'data/all_short_words.txt')
-	with open(data_file_path, 'r') as file:
-		terms = file.readlines()
-	return [term.strip() for term in terms]
-
-#==========================
-def add_no_click_div(text):
-	#global use_add_no_click_div
-	if use_add_no_click_div is False:
-		return text
-	number = random.randint(1000,9999)
-	output  = f'<div id="drv_{number}" '
-	output += 'oncopy="return false;" onpaste="return false;" oncut="return false;" '
-	output += 'oncontextmenu="return false;" onmousedown="return false;" onselectstart="return false;" '
-	output += '>'
-	output += text
-	output += '</div>'
-	return output
+	if shift >= 0:
+		# Generate a deterministic sequence with a valid shift
+		shift = shift % (len(alphabet) - num_genes + 1)
+		return alphabet[shift:shift + num_genes]
+	else:
+		# Generate random unique letters
+		return ''.join(sorted(random.sample(alphabet, num_genes)))
+assert generate_gene_letters(5, 3) == "defgh"  # Deterministic with full alphabet
+assert generate_gene_letters(5, 3, clear=True) == "defhj"  # Deterministic with clear alphabet
+assert len(generate_gene_letters(5)) == 5  # Random with full alphabet
