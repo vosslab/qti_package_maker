@@ -7,6 +7,7 @@
 * ADD BBQ read of ORDER, NUM, FIB, MUTLI_FIB
 * EDIT text in the README.md file
 * EDIT html_selftest needs to respect DARK MODE
+* ADD keep track of CRC codes for uniqeness
 
 DONE Full write capable:
 * human_readable
