@@ -17,32 +17,27 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
 	item_body = item_xml_helpers.create_item_body(question_text, choices_list, max_choices=1)
 	response_processing = item_xml_helpers.create_response_processing()
-
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
 	for outcome in outcome_declarations:
 		assessment_item_etree.append(outcome)
 	assessment_item_etree.append(item_body)
 	assessment_item_etree.append(response_processing)
-
 	return assessment_item_etree
 
 #==============================================================
 def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""Create a Multiple Answer (Checkboxes) question."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(crc16_text)
-
 	answer_id_list = []
 	for answer_text in answers_list:
 		answer_id = f"answer_{choices_list.index(answer_text) + 1}"
 		answer_id_list.append(answer_id)
 	answer_id_list.sort()
 	response_declaration = item_xml_helpers.create_response_declaration(answer_id_list)
-
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
 	item_body = item_xml_helpers.create_item_body(question_text, choices_list, max_choices=len(answers_list))
 	response_processing = item_xml_helpers.create_response_processing()
-
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
 	for outcome in outcome_declarations:
@@ -70,17 +65,13 @@ def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: lis
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
 	item_body = item_xml_helpers.create_item_body_FIB(question_text, answers_list)
 	response_processing = item_xml_helpers.create_response_processing()
-
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
 	for outcome in outcome_declarations:
 		assessment_item_etree.append(outcome)
 	assessment_item_etree.append(item_body)
 	assessment_item_etree.append(response_processing)
-
 	return assessment_item_etree
-
-	pass
 
 #==============================================================
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
