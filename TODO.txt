@@ -37,3 +37,43 @@ def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: flo
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict):
 def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
+
+
+#============================================
+# TODO: Implement Automatic File Type Detection in MasterQTIPackage
+#============================================
+
+## Overview:
+Enhance MasterQTIPackage to automatically detect input file types based on
+file extension and contents. This will allow users to call `read()` without
+manually specifying the format.
+
+## Steps:
+1. **Detect File Type**
+   - Use file extension (`.zip`, `.txt`, `.xml`) as an initial hint.
+   - Inspect **ZIP contents** for QTI manifests (`imsmanifest.xml`) to distinguish
+     between **QTI 1.2** and **QTI 2.1**.
+   - Check **first line of `.txt` files** for BBQ text format.
+   - Scan **first 200 characters of `.xml` files** to determine if they contain
+     `<questestinterop>` (QTI 1.2) or `<assessmentTest>` (QTI 2.1).
+
+2. **Read Using the Correct Reader**
+   - Automatically select the appropriate `Reader` class (`QTIv1Reader`, `QTIv2Reader`,
+     `BBQTextReader`, etc.).
+   - Store all parsed questions for later conversion.
+
+3. **Support Multiple Reads in One Session**
+   - Allow reading multiple files (`qti12.zip`, `bbq-questions.txt`, etc.).
+   - Prevent duplicate reads of the same file.
+
+4. **Ensure Compatibility with Writers**
+   - Ensure the selected writer can handle all loaded question types.
+   - Consider auto-detecting the best `Writer` format based on input.
+
+## Example Usage (After Implementation):
+```python
+qpm = MasterQTIPackage(writer='human')
+qpm.read('qti12.zip')              # Auto-detects QTI 1.2
+qpm.read('qti21.zip')              # Auto-detects QTI 2.1
+qpm.read('bbq-questions.txt')      # Detects BBQ text format
+qpm.save('human.txt')              # Converts all to human-readable
