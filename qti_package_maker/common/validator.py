@@ -177,7 +177,7 @@ def validate_FIB(question_text: str,  answers_list: list):
 	Validate a Fill-in-the-Blank question.
 	"""
 	validate_string_text(question_text, 'question_text')
-	validate_list_of_strings(answers_list, 'answers_list', 2)
+	validate_list_of_strings(answers_list, 'answers_list', 1)
 	return True
 assert validate_FIB("What color are bananas at the store?", ["green", "yellow"]) == True
 
