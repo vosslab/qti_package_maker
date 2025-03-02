@@ -47,11 +47,17 @@ class MasterQTIPackage:
 		if question_type not in supported_types:
 			self.show_available_question_types()
 			raise NotImplementedError(f"Error: Unsupported question type '{question_type}'")
-		add_method = getattr(self, f"add_{question_type}", None)
+		# Get method reference from `self.engine`, not `self`
+		add_method = getattr(self.engine, question_type, None)
 		if add_method is None:
 			self.show_available_question_types()
 			raise NotImplementedError(f"Error: No method found for question type '{question_type}'")
+		# Check actual list length, not a counter
+		prev_count = len(self.engine.assessment_items_tree)
 		add_method(*question_tuple)
+		# Verify that a new question was added
+		if len(self.engine.assessment_items_tree) == prev_count:
+			raise ValueError(f"Error: '{question_type}' failed to add a question")
 
 	def add_MC(self, question_text: str, choices_list: list, answer_text: str):
 		"""Handles adding a Multiple-Choice (MC) question."""
