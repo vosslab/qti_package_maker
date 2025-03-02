@@ -75,21 +75,6 @@ def create_response_declaration(correct_values: list) -> lxml.etree.Element:
 #==============
 def create_response_declaration_FIB(answers_list: list) -> lxml.etree.Element:
 	## IMPORTANT !!!
-	"""
-	Create a <responseDeclaration> element.
-	Returns:
-		lxml.etree.Element: The <responseDeclaration> element.
-  <responseDeclaration cardinality="single" baseType="string" identifier="RESPONSE">
-    <correctResponse>
-      <value>uno</value>
-      <value>dos</value>
-    </correctResponse>
-    <mapping>
-      <mapEntry mapKey="uno" caseSensitive="false" mappedValue="100.0"/>
-      <mapEntry mapKey="dos" caseSensitive="false" mappedValue="100.0"/>
-    </mapping>
-  </responseDeclaration>
-	"""
 	responseDeclaration = lxml.etree.Element(
 		"responseDeclaration",
 		attrib={
@@ -101,7 +86,6 @@ def create_response_declaration_FIB(answers_list: list) -> lxml.etree.Element:
 	# Create <correctResponse> and <mapping>
 	correct_response = lxml.etree.SubElement(responseDeclaration, "correctResponse")
 	mapping = lxml.etree.SubElement(responseDeclaration, "mapping")
-
 	# Iterate once to create both <value> and <mapEntry>
 	for value in answers_list:
 		lxml.etree.SubElement(correct_response, "value").text = value
@@ -153,7 +137,7 @@ def create_item_body(question_html_text: str, choices_list: list, max_choices: i
 	return item_body
 
 #==============
-def create_item_body_FIB(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
+def create_item_body_FIB(question_html_text: str, choices_list: list):
 	## IMPORTANT !!!
 	"""
 	Create the <itemBody> element with the question text and choices.
