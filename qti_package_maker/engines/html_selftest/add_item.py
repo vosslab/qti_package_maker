@@ -4,10 +4,10 @@ ENGINE_NAME = "html_selftest"
 from qti_package_maker.engines.html_selftest import add_MC
 from qti_package_maker.engines.html_selftest import add_MA
 from qti_package_maker.engines.html_selftest import add_MATCH
-from qti_package_maker.engines.html_selftest import add_NUM
-from qti_package_maker.engines.html_selftest import add_FIB
-from qti_package_maker.engines.html_selftest import add_MULTI_FIB
-from qti_package_maker.engines.html_selftest import add_ORDER
+#from qti_package_maker.engines.html_selftest import add_NUM
+#from qti_package_maker.engines.html_selftest import add_FIB
+#from qti_package_maker.engines.html_selftest import add_MULTI_FIB
+#from qti_package_maker.engines.html_selftest import add_ORDER
 
 #==============================================================
 def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
