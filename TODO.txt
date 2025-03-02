@@ -2,6 +2,7 @@
 * ADD clean up choice_text, answer_text, and question_text
  - remove leading and trailing &nbsp;
  - remove extra crc16 sums at begining of question_text
+* ADD quiet mode, less verbose
 * ADD shuffle mechanism
 * ADD general read engine capabilities
 * ADD BBQ read of ORDER, NUM, FIB, MUTLI_FIB
@@ -27,11 +28,12 @@ ADD current unimplemented functions:
 * html_selftest/add_item.py:def MULTI_FIB()
 * html_selftest/add_item.py:def ORDER()
 
-Function Types:
+Question function Types:
 def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
 def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
 def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: float,
+		  tolerance_float: float, tolerance_message=True):
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict):
 def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
