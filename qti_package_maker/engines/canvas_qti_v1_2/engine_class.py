@@ -18,14 +18,12 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 #==============
 
 class QTIv1Engine(base_package_maker.BaseEngine):
-	def __init__(self, package_name: str):
-		super().__init__(package_name)
+	def __init__(self, package_name: str, verbose: bool=False):
+		super().__init__(package_name, verbose)
 		self.add_item = add_item
-
 		# Verify that the correct add_item module is imported
 		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "canvas_qti_v1_2":
 			raise ImportError("Incorrect add_item module imported for QTIv1Engine engine")
-
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI-{package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")

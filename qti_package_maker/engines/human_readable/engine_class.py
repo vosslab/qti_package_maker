@@ -9,13 +9,11 @@ from qti_package_maker.common import base_package_maker
 from qti_package_maker.engines.human_readable import add_item
 
 class HumanReadable(base_package_maker.BaseEngine):
-	def __init__(self, package_name: str):
-		super().__init__(package_name)
-
+	def __init__(self, package_name: str, verbose: bool=False):
+		super().__init__(package_name, verbose)
 		# Verify that the correct add_item module is imported
 		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "human_readable":
 			raise ImportError("Incorrect add_item module imported for HumanReadable engine")
-
 		self.add_item = add_item
 
 	#==============
