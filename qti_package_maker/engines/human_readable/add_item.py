@@ -2,10 +2,29 @@ ENGINE_NAME = "human_readable"
 
 from qti_package_maker.common import string_functions
 
+#==============================================================
+def is_valid_content(content_text):
+	if '<mathml' in content_text.lower():
+		return False
+	if 'rdkit' in content_text.lower():
+		return False
+	if '<table' in content_text.lower():
+		return False
+	return True
+
+def is_valid_list(list_of_strings):
+	for content_text in list_of_strings:
+		if not is_valid_content(content_text):
+			return False
+	return True
 
 #==============================================================
 def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
+	if not is_valid_content(question_text):
+		return False
+	if not is_valid_list(choices_list):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -27,6 +46,10 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 #==============================================================
 def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""Create a Multiple Answer (Checkboxes) question."""
+	if not is_valid_content(question_text):
+		return False
+	if not is_valid_list(choices_list):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -49,6 +72,12 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
 	"""Create a Matching question where users match items from two lists."""
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
+	if not is_valid_content(question_text):
+		return False
+	if not is_valid_list(prompts_list):
+		return False
+	if not is_valid_list(choices_list):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -70,6 +99,8 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: float,
 		  tolerance_float: float, tolerance_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
+	if not is_valid_content(question_text):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	if tolerance_message:
@@ -82,6 +113,10 @@ def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: flo
 #==============================================================
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	if not is_valid_content(question_text):
+		return False
+	if not is_valid_list(answers_list):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text = assessment_text.replace("____", "[____]")  # Ensure consistent blank formatting
@@ -97,6 +132,8 @@ def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: lis
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	if not is_valid_content(question_text):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
@@ -115,6 +152,10 @@ def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map:
 #==============================================================
 def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	if not is_valid_content(question_text):
+		return False
+	if not is_valid_list(ordered_answers_list):
+		return False
 	assessment_text = ''
 	assessment_text += string_functions.make_question_pretty(question_text)
 	assessment_text += '\n'
