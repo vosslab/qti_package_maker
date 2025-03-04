@@ -22,6 +22,7 @@ class BaseEngine:
 		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
 		#self.add_item must be overridden in all implementations of engine class
 		self.add_item = None
+		self.verbose = verbose
 
 	#==============
 	def save_package(self, outfile: str=None):
@@ -46,7 +47,7 @@ class BaseEngine:
 		if assessment_item_data is None or not assessment_item_data:
 			raise ValueError(f"Error: 'assessment_item_data' is empty for item_type '{item_type}'")
 		# Debugging print to confirm it's being called
-		if verbose is True:
+		if self.verbose is True:
 			print(f"Adding assessment item: {item_type}, CRC16: {crc16}")
 		# Format item dict
 		assessment_item_dict = {

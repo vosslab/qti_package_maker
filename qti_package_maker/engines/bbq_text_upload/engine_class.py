@@ -32,5 +32,5 @@ class BBQTextEngine(base_package_maker.BaseEngine):
 					# Ensure each item is on a new line
 					f.write(formatted_bbq_text + "\n")
 					count += 1
-		if verbose is True:
+		if self.verbose is True:
 			print(f"Saved {count} assessment items to {outfile}")

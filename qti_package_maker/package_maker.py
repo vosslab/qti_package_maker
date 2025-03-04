@@ -15,6 +15,7 @@ from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engi
 class MasterQTIPackage:
 	def __init__(self, package_name: str, engine_name: str, verbose: bool=False):
 		package_name = package_name.strip()
+		self.verbose = verbose
 		if not package_name:
 			raise ValueError("package_name not defined")
 		# Convert to lowercase
@@ -38,7 +39,7 @@ class MasterQTIPackage:
 			self.engine = QTIv2Engine(package_name, verbose)
 		else:
 			raise ValueError(f"Unknown engine: {engine_name}")
-		if verbose is True:
+		if self.verbose is True:
 			print(f"Initialized Engine: {self.engine.engine_name}")
 
 	#=====================================================================
@@ -91,7 +92,7 @@ class MasterQTIPackage:
 
 	#=====================================================================
 	def save_package(self, outfile: str=None):
-		if verbose is True:
+		if self.verbose is True:
 			print(
 				f"Saving package {self.engine.package_name}\n"
 				f"  with engine {self.engine.engine_name} and\n"
