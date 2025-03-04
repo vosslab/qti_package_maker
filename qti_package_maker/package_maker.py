@@ -13,7 +13,7 @@ from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
 from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
 
 class MasterQTIPackage:
-	def __init__(self, package_name: str, engine_name: str):
+	def __init__(self, package_name: str, engine_name: str, verbose: bool=False):
 		package_name = package_name.strip()
 		if not package_name:
 			raise ValueError("package_name not defined")
@@ -23,22 +23,23 @@ class MasterQTIPackage:
 		engine_name = re.sub("[^a-z0-9]", "", engine_name)
 		if engine_name.startswith('bbq') or engine_name.startswith('blackboardtext'):
 			# blackboard_text_upload
-			self.engine = BBQTextEngine(package_name)
+			self.engine = BBQTextEngine(package_name, verbose)
 		elif engine_name.startswith('html'):
 			# blackboard_text_upload
-			self.engine = HTMLSelfTest(package_name)
+			self.engine = HTMLSelfTest(package_name, verbose)
 		elif engine_name.startswith('human'):
 			# human_readable
-			self.engine = HumanReadable(package_name)
+			self.engine = HumanReadable(package_name, verbose)
 		elif engine_name.startswith('qtiv1') or engine_name.startswith('canvas'):
 			# canvas_qti_v1_2
-			self.engine = QTIv1Engine(package_name)
+			self.engine = QTIv1Engine(package_name, verbose)
 		elif engine_name.startswith('qtiv2') or engine_name.startswith('blackboardqti'):
 			# blackboard_qti_v2_1
-			self.engine = QTIv2Engine(package_name)
+			self.engine = QTIv2Engine(package_name, verbose)
 		else:
 			raise ValueError(f"Unknown engine: {engine_name}")
-		print(f"Initialized Engine: {self.engine.engine_name}")
+		if verbose is True:
+			print(f"Initialized Engine: {self.engine.engine_name}")
 
 	#=====================================================================
 	def add_question(self, question_type: str, question_tuple: tuple):
@@ -90,11 +91,12 @@ class MasterQTIPackage:
 
 	#=====================================================================
 	def save_package(self, outfile: str=None):
-		print(
-			f"Saving package {self.engine.package_name}\n"
-			f"  with engine {self.engine.engine_name} and\n"
-			f"  {len(self.engine.assessment_items_tree)} questions."
-		)
+		if verbose is True:
+			print(
+				f"Saving package {self.engine.package_name}\n"
+				f"  with engine {self.engine.engine_name} and\n"
+				f"  {len(self.engine.assessment_items_tree)} questions."
+			)
 		self.engine.save_package(outfile)
 
 	#=====================================================================

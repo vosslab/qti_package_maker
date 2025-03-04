@@ -14,7 +14,7 @@ from qti_package_maker.common import string_functions
 # engine_base.py (shared base for all engines)
 class BaseEngine:
 	#==============
-	def __init__(self, package_name: str):
+	def __init__(self, package_name: str, verbose: bool=False):
 		self.package_name = package_name
 		self.assessment_items_tree = []
 		self.number_of_assessment_items = 0
@@ -46,7 +46,8 @@ class BaseEngine:
 		if assessment_item_data is None or not assessment_item_data:
 			raise ValueError(f"Error: 'assessment_item_data' is empty for item_type '{item_type}'")
 		# Debugging print to confirm it's being called
-		print(f"Adding assessment item: {item_type}, CRC16: {crc16}")
+		if verbose is True:
+			print(f"Adding assessment item: {item_type}, CRC16: {crc16}")
 		# Format item dict
 		assessment_item_dict = {
 				'crc16': crc16,
