@@ -33,4 +33,5 @@ class HumanReadable(base_package_maker.BaseEngine):
 				else:
 					f.write(f"{item_number}. {assessment_text}")
 				count += 1
-		print(f"Saved {count} assessment items to {outfile}")
+		if verbose is True:
+			print(f"Saved {count} assessment items to {outfile}")

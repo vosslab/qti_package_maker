@@ -99,7 +99,8 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 
 		# Step 5: Log the number of saved items and return the file list
-		#print(f"Saved {self.save_count} assessment items for {self.package_name}")
+		if verbose is True:
+			print(f"Wrote {self.save_count} assessment items for {self.package_name}")
 		return assessment_file_name_list
 
 	#==============
@@ -148,7 +149,8 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 					# No need to add package_name prefix
 					zipf.write(full_path, relative_path)
 		self.clean_temp_files()
-		print(f"Saved {self.save_count} assessment items to {outfile}")
+		if verbose is True:
+			print(f"Saved {self.save_count} assessment items to {outfile}")
 
 	#==============
 

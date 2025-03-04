@@ -73,7 +73,8 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 			f.write(assessment_items_xml_string.decode("utf-8"))
 
 		# Step 6: Log & return filename
-		print(f"Saved {self.save_count} assessment items to {self.assessment_items_base_path}")
+		if verbose is True:
+			print(f"Wrote {self.save_count} assessment items to {self.assessment_items_base_path}")
 		return
 
 	#==============
@@ -120,7 +121,8 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 					relative_path = os.path.relpath(full_path, self.output_dir)
 					zipf.write(full_path, relative_path)  # No need to add package_name prefix
 		self.clean_temp_files()
-		print(f"Saved {self.save_count} assessment items to {outfile}")
+		if verbose is True:
+			print(f"Saved {self.save_count} assessment items to {outfile}")
 
 	#==============
 

@@ -31,4 +31,5 @@ class HTMLSelfTest(base_package_maker.BaseEngine):
 			formatted_html_text = assessment_item_dict['assessment_item_data']
 			f.write(formatted_html_text)
 			count += 1
-		print(f"Saved {count} assessment items to {outfile}")
+		if verbose is True:
+			print(f"Saved {count} assessment items to {outfile}")
