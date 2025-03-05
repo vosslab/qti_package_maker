@@ -59,7 +59,9 @@ class MasterQTIPackage:
 		add_method(*question_tuple)
 		# Verify that a new question was added
 		if len(self.engine.assessment_items_tree) == prev_count:
-			raise ValueError(f"Error: '{question_type}' failed to add a question")
+			if self.verbose is True:
+				print(f"Warning: '{question_type}' failed to add a question")
+			return
 
 	def add_MC(self, question_text: str, choices_list: list, answer_text: str):
 		"""Handles adding a Multiple-Choice (MC) question."""
@@ -92,6 +94,9 @@ class MasterQTIPackage:
 
 	#=====================================================================
 	def save_package(self, outfile: str=None):
+		if len(self.engine.assessment_items_tree) == 0:
+			print("no questions to write, skipping save_package()")
+			return
 		if self.verbose is True:
 			print(
 				f"Saving package {self.engine.package_name}\n"

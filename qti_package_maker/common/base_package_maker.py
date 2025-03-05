@@ -45,7 +45,9 @@ class BaseEngine:
 			raise ValueError(f"Invalid item_type format: '{item_type}'.")
 		# Catch both `None` and empty structures like `{}` or `[]`
 		if assessment_item_data is None or len(assessment_item_data) == 0:
-			raise ValueError(f"Error: 'assessment_item_data' is empty for item_type '{item_type}'")
+			if self.verbose is True:
+				print(f"Warning: 'assessment_item_data' is empty for item_type '{item_type}'")
+			return
 		# Debugging print to confirm it's being called
 		if self.verbose is True:
 			print(f"Adding assessment item: {item_type}, CRC16: {crc16}")
