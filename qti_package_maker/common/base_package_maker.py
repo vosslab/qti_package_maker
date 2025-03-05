@@ -44,7 +44,7 @@ class BaseEngine:
 		if not self.item_type_pattern.fullmatch(item_type):
 			raise ValueError(f"Invalid item_type format: '{item_type}'.")
 		# Catch both `None` and empty structures like `{}` or `[]`
-		if assessment_item_data is None or not assessment_item_data:
+		if assessment_item_data is None or len(assessment_item_data) == 0:
 			raise ValueError(f"Error: 'assessment_item_data' is empty for item_type '{item_type}'")
 		# Debugging print to confirm it's being called
 		if self.verbose is True:
