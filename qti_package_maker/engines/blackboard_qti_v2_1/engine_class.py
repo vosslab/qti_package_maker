@@ -139,7 +139,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 		# Write the package to a ZIP file
 		#zip_path = f"{self.package_name}.zip"
-		outfile = self.get_outfile_name('qti12', 'zip', outfile)
+		outfile = self.get_outfile_name('qti21', 'zip', outfile)
 		with zipfile.ZipFile(outfile, "w", zipfile.ZIP_DEFLATED) as zipf:
 			for root, _, files in os.walk(self.output_dir):
 				for file in files:
