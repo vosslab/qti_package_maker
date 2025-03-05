@@ -6,108 +6,89 @@ import re
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.engines.bbq_text_upload.engine_class import BBQTextEngine
-from qti_package_maker.engines.html_selftest.engine_class import HTMLSelfTest
-from qti_package_maker.engines.human_readable.engine_class import HumanReadable
-from qti_package_maker.engines.canvas_qti_v1_2.engine_class import QTIv1Engine
-from qti_package_maker.engines.blackboard_qti_v2_1.engine_class import QTIv2Engine
+from qti_package_maker.item_bank import ItemBank
+from qti_package_maker.assessment_items import assessment_items
+from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
 
-class MasterQTIPackage:
-	def __init__(self, package_name: str, engine_name: str, verbose: bool=False):
+class QTIPackageInterface:
+	#=====================================================================
+	def __init__(self, package_name: str, input_engine_name: str, verbose: bool = False):
 		package_name = package_name.strip()
 		self.verbose = verbose
+		self.item_bank = ItemBank()
 		if not package_name:
 			raise ValueError("package_name not defined")
-		# Convert to lowercase
-		engine_name = engine_name.lower()
-		# Remove non-alphanumeric characters
-		engine_name = re.sub("[^a-z0-9]", "", engine_name)
-		if engine_name.startswith('bbq') or engine_name.startswith('blackboardtext'):
-			# blackboard_text_upload
-			self.engine = BBQTextEngine(package_name, verbose)
-		elif engine_name.startswith('html'):
-			# blackboard_text_upload
-			self.engine = HTMLSelfTest(package_name, verbose)
-		elif engine_name.startswith('human'):
-			# human_readable
-			self.engine = HumanReadable(package_name, verbose)
-		elif engine_name.startswith('qtiv1') or engine_name.startswith('canvas'):
-			# canvas_qti_v1_2
-			self.engine = QTIv1Engine(package_name, verbose)
-		elif engine_name.startswith('qtiv2') or engine_name.startswith('blackboardqti'):
-			# blackboard_qti_v2_1
-			self.engine = QTIv2Engine(package_name, verbose)
-		else:
-			raise ValueError(f"Unknown engine: {engine_name}")
-		if self.verbose is True:
-			print(f"Initialized Engine: {self.engine.engine_name}")
+		_init_engine(input_engine_name, verbose)
 
 	#=====================================================================
-	def add_question(self, question_type: str, question_tuple: tuple):
-		""" General method to add a question to the engine. """
-		supported_types = self.engine.get_available_question_types()
-		if question_type not in supported_types:
-			self.show_available_question_types()
-			raise NotImplementedError(f"Error: Unsupported question type '{question_type}'")
-		# Get method reference from `self.engine`, not `self`
-		add_method = getattr(self.engine, question_type, None)
-		if add_method is None:
-			self.show_available_question_types()
-			raise NotImplementedError(f"Error: No method found for question type '{question_type}'")
-		# Check actual list length, not a counter
-		prev_count = len(self.engine.assessment_items_tree)
-		add_method(*question_tuple)
-		# Verify that a new question was added
-		if len(self.engine.assessment_items_tree) == prev_count:
-			if self.verbose is True:
-				print(f"Warning: '{question_type}' failed to add a question")
+	def _init_engine(self, input_engine_name: str, verbose: bool = False):
+		"""Initialize the engine based on the given engine name."""
+		# Normalize engine name
+		input_engine_name = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
+		# Match against registered engines
+		for key, engine_info in ENGINE_REGISTRY.items():
+			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["engine_name"].lower())
+			if input_engine_name.startswith(key) or input_engine_name.startswith(engine_name):
+				self.engine = engine_info["engine_class"](self.package_name, verbose)
+				break
+		else:
+			raise ValueError(f"Unknown engine: {input_engine_name}")
+		if self.verbose:
+			print(f"Initialized Engine: {self.engine.__class__.__name__} ({engine_info['engine_name']})")
+
+	#=====================================================================
+	def show_available_engines(self):
+		"""Print all registered engines and their capabilities."""
+		print("Available Engines:")
+		for key, engine_info in ENGINE_REGISTRY.items():
+			print(f"- {engine_info['engine_name']}"
+				f"(can_read = {engine_info['can_read']})"
+				f"(can_write = {engine_info['can_write']})"
+			)
+
+	#=====================================================================
+	def add_item(self, item_type: str, item_tuple: tuple):
+		self.item_bank.add_item(item_type, item_tuple)
+
+	#=====================================================================
+	def read_package(self, input_file: str):
+		"""
+		Reads an assessment package from the given input file and loads items into the item bank.
+		"""
+		# Ensure the selected engine supports reading
+		if not hasattr(self.engine, "read_items"):
+			raise NotImplementedError(f"Engine {self.engine.__class__.__name__} does not support reading.")
+
+		# Retrieve the assessment items from the input file
+		new_item_bank = self.engine.read_items(input_file)
+
+		# If no items were read, notify the user and return
+		if not new_item_bank or len(new_item_bank) == 0:
+			print(f"Warning: No assessment items were found in the file: {input_file}.")
 			return
 
-	def add_MC(self, question_text: str, choices_list: list, answer_text: str):
-		"""Handles adding a Multiple-Choice (MC) question."""
-		self.engine.MC(question_text, choices_list, answer_text)
+		# Merge the newly read items into the existing item bank, avoiding duplicates
+		self.item_bank |= new_item_bank
 
-	def add_MA(self, question_text: str, choices_list: list, answers_list: list):
-		"""Handles adding a Multiple-Answer (MA) question."""
-		self.engine.MA(question_text, choices_list, answers_list)
-
-	def add_MATCH(self, question_text: str, prompts_list: list, choices_list: list):
-		"""Handles adding a Matching (MATCH) question."""
-		self.engine.MATCH(question_text, prompts_list, choices_list)
-
-	def add_FIB(self, question_text: str,  answers_list: list):
-		"""Handles adding a Multiple-Choice (MC) question."""
-		self.engine.FIB(question_text, answers_list)
-
-	def add_MULTI_FIB(self, question_text: str, answer_map: dict):
-		"""Handles adding a Multiple-Choice (MC) question."""
-		self.engine.MULTI_FIB(question_text, answer_map)
-
-	def add_NUM(self, question_text: str, answer_float: float,
-				 tolerance_float: float, tolerance_message: bool=True):
-		"""Handles adding a Multiple-Answer (MA) question."""
-		self.engine.NUM(question_text, answer_float, tolerance_float, tolerance_message)
-
-	def add_ORDER(self, question_text: str,  ordered_answers_list: list):
-		"""Handles adding a Matching (MATCH) question."""
-		self.engine.ORDER(question_text, ordered_answers_list)
+		# Provide detailed output if verbosity is enabled
+		if self.verbose:
+			print(
+				f"Successfully loaded {len(new_item_bank)} new assessment items from {input_file}.\n"
+				f"The item bank now contains a total of {len(self.item_bank)} unique assessment items."
+			)
 
 	#=====================================================================
-	def save_package(self, outfile: str=None):
-		if len(self.engine.assessment_items_tree) == 0:
-			print("no questions to write, skipping save_package()")
+	def save_package(self, outfile: str = None):
+		if len(self.item_bank.items_tree) == 0:
+			print("No assessment items to write, skipping save_package()")
 			return
 		if self.verbose is True:
 			print(
 				f"Saving package {self.engine.package_name}\n"
 				f"  with engine {self.engine.engine_name} and\n"
-				f"  {len(self.engine.assessment_items_tree)} questions."
+				f"  {len(self.item_bank.items_tree)} assessment items."
 			)
-		self.engine.save_package(outfile)
-
-	#=====================================================================
-	def show_available_question_types(self):
-		self.engine.show_available_question_types()
+		self.engine.write_items(outfile, self.item_bank.items_tree)
 
 
 #===========================================================
@@ -120,16 +101,20 @@ def main():
 	# Parse arguments from the command line
 	#args = parse_arguments()
 
-	qti_packer = MasterQTIPackage('example_pool_from_test_maker')
-	qti_packer.show_available_question_types()
+	qti_packer = QTIPackageInterface('example_pool_from_test_maker')
+	qti_packer.show_available_engines()
+
 	question_text = 'What is your favorite color?'
 	answer_text = 'blue'
 	choices_list = ['blue', 'red', 'yellow']
-	qti_packer.add_MC(question_text, choices_list, answer_text)
+	qti_packer.add_item("MC", (question_text, choices_list, answer_text))
 
 	question_text = 'Which are types of fruit?'
 	answers_list = ['orange', 'banana', 'apple']
 	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
-	qti_packer.add_MA(question_text, choices_list, answers_list)
+	qti_packer.add_item("MA", (question_text, choices_list, answers_list))
 
 	qti_packer.save_package()
+
+if __name__ == "__main__":
+	main()
