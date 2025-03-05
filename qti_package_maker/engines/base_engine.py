@@ -20,8 +20,8 @@ class BaseEngine:
 		self.number_of_assessment_items = 0
 		self.crc16_pattern = re.compile(r"\b([0-9a-f]{4})(?:_[0-9a-f]{4})*\b")
 		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
-		#self.add_item must be overridden in all implementations of engine class
-		self.add_item = None
+		#self.write_item must be overridden in all implementations of engine class
+		self.write_item = None
 		self.verbose = verbose
 
 	#==============
@@ -99,9 +99,9 @@ class BaseEngine:
 		crc16question = string_functions.get_crc16_from_string(question_text)
 		# Step 3: Merge CRC16 hashes
 		crc16merge = f"{crc16question}_{crc16secondary}"
-		# Step 4: Call the appropriate add_item function dynamically
-		add_item_function = getattr(self.add_item, item_type)
-		assessment_item_data = add_item_function(item_number, crc16merge, question_text, *args)
+		# Step 4: Call the appropriate write_item function dynamically
+		write_item_function = getattr(self.write_item, item_type)
+		assessment_item_data = write_item_function(item_number, crc16merge, question_text, *args)
 		# Step 5: Store the processed assessment item
 		self.add_assessment_item(crc16merge, item_type, assessment_item_data)
 
@@ -166,14 +166,14 @@ class BaseEngine:
 
 	#==============
 	def get_available_question_types(self) -> list:
-		""" Returns a list of available question types based on callable methods in `add_item`. """
-		if not self.add_item:
-			print(f"No add_item module assigned for engine {self.engine_name}.")
+		""" Returns a list of available question types based on callable methods in `write_item`. """
+		if not self.write_item:
+			print(f"No write_item module assigned for engine {self.engine_name}.")
 			return []
 		# Extract function names dynamically
 		functions = [
-			name for name in dir(self.add_item)
-			if callable(getattr(self.add_item, name)) and not name.startswith("__")
+			name for name in dir(self.write_item)
+			if callable(getattr(self.write_item, name)) and not name.startswith("__")
 		]
 		return functions
 

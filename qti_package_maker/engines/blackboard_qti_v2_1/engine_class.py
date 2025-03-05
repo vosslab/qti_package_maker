@@ -11,7 +11,7 @@ import lxml.etree
 # QTI Package Maker
 from qti_package_maker.common import qti_manifest
 from qti_package_maker.common import base_package_maker
-from qti_package_maker.engines.blackboard_qti_v2_1 import add_item
+from qti_package_maker.engines.blackboard_qti_v2_1 import write_item
 from qti_package_maker.engines.blackboard_qti_v2_1 import assessment_meta
 #from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
@@ -20,10 +20,10 @@ from qti_package_maker.engines.blackboard_qti_v2_1 import assessment_meta
 class QTIv2Engine(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
-		self.add_item = add_item
-		# Verify that the correct add_item module is imported
-		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "blackboard_qti_v2_1":
-			raise ImportError("Incorrect add_item module imported for QTIv2Engine engine")
+		self.write_item = write_item
+		# Verify that the correct write_item module is imported
+		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "blackboard_qti_v2_1":
+			raise ImportError("Incorrect write_item module imported for QTIv2Engine engine")
 
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI21-{package_name}_package_{current_time}")

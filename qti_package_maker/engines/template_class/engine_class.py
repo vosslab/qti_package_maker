@@ -6,15 +6,15 @@ import os
 
 # QTI Package Maker
 from qti_package_maker.common import base_package_maker
-from qti_package_maker.engines.human_readable import add_item
+from qti_package_maker.engines.human_readable import write_item
 
 class HumanReadable(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
-		# Verify that the correct add_item module is imported
-		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "human_readable":
-			raise ImportError("Incorrect add_item module imported for HumanReadable engine")
-		self.add_item = add_item
+		# Verify that the correct write_item module is imported
+		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "human_readable":
+			raise ImportError("Incorrect write_item module imported for HumanReadable engine")
+		self.write_item = write_item
 
 	#==============
 	def save_package(self, outfile: str = None):
