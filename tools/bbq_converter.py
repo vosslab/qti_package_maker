@@ -174,6 +174,12 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 	parser.add_argument("-n", "--limit", "--question_limit", type=int,
 			dest="question_limit", help="Limit the number of input items.")
 
+	parser.add_argument("-q", "--quiet", dest="verbose",
+		action="store_false", help="Disable verbose output")
+	parser.add_argument("-v", "--verbose", dest="verbose",
+		action="store_true", help="Enable verbose output")
+	parser.set_defaults(verbose=True)
+
 	# Boolean flag for allowing mixed question types
 	parser.add_argument("--allow-mixed", dest="allow_mixed", help="Allow mixed question types",
 			action="store_true", default=False)
@@ -213,6 +219,7 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 
 	return args
 
+#=====================================================
 def extract_core_name(bbq_file_name):
 	# Regular expression to match the core part
 	if '/' in bbq_file_name:
@@ -256,7 +263,7 @@ def main():
 		short_name = format_shortcuts[output_format][1]
 		#package_name = f"{short_name}-{content_name}"
 		package_name = f"{content_name}"
-		qti_packer = MasterQTIPackage(package_name, output_format)
+		qti_packer = MasterQTIPackage(package_name, output_format, args.verbose)
 		engine_list.append(qti_packer)
 
 	# Step 1: Read questions from the input file
