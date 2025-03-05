@@ -25,7 +25,7 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		if not hasattr(add_item, "ENGINE_NAME") or add_item.ENGINE_NAME != "canvas_qti_v1_2":
 			raise ImportError("Incorrect add_item module imported for QTIv1Engine engine")
 		current_time = time.strftime("%H%M")
-		self.output_dir = os.path.join(os.getcwd(), f"QTI-{package_name}_package_{current_time}")
+		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)
