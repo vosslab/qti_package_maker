@@ -54,7 +54,7 @@ def create_assessment_meta_header(package_name: str) -> lxml.etree.Element:
 	return assessment_test
 
 #==============
-def create_assessment_section(assessment_file_name_list: list, use_item_ref: bool = False) -> lxml.etree.Element:
+def create_assessment_section(assessment_file_name_list: list) -> lxml.etree.Element:
 	"""
 	Creates the assessment section, which references all assessment items.
 
@@ -64,6 +64,9 @@ def create_assessment_section(assessment_file_name_list: list, use_item_ref: boo
 	Returns:
 		lxml.etree.Element: The 'testPart' element containing assessment item references.
 	"""
+	if len(assessment_file_name_list) == 0:
+		raise ValueError("assessment_file_name_list is empty")
+
 	test_part = lxml.etree.Element("testPart", identifier="test_part",
 		navigationMode="nonlinear", submissionMode="simultaneous")
 
@@ -72,13 +75,11 @@ def create_assessment_section(assessment_file_name_list: list, use_item_ref: boo
 		identifier="section_part", visible="false", title="Question Pool")
 	for assessment_file_name in assessment_file_name_list:
 		assessment_base_name = os.path.basename(assessment_file_name)
-		# do I need item_ref? or not? save for now, set to False
-		if use_item_ref:
-			assessment_core_name = os.path.splitext(assessment_base_name)[0]
-			item_ref = lxml.etree.SubElement(assessment_ref, "assessmentItemRef",
-				identifier=assessment_core_name,
-				href=assessment_base_name)
-			assessment_ref.append(item_ref)
+		assessment_core_name = os.path.splitext(assessment_base_name)[0]
+		item_ref = lxml.etree.SubElement(assessment_ref, "assessmentItemRef",
+			identifier=assessment_core_name,
+			href=assessment_base_name)
+		assessment_ref.append(item_ref)
 	test_part.append(assessment_ref)
 
 	return test_part
