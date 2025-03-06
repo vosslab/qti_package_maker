@@ -17,7 +17,7 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 
 #==============
 
-class QTIv1Engine(base_package_maker.BaseEngine):
+class EngineClass(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		self.write_item = write_item

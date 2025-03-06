@@ -7,7 +7,7 @@
 from qti_package_maker.common import base_package_maker
 from qti_package_maker.engines.bbq_text_upload import write_item
 
-class BBQTextEngine(base_package_maker.BaseEngine):
+class EngineClass(base_package_maker.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		# Verify that the correct write_item module is imported

@@ -13,7 +13,7 @@ import os
 # QTI Package Maker
 from qti_package_maker.engines import base_engine
 
-class TemplateEngine(base_engine.BaseEngine):
+class EngineClass(base_engine.BaseEngine):
 	"""
 	Template engine class for developers to use as a reference.
 	This is not an actual engine but provides a structured example.

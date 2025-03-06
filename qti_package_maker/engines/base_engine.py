@@ -42,20 +42,20 @@ class BaseEngine:
 		item_engine_data = write_item_function(item_cls)
 		return item_engine_data
 
-	#==============
+	#=============
 	def process_item_bank(self, item_bank):
 		"""
 		Processes the given ItemBank and converts assessment items into the required format.
 		"""
 		if len(item_bank) == 0:
-			print("No items to write out skipping")
-			return
+			print("No items to write, skipping processing.")
+			return []
 		assessment_items_tree = []
 		for item_cls in item_bank.get_item_list():
 			write_item_function = getattr(self.write_item, item_cls.item_type, None)
 			if not write_item_function:
 				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
-				return
+				continue
 			item_engine_data = write_item_function(item_cls)
 			assessment_items_tree.append(item_engine_data)
 		return assessment_items_tree

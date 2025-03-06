@@ -17,33 +17,35 @@ class QTIPackageInterface:
 		self.item_bank = item_bank.ItemBank()
 		if not package_name:
 			raise ValueError("package_name not defined")
-		self.engine_data = []
-		for engine_info in ENGINE_REGISTRY.values()
-			{
+		self._set_engine_data()
+
+	#=====================================================================
+	def _set_engine_data(self):
+		self.engine_data = {}
+		for engine_info in ENGINE_REGISTRY.values():
+			self.engine_data['name'] =
+				{
 					"name": engine_info["engine_name"],
 					"can_read": engine_info["can_read"],
 					"can_write": engine_info["can_write"],
 					"class": engine_info["engine_class"]
-			}
-
-    ]
+				}
 
 	#=====================================================================
-	def init_engine(self, input_engine_name: str, verbose: bool = False):
-		"""Initialize the engine based on the given engine name."""
-		# Normalize engine name
+	def init_engine(self, input_engine_name: str):
+		"""Retrieve the engine class based on the given engine name."""
 		input_engine_name = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
-		# Match against registered engines
-		for key, engine_info in ENGINE_REGISTRY.items():
-			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["engine_name"].lower())
-			if input_engine_name.startswith(key) or input_engine_name.startswith(engine_name):
-				engine_cls = engine_info["engine_class"](self.package_name, verbose)
-				break
-		else:
-			raise ValueError(f"Unknown engine: {input_engine_name}")
-		if self.verbose:
-			print(f"Initialized Engine: {engine_cls.__class__.__name__} ({engine_info['engine_name']})")
-		return engine_cls
+
+		# Use preloaded engine data
+		for engine_info in self.engine_data:
+			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["name"].lower())
+			if input_engine_name.startswith(engine_name):
+				engine_cls = engine_info["class"](self.package_name, self.verbose)
+				if self.verbose:
+					print(f"Initialized Engine: {engine_cls.__class__.__name__} ({engine_info['name']})")
+				return engine_cls
+
+		raise ValueError(f"Unknown engine: {input_engine_name}")
 
 	#=====================================================================
 	def show_available_engines(self):
@@ -106,18 +108,24 @@ class QTIPackageInterface:
 			)
 
 	#=====================================================================
-	def save_package(self, outfile: str = None):
-		if len(self.item_bank.items_tree) == 0:
+	def save_package(self, engine_name: str, outfile: str = None):
+		"""
+		Saves the current item bank using the specified engine.
+		"""
+		if len(self.item_bank) == 0:
 			print("No assessment items to write, skipping save_package()")
 			return
-		if self.verbose is True:
-			print(
-				f"Saving package {self.engine.package_name}\n"
-				f"  with engine {self.engine.engine_name} and\n"
-				f"  {len(self.item_bank.items_tree)} assessment items."
-			)
-		self.engine.write_items(outfile, self.item_bank.items_tree)
 
+		engine_cls = self.init_engine(engine_name)  # Initialize the engine
+		if not hasattr(engine_cls, "save_package"):
+			raise NotImplementedError(f"Engine {engine_cls.name} does not support writing.")
+
+		if self.verbose:
+			print(
+				f"Saving package {engine_cls.name}\n"
+				f"  with {len(self.item_bank)} assessment items."
+			)
+		engine_cls.save_package(self.item_bank, outfile)
 
 #===========================================================
 # This function serves as the entry point for generating and saving questions.
