@@ -1,5 +1,6 @@
 
 # Standard Library
+import re
 import inspect
 from collections import defaultdict
 
@@ -24,6 +25,8 @@ class ItemBank:
 		# Track the first added item type
 		self.first_item_type = None
 		self.used_item_types_set = set()
+		self.crc16_pattern = re.compile(r"\b([0-9a-f]{4})(?:_[0-9a-f]{4})*\b")
+		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
 
 	#============================================
 	def _discover_item_classes(self):
@@ -150,14 +153,22 @@ class ItemBank:
 			item_tuple (tuple): The parameters needed to create the item.
 		"""
 		item_type = item_type.upper()
+		# Validate item_type format pattern of (ALL CAPS + UNDERSCORES ONLY)
+		if not self.item_type_pattern.fullmatch(item_type):
+			self.show_available_item_types()
+			raise ValueError(f"Invalid item_type format: '{item_type}'.")
 		if item_type not in self.item_classes:
 			self.show_available_item_types()
 			raise NotImplementedError(f"Error: Unsupported assessment item type '{item_type}'")
 		self._validate_item_type(item_type)
 		# Instantiate the assessment item
 		item_instance = self.item_classes[item_type](*item_tuple)
+		# Validate CRC16 format pattern of (4-character hex pairs separated by underscores)
+		item_crc = item_instance.item_crc
+		if not self.crc16_pattern.fullmatch(item_crc):
+			raise ValueError(f"Invalid CRC16 format: '{item_crc}'")
 		# Store in dictionary using item_crc as key to prevent duplicates
-		self.items_dict[item_instance.item_crc] = item_instance
+		self.items_dict[item_crc] = item_instance
 		self.used_item_types_set.add(item_type)
 
 	#============================================

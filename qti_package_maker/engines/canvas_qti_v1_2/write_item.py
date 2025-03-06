@@ -13,9 +13,9 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
 	# Create the root <item> element with a unique identifier and title
-	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_choice_{item_number}", title=crc16_text)
+	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_choice_{item_number:03d}", title=crc16_text)
 	# Generate the <itemmetadata> section to store metadata about the question
-	choice_ids_list = [f"choice_{i+1}" for i in range(len(choices_list))]
+	choice_ids_list = [f"choice_{i+1:03d}" for i in range(len(choices_list))]
 	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'multiple_choice_question')
 	# Create the <presentation> section to hold the question text and answer choices
 	presentation_etree = lxml.etree.Element("presentation")
@@ -38,9 +38,9 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
 	"""Create a Multiple Answer (Checkboxes) question."""
 	# Create the root <item> element with a unique identifier and title
-	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_answer_{item_number}", title=crc16_text)
+	assessment_item_etree = lxml.etree.Element("item", ident=f"multiple_answer_{item_number:03d}", title=crc16_text)
 	# Generate the <itemmetadata> section to store metadata about the question
-	choice_ids_list = [f"choice_{i+1}" for i in range(len(choices_list))]
+	choice_ids_list = [f"choice_{i+1:03d}" for i in range(len(choices_list))]
 	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'multiple_answers_question')
 	# Create the <presentation> section to hold the question text and answer choices
 	presentation_etree = lxml.etree.Element("presentation")
@@ -63,9 +63,9 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
 	"""Create a Matching question where users match items from two lists."""
 	# Create the root <item> element with a unique identifier and title
-	assessment_item_etree = lxml.etree.Element("item", ident=f"matching_{item_number}", title=crc16_text)
+	assessment_item_etree = lxml.etree.Element("item", ident=f"matching_{item_number:03d}", title=crc16_text)
 	# Generate the <itemmetadata> section for metadata
-	choice_ids_list = [f"{i+1:04d}" for i in range(len(choices_list))]
+	choice_ids_list = [f"{i+1:03d}" for i in range(len(choices_list))]
 	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'matching_question')
 	# Create the <presentation> section for question text and matching choices
 	presentation_etree = lxml.etree.Element("presentation")
@@ -88,19 +88,19 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 #==============================================================
 def NUM(item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
 def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	pass
+	raise NotImplementedError

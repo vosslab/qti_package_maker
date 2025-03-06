@@ -28,19 +28,15 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI21-{package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
-		# Create necessary directories
-		os.makedirs(self.output_dir, exist_ok=True)
 		#self.assessment_base_name = "blackboard_qti21_items"
 		self.assessment_base_name = "qti21_items"
 		self.assessment_dir = os.path.join(self.output_dir, self.assessment_base_name)
-		os.makedirs(self.assessment_dir, exist_ok=True)
-
 		self.assessment_meta_file_path = os.path.join(self.assessment_dir, 'assessment_meta.xml')
 		self.manifest_file_path = os.path.join(self.output_dir, "imsmanifest.xml")
 
 	#==============
 
-	def write_assessment_items(self):
+	def write_assessment_items(self, item_bank):
 		"""
 		Write all assessment items into structured Blackboard QTI 2.1 XML files.
 
@@ -50,7 +46,7 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		Returns:
 			list: A list of relative paths to the saved assessment item XML files.
 		"""
-		if len(self.assessment_items_tree) == 0:
+		if len(self.item_bank) == 0:
 			print("No items to write out skipping")
 			return
 
@@ -58,8 +54,9 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 		assessment_file_name_list = []
 
 		self.save_count = 0
+		assessment_items_tree = self.process_item_bank(item_bank)
 		# Iterate through all assessment items and assign a unique filename
-		for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
+		for item_number, assessment_item_etree in enumerate(assessment_items_tree, start=1):
 			# Generate a unique filename for each assessment item XML
 			item_file_name = f"item_{item_number:05d}.xml"
 
@@ -69,9 +66,6 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 			# Store the relative path of the item file for reference
 			assessment_file_name_list.append(item_relative_path)
-
-			# Step 1: Retrieve the assessment item XML tree
-			assessment_item_etree = assessment_item_dict['assessment_item_data']
 
 			if assessment_item_etree is None:
 				print("No data to write out skipping")
@@ -129,11 +123,14 @@ class QTIv2Engine(base_package_maker.BaseEngine):
 
 	#==============
 
-	def save_package(self, outfile: str=None):
+	def save_package(self, item_bank, outfile: str=None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
-		assessment_file_name_list = self.write_assessment_items()
+		# Create necessary directories
+		os.makedirs(self.output_dir, exist_ok=True)
+		os.makedirs(self.assessment_dir, exist_ok=True)
+		assessment_file_name_list = self.write_assessment_items(item_bank)
 		self.write_assessment_meta(assessment_file_name_list)
 		self.write_manifest(assessment_file_name_list)
 

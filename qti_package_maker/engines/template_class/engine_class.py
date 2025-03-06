@@ -16,15 +16,16 @@ class HumanReadable(base_package_maker.BaseEngine):
 		self.write_item = write_item
 
 	#==============
-	def save_package(self, outfile: str = None):
+	def save_package(self, item_bank, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
 		outfile = self.get_outfile_name('human', 'txt', outfile)
+		assessment_items_tree = self.process_item_bank(item_bank)
 		# Write assessment items to the file
 		with open(outfile, "w") as f:
 			count = 0
-			for item_number, assessment_item_dict in enumerate(self.assessment_items_tree, start=1):
+			for item_number, assessment_item_dict in enumerate(assessment_items_tree, start=1):
 				item_type = assessment_item_dict['item_type']
 				assessment_text = assessment_item_dict['assessment_item_data']
 				if item_type.lower() == 'match':

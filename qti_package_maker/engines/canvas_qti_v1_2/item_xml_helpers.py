@@ -53,7 +53,8 @@ def create_material_mattext(question_text: str):
 	"""Create the <material> section inside <presentation>."""
 	material = lxml.etree.Element("material")
 	mattext = lxml.etree.SubElement(material, "mattext", texttype="text/html")
-	mattext.text = question_text  # Question text in HTML format
+	# Question text in HTML format
+	mattext.text = question_text
 	return material
 
 #==============================================================
@@ -64,7 +65,7 @@ def create_choice_response_lid(choices_list: list, cardinality: str="Single"):
 
 	# Create choices
 	for index, choice_text in enumerate(choices_list, start=1):
-		choice_id = f"choice_{index}"
+		choice_id = f"choice_{index:03d}"
 		response_label = lxml.etree.SubElement(render_choice, "response_label", ident=choice_id)
 		material = lxml.etree.SubElement(response_label, "material")
 		mattext = lxml.etree.SubElement(material, "mattext", texttype="text/html")
@@ -77,7 +78,7 @@ def create_matching_response_lid(prompts_list: list, choices_list: list):
 	response_lids = []
 	# Iterate through answers and create a <response_lid> for each one
 	for i, prompt_text in enumerate(prompts_list):
-		response_lid = lxml.etree.Element("response_lid", ident=f"response_{i+1:04d}")
+		response_lid = lxml.etree.Element("response_lid", ident=f"response_{i+1:03d}")
 		#response_lid = lxml.etree.Element("response_lid", ident=f"prompt{i + 1}")
 
 		# Add the main item (left-side term)
@@ -90,7 +91,7 @@ def create_matching_response_lid(prompts_list: list, choices_list: list):
 
 		# Add each matching choice as a response_label
 		for j, choice_text in enumerate(choices_list):
-			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=f"choice_{j+1}")
+			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=f"choice_{j+1:03d}")
 			label_material = lxml.etree.SubElement(response_label, "material")
 			label_mattext = lxml.etree.SubElement(label_material, "mattext")
 			label_mattext.text = choice_text  # Example: "orange", "yellow", "green", "distractor"
@@ -128,7 +129,7 @@ def create_MC_resprocessing(choices_list, answer_text):
 	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
 
 	# Multiple Choice (Single) → NO `<and>`, NO `<not>`, just a single `<varequal>`
-	correct_choice_id = f"choice_{choices_list.index(answer_text) + 1}"
+	correct_choice_id = f"choice_{choices_list.index(answer_text)+1:03d}"
 	lxml.etree.SubElement(conditionvar, "varequal", respident="response1").text = correct_choice_id
 
 	# Assign full 100 points only if the condition is met
@@ -151,7 +152,7 @@ def create_MA_resprocessing(choices_list, answers_list):
 
 	# Add correct answer conditions
 	for i, choice_text in enumerate(choices_list):
-		choice_id = f"choice_{i + 1}"
+		choice_id = f"choice_{i+1:03d}"
 		if choice_text in answers_list:
 			lxml.etree.SubElement(and_condition, "varequal", respident="response1").text = choice_id
 		else:
@@ -180,7 +181,7 @@ def create_MATCH_resprocessing(prompts_list: list):
 		conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
 
 		# Match the correct response
-		lxml.etree.SubElement(conditionvar, "varequal", respident=f"response_{i+1:04d}").text = f"choice_{i + 1}"
+		lxml.etree.SubElement(conditionvar, "varequal", respident=f"response_{i+1:03d}").text = f"choice_{i+1:03d}"
 		#lxml.etree.SubElement(conditionvar, "varequal", respident=f"prompt{i + 1}").text = f"choice_{i + 1}"
 
 		# Assign a portion of the score

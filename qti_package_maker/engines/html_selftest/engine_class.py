@@ -1,6 +1,5 @@
 
 # Standard Library
-import random
 
 # Pip3 Library
 
@@ -17,18 +16,18 @@ class HTMLSelfTest(base_package_maker.BaseEngine):
 		self.write_item = write_item
 
 	#==============
-	def save_package(self, outfile: str = None):
+	def save_package(self, item_bank, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
+		if len(item_bank) == 0:
+			print("No items to write out skipping")
+			return
 		outfile = self.get_outfile_name('selftest', 'html', outfile)
 		# Write assessment items to the file
+		formatted_html_text = self.process_one_item_from_item_bank(item_bank)
 		with open(outfile, "w") as f:
-			count = 0
 			# only one problem per file, only write one
-			assessment_item_dict = random.choice(self.assessment_items_tree)
-			formatted_html_text = assessment_item_dict['assessment_item_data']
 			f.write(formatted_html_text)
-			count += 1
 		if self.verbose is True:
-			print(f"Saved {count} assessment items to {outfile}")
+			print(f"Saved one assessment item to {outfile}")

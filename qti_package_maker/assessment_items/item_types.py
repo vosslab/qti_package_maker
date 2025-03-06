@@ -1,58 +1,120 @@
 
 # Standard Library
+import re
 import time
 
 # Pip3 Library
 
 # QTI Package Maker
+from qti_package_maker.common import validator
 from qti_package_maker.common import string_functions
 
 class BaseItem:
-	"""Base class for all assessment items."""
+	"""
+	Base class for all assessment items.
+	Handles validation, CRC calculations, and common properties.
+	"""
 	def __init__(self, question_text):
+		"""
+		Initializes a base assessment item.
+		Ensures necessary properties are set and validates the item.
+		"""
+		# Ensure that secondary_crc16 is set in subclasses before proceeding
+		if not hasattr(self, 'secondary_crc16'):
+			raise AttributeError(
+				f"{self.__class__.__name__} must define 'secondary_crc16' before calling BaseItem.__init__()"
+			)
+		self.crc16_pattern = re.compile(r"\b([0-9a-f]{4})(?:_[0-9a-f]{4})*\b")
+		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
+		# Store the time of item creation
 		self.timestamp = time.time()
+		# Store the question text
 		self.question_text = question_text
+		# Compute CRC16 hash for the question text
 		self.question_crc16 = string_functions.get_crc16_from_string(question_text)
-		if not hasattr(self, 'options_crc16'):
-			raise AttributeError("Assessment Items must override and set their 'options_crc16' value")
-		self.item_crc = f"{self.question_crc16}_{self.options_crc16}"
+		# Combine question CRC16 with options CRC16 to create a unique item CRC
+		self.item_crc = f"{self.question_crc16}_{self.secondary_crc16}"
+		if not self.crc16_pattern.fullmatch(self.item_crc):
+			raise ValueError(f"Invalid CRC16 format: '{self.item_crc}'")
+		# Validate the item using the appropriate validation function
+		self._validate()
 
 	#==============
 	@property
 	def item_type(self):
 		"""
-		Dynamically get the class name as the item type.
+		Dynamically retrieves the class name as the item type.
+		Used to determine validation and processing logic.
 		"""
+		# Return the name of the subclass (e.g., 'MC', 'MA', etc.)
 		return self.__class__.__name__
+
+	#==============
+	def _validate(self):
+		"""
+		Calls the appropriate validator function for the item type.
+		Ensures the item meets required structure and content constraints.
+		"""
+		# Retrieve the validation function dynamically based on item type
+		validate_function = getattr(validator, f"validate_{self.item_type}")
+		# Call the validation function with question text and item-specific parameters
+		validate_function(self.question_text, *self.get_tuple())
+
+#============================================
+# TODO: Future Enhancements for Assessment Items
+#============================================
+#
+# 1. **Feedback for Correct/Incorrect Responses**
+#    - Add `self.feedback_correct` and `self.feedback_incorrect` attributes.
+#    - Ensure `get_tuple()` includes feedback data.
+#
+# 2. **Shuffle Choices Boolean for MC/MA Questions**
+#    - Introduce `self.shuffle_choices = False` to allow randomized choices.
+#    - Ensure answer order randomization is handled when exporting.
+#
+# 3. **Hints for Students**
+#    - Add `self.hint` to provide optional hints before answering.
+#    - Ensure `get_tuple()` includes hint data.
+#
+#============================================
 
 #============================================
 class MC(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answer_text: str):
 		self.choices_list = choices_list
 		self.answer_text = answer_text
-		options_string = "|".join(choices_list)
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = "|".join(choices_list)
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		self.answer_index = choices_list.index(answer_text)
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.choices_list, self.answer_text)
 
 #============================================
 class MA(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answers_list: list):
 		self.choices_list = choices_list
 		self.answers_list = answers_list
-		options_string = "|".join(choices_list)
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = "|".join(choices_list)
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		self.answer_index_list = [choices_list.index(answer_text) for answer_text in answers_list]
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.choices_list, self.answers_list)
 
 #============================================
 class MATCH(BaseItem):
 	def __init__(self, question_text: str, prompts_list: list, choices_list: list):
 		self.prompts_list = prompts_list
 		self.choices_list = choices_list
-		options_string = "|".join(prompts_list+choices_list)
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = "|".join(prompts_list+choices_list)
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.prompts_list, self.choices_list)
 
 #============================================
 class NUM(BaseItem):
@@ -60,31 +122,42 @@ class NUM(BaseItem):
 		self.answer_float = answer_float
 		self.tolerance_float = tolerance_float
 		self.tolerance_message = tolerance_message
-		options_string = f"{answer_float:.2e}_{tolerance_float:.2e}"
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = f"{answer_float:.2e}_{tolerance_float:.2e}"
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.answer_float, self.tolerance_float, self.tolerance_message)
 
 #============================================
 class FIB(BaseItem):
 	def __init__(self, question_text: str, answers_list: list):
 		self.answers_list = answers_list
-		options_string = "|".join(answers_list)
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = "|".join(answers_list)
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.answers_list,)
 
 #============================================
 class MULTI_FIB(BaseItem):
 	def __init__(self, question_text: str, answer_map: dict):
 		self.answer_map = answer_map
-		options_string = "|".join(answer_map.values())
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = '|'.join(f"{k}:{v}" for k, v in sorted(answer_map.items()))
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
+	#================
+	def get_tuple(self):
+		return (self.answer_map,)
 
 #============================================
 class ORDER(BaseItem):
 	def __init__(self, question_text: str, ordered_answers_list: list):
 		self.ordered_answers_list = ordered_answers_list
-		options_string = "|".join(ordered_answers_list)
-		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		secondary_string = "|".join(ordered_answers_list)
+		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
-
+	#================
+	def get_tuple(self):
+		return (self.ordered_answers_list,)

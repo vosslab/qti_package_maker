@@ -28,10 +28,8 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
-		os.makedirs(self.output_dir, exist_ok=True)
 		self.assessment_base_name = "canvas_qti12_questions"
 		self.assessment_dir = os.path.join(self.output_dir, self.assessment_base_name)
-		os.makedirs(self.assessment_dir, exist_ok=True)
 		self.assessment_items_file_name = self.assessment_base_name + ".xml"
 		self.assessment_items_base_path = os.path.join(self.assessment_base_name, self.assessment_items_file_name)
 		self.assessment_items_file_path = os.path.join(self.output_dir, self.assessment_items_base_path)
@@ -40,8 +38,8 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 
 	#==============
 
-	def write_assessment_items(self):
-		if len(self.assessment_items_tree) == 0:
+	def write_assessment_items(self, item_bank):
+		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
 
@@ -51,9 +49,9 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 
 		# Step 2: Append each <item> (assessment item) to <section>
 		self.save_count = 0
-		for assessment_item_dict in self.assessment_items_tree:
+		assessment_items_tree = self.process_item_bank(item_bank)
+		for assessment_item_etree in assessment_items_tree:
 			self.save_count += 1
-			assessment_item_etree = assessment_item_dict['assessment_item_data']
 			section_level_etree.append(assessment_item_etree)
 
 		# Step 3: Create <assessment> and append <section>
@@ -101,13 +99,16 @@ class QTIv1Engine(base_package_maker.BaseEngine):
 		return
 
 	#==============
-	def save_package(self, outfile: str=None):
+	def save_package(self, item_bank, outfile: str=None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
+		# Create necessary directories
+		os.makedirs(self.output_dir, exist_ok=True)
+		os.makedirs(self.assessment_dir, exist_ok=True)
 		self.write_manifest()
 		self.write_assessment_meta()
-		self.write_assessment_items()
+		self.write_assessment_items(item_bank)
 
 		# Write the package to a ZIP file
 		#zip_path = f"{self.package_name}-qti_v1_2.zip"
