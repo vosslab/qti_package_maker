@@ -1,10 +1,12 @@
 
 # Standard Library
 import inspect
+from collections import defaultdict
 
 # Pip3 Library
 
 # QTI Package Maker
+from qti_package_maker.common import string_functions
 from qti_package_maker.assessment_items import item_types
 
 class ItemBank:
@@ -21,6 +23,7 @@ class ItemBank:
 		self.item_classes = self._discover_item_classes()
 		# Track the first added item type
 		self.first_item_type = None
+		self.used_item_types_set = set()
 
 	#============================================
 	def _discover_item_classes(self):
@@ -46,6 +49,81 @@ class ItemBank:
 		print("Available Assessment Item Types:")
 		for item_type in self.get_available_item_types():
 			print(f"- {item_type}")
+
+	#============================================
+	def summarize_item_bank(self):
+		"""Summarizes the count of each item type in items_dict."""
+		item_type_counts = defaultdict(int)
+		# Count item types
+		for item_cls in self.items_dict.value():
+			item_type_counts[item_cls.item_type] += 1
+		# Sort the dictionary by item_type
+		sorted_items = sorted(item_type_counts.items(), key=lambda x: x[0], reverse=True)
+		# Print results
+		print("count\titem_type")
+		for item_type, count in sorted_items:
+			print(f"{count}\t{item_type}")
+
+	#============================================
+	def print_histogram_item_bank(self):
+		"""
+		Summarizes the count of each item type in items_dict and prints histograms for supported types.
+		"""
+		if len(self.items_dict) == 0:
+			return
+		# Check if 'MC' type items exist and print their histogram
+		if 'MC' in self.used_item_types_set:
+			self.print_histogram_MC_items()
+		# Check if 'MA' type items exist and print their histogram
+		if 'MA' in self.used_item_types_set:
+			self.print_histogram_MA_items()
+
+	#============================================
+	def print_histogram_MC_items(self):
+		"""
+		Prints a histogram summarizing the distribution of answers for Multiple Choice (MC) items.
+		"""
+		answer_counts = defaultdict(int)
+		# Iterate through MC items and count occurrences of each answer index
+		for item_cls in self.items_dict.values():
+			if item_cls.item_type != "MC":
+				continue
+			answer_counts[item_cls.answer_index] += 1
+		# Determine the highest answer index found
+		max_index = max(answer_counts.keys())
+		# Compute the total number of answers for percentage calculation
+		total_answers = sum(answer_counts.values())
+		# Print histogram summary
+		print("Multiple Choice (MC) Histogram")
+		for index in range(max_index + 1):
+			letter = string_functions.number_to_letter(index + 1)
+			count = answer_counts[index]
+			percent = 100 * count / float(total_answers)
+			print(f"{letter}: {count} ({percent:.1f}%)")
+
+	#============================================
+	def print_histogram_MA_items(self):
+		"""
+		Prints a histogram summarizing the distribution of answers for Multiple Answer (MA) items.
+		"""
+		answer_counts = defaultdict(int)
+		# Iterate through MA items and count occurrences of each answer index
+		for item_cls in self.items_dict.values():
+			if item_cls.item_type != "MA":
+				continue
+			for index in item_cls.answer_index_list:
+				answer_counts[index] += 1
+		# Determine the highest answer index found
+		max_index = max(answer_counts.keys())
+		# Compute the total number of answers for percentage calculation
+		total_answers = sum(answer_counts.values())
+		# Print histogram summary
+		print("Multiple Answer (MA) Histogram")
+		for index in range(max_index + 1):
+			letter = string_functions.number_to_letter(index + 1)
+			count = answer_counts[index]
+			percent = 100 * count / float(total_answers)
+			print(f"{letter}: {count} ({percent:.1f}%)")
 
 	#============================================
 	def _validate_item_type(self, item_type):
@@ -80,6 +158,14 @@ class ItemBank:
 		item_instance = self.item_classes[item_type](*item_tuple)
 		# Store in dictionary using item_crc as key to prevent duplicates
 		self.items_dict[item_instance.item_crc] = item_instance
+		self.used_item_types_set.add(item_type)
+
+	#============================================
+	def get_item_list(self):
+		"""
+		Returns a list of all assessment item objects in the bank.
+		"""
+		return list(self.items_dict.values())
 
 	#============================================
 	def merge(self, other):
@@ -90,13 +176,24 @@ class ItemBank:
 		Returns:
 			ItemBank: A new ItemBank containing the union of assessment items.
 		"""
+		# Ensure that the object being merged is an instance of ItemBank
 		if not isinstance(other, ItemBank):
 			raise TypeError("Can only merge with another ItemBank instance")
+		# Determine the new allow_mixed value after merging
+		# If either ItemBank allows mixed types, the merged ItemBank will too
+		merged_allow_mixed = self.allow_mixed or other.allow_mixed
 		# Ensure mixed types are not allowed if allow_mixed is False
-		self._validate_item_type(other.first_item_type)
-		merged_bank = ItemBank(allow_mixed=self.allow_mixed)
-		# Merge dictionaries
-		merged_bank.items_dict = {**self.items_dict, **other.items_dict}
+		# If allow_mixed is False and item types do not match, raise an error
+		if not merged_allow_mixed and self.first_item_type != other.first_item_type:
+			raise ValueError("Error: Mixing item types is not allowed. "
+				+ f"First type was '{self.first_item_type}', attempted to add '{other.first_item_type}'")
+		# Create a new merged ItemBank with the determined allow_mixed setting
+		merged_bank = ItemBank(allow_mixed=merged_allow_mixed)
+		# Merge dictionaries, ensuring no duplicate items by keying with item_crc
+		merged_bank.items_dict = self.items_dict | other.items_dict
+		# Merge sets to track all used item types from both banks
+		merged_bank.used_item_types_set = self.used_item_types_set | other.used_item_types_set
+		# Return the new merged ItemBank
 		return merged_bank
 
 	#============================================

@@ -3,7 +3,6 @@
 import os
 import re
 import inspect
-from collections import defaultdict
 
 # Pip3 Library
 
@@ -61,20 +60,23 @@ class BaseEngine:
 		self.assessment_items_tree.append(assessment_item_dict)
 		self.number_of_assessment_items += 1
 
-	#==============
-	def summarize_assessment_items(self):
-		"""Summarizes the count of each item type in assessment_items_tree."""
-		item_type_counts = defaultdict(int)  # Fix: Use `int` for default zero values
-		# Count item types
-		for item in self.assessment_items_tree:
-			item_type = item['item_type']
-			item_type_counts[item_type] += 1
-		# Sort the dictionary by item_type
-		sorted_items = sorted(item_type_counts.items(), key=lambda x: x[0], reverse=True)
-		# Print results
-		print("count\titem_type")
-		for item_type, count in sorted_items:
-			print(f"{count}\t{item_type}")
+
+
+	def process_item_bank(self, item_bank):
+		"""
+		Processes the given ItemBank and converts assessment items into the required format.
+
+		Args:
+			item_bank (ItemBank): The ItemBank containing assessment items to process.
+		"""
+		self.assessment_items_tree = []  # Ensure tree is reset before processing
+
+		for item_cls in item_bank.get_item_list():
+			write_item_function = getattr(self.write_item, item_cls.item_type, None)
+			if not write_item_function:
+				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
+			assessment_item_data = write_item_function(item_cls)
+			self.assessment_items_tree.append(assessment_item_data)
 
 	#==============
 	def process_assessment_item(self, item_type: str, question_text: str, crc16secondary: str, *args):

@@ -17,6 +17,14 @@ class BaseItem:
 			raise AttributeError("Assessment Items must override and set their 'options_crc16' value")
 		self.item_crc = f"{self.question_crc16}_{self.options_crc16}"
 
+	#==============
+	@property
+	def item_type(self):
+		"""
+		Dynamically get the class name as the item type.
+		"""
+		return self.__class__.__name__
+
 #============================================
 class MC(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answer_text: str):
@@ -24,6 +32,7 @@ class MC(BaseItem):
 		self.answer_text = answer_text
 		options_string = "|".join(choices_list)
 		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		self.answer_index = choices_list.index(answer_text)
 		super().__init__(question_text)
 
 #============================================
@@ -33,6 +42,7 @@ class MA(BaseItem):
 		self.answers_list = answers_list
 		options_string = "|".join(choices_list)
 		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
+		self.answer_index_list = [choices_list.index(answer_text) for answer_text in answers_list]
 		super().__init__(question_text)
 
 #============================================
@@ -77,3 +87,4 @@ class ORDER(BaseItem):
 		options_string = "|".join(ordered_answers_list)
 		self.options_crc16 = string_functions.get_crc16_from_string(options_string)
 		super().__init__(question_text)
+
