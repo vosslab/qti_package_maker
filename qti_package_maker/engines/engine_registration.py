@@ -1,52 +1,50 @@
 #!/usr/bin/env python
 
-import importlib
+import sys
+import inspect
+import pathlib
 import pkgutil
-from pathlib import Path
+import tabulate
+import importlib
 
 # Dictionary to store engine information dynamically
 ENGINE_REGISTRY = {}
 
 # Get the directory where this script is located
-ENGINES_DIR = Path(__file__).parent
+ENGINES_DIR = pathlib.Path(__file__).parent
 
 #============================================
 def is_method_implemented(engine_class, method_name: str) -> bool:
 	"""
-	Checks if the given method exists and does NOT raise NotImplementedError.
-	Args:
-		engine_class: The engine class to check.
-		method_name (str): The name of the method to check.
-	Returns:
-		bool: True if the method is implemented, False if it raises NotImplementedError.
+	Checks if the given method exists and is actually implemented in the engine.
 	"""
+	# Get the method from the class
 	method = getattr(engine_class, method_name, None)
+	# If the method does not exist or is not callable, return False
 	if not callable(method):
 		return False
-	try:
-		method()  # Test call (may require dummy arguments in some cases)
-	except NotImplementedError:
-		return False
-	except TypeError:
-		# Raised if the method requires arguments, meaning it's likely implemented
-		return True
-	except Exception as e:
-		print(f"Warning: Unexpected error when checking {method_name} in {engine_class}: {e}")
+	# Get method source code to check if it only raises NotImplementedError
+	source = inspect.getsource(method)
+	if "raise NotImplementedError" in source:
+		# The method is not implemented
 		return False
 	return True
 
+#============================================
 def process_engine(module_name, ispkg):
 	# Import the engine_class module dynamically
-	module = importlib.import_module(
-		f"qti_package_maker.engines.{module_name}.engine_class"
-	)
+	module_path = f"qti_package_maker.engines.{module_name}.engine_class"
+
+	# Import the module
+	module = importlib.import_module(module_path)
+	#importlib.reload(module)
 
 	# Debugging output
-	print(f"Module '{module_name}' contents:", dir(module))
+	#print(f"Module '{module_name}' contents:", dir(module))
 
 	# Explicitly fetch EngineClass using getattr()
 	engine_class = getattr(module, "EngineClass", None)
-	print(f"EngineClass for '{module_name}':", engine_class)
+	#print(f"EngineClass for '{module_name}':", engine_class)
 
 	if not engine_class:
 		print(f"Warning: {module_name}.engine_class.py does not define EngineClass.")
@@ -84,22 +82,38 @@ def register_engines():
 
 #============================================
 # Run the registration when imported
-register_engines()
+try:
+	register_engines()
+except ModuleNotFoundError:
+	pass
+
+#============================================
+def get_git_root():
+	"""Return the absolute path of the repository root."""
+	import subprocess
+	try:
+		# Run git command to find the root of the repository
+		base = subprocess.check_output(
+			["git", "rev-parse", "--show-toplevel"], text=True
+		).strip()
+		return base
+	except subprocess.CalledProcessError:
+		# Not inside a git repository
+		return None
 
 #============================================
 # If this script is run directly, print the available engines
 #============================================
 def main():
-	"""
-	If executed as a script, prints out available engines for testing.
-	"""
+	sys.path.insert(0, get_git_root())
+	register_engines()
 	if ENGINE_REGISTRY:
+		engine_data = []
+		for info in ENGINE_REGISTRY.values():
+			engine_data.append([info["engine_name"], info["can_read"], info["can_write"]])
 		print("\nRegistered Engines:")
-		for key, engine_info in ENGINE_REGISTRY.items():
-			print(
-				f"- {engine_info['engine_name']} "
-				f"(Read: {engine_info['can_read']}, Write: {engine_info['can_write']})"
-			)
+		headers=["Engine Name", "Can Read", "Can Write"]
+		print(tabulate.tabulate(engine_data, headers, tablefmt="rounded_outline"))
 	else:
 		print("No engines found.")
 

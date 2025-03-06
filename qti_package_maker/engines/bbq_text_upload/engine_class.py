@@ -4,16 +4,23 @@
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.common import base_package_maker
+from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.bbq_text_upload import write_item
+#from qti_package_maker.engines.bbq_text_upload import read_package
 
-class EngineClass(base_package_maker.BaseEngine):
+class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		# Verify that the correct write_item module is imported
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "bbq_text_upload":
 			raise ImportError("Incorrect write_item module imported for BBQTextEngine engine")
 		self.write_item = write_item
+		self.read_package = read_package
+		self.validate_modules()
+
+	#==============
+	def read_package(self, infile: str):
+		raise NotImplementedError
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):

@@ -2,29 +2,47 @@
 # Standard Library
 import os
 import random
+import pathlib
 
 # Pip3 Library
 
 # QTI Package Maker
 
-# engine_base.py (shared base for all engines)
+
 class BaseEngine:
 	#==============
-	def __init__(self, package_name: str, verbose: bool=False):
+	def __init__(self, package_name: str, verbose: bool = False):
 		self.package_name = package_name
 		self.verbose = verbose
-		#self.write_item must be overridden in all implementations of engine class
+		self.name = self._get_name()
+		# Must be overridden by child classes
 		self.write_item = None
+
+	#==============
+	def _get_name(self) -> str:
+		"""
+		Returns the engine's directory name, assuming the engine class is inside:
+		qti_package_maker/engines/<engine_name>/engine_class.py
+		"""
+		return pathlib.Path(__file__).resolve().parent.name  # Cleaner & direct
+
+	#==============
+	def validate_write_item_module(self):
+		"""
+		Validates that the correct write_item and read_package modules are imported.
+		This should be called in subclasses after setting self.write_item and self.read_package.
+		"""
+		write_item_path = pathlib.Path(self.write_item.__file__).resolve()
+		if self.name not in write_item_path.parts:
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
+
+	#==============
+	def read_package(self, infile: str):
+		raise NotImplementedError
 
 	#==============
 	def save_package(self, item_bank, outfile: str=None):
 		raise NotImplementedError
-
-	#==============
-	@property
-	def engine_name(self):
-		# Dynamically get the class name
-		return self.__class__.__name__
 
 	#==============
 	def process_one_item_from_item_bank(self, item_bank):

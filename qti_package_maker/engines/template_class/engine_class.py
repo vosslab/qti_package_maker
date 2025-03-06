@@ -4,22 +4,14 @@
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.common import base_package_maker
-from qti_package_maker.engines.human_readable import write_item
-
-# Standard Library
-import os
-
-# QTI Package Maker
 from qti_package_maker.engines import base_engine
+#from qti_package_maker.engines.human_readable import write_item
 
 class EngineClass(base_engine.BaseEngine):
 	"""
 	Template engine class for developers to use as a reference.
 	This is not an actual engine but provides a structured example.
 	"""
-	ENGINE_NAME = "template_engine"
-
 	def __init__(self, package_name: str, verbose: bool = False):
 		"""
 		Initializes the template engine with the package name.

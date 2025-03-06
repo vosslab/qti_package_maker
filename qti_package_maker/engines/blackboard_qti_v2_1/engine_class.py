@@ -10,14 +10,14 @@ import lxml.etree
 
 # QTI Package Maker
 from qti_package_maker.common import qti_manifest
-from qti_package_maker.common import base_package_maker
+from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.blackboard_qti_v2_1 import write_item
 from qti_package_maker.engines.blackboard_qti_v2_1 import assessment_meta
 #from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
 #==============
 
-class EngineClass(base_package_maker.BaseEngine):
+class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		self.write_item = write_item
@@ -35,7 +35,10 @@ class EngineClass(base_package_maker.BaseEngine):
 		self.manifest_file_path = os.path.join(self.output_dir, "imsmanifest.xml")
 
 	#==============
+	def read_package(self, infile: str):
+		raise NotImplementedError
 
+	#==============
 	def write_assessment_items(self, item_bank):
 		"""
 		Write all assessment items into structured Blackboard QTI 2.1 XML files.
@@ -98,7 +101,6 @@ class EngineClass(base_package_maker.BaseEngine):
 		return assessment_file_name_list
 
 	#==============
-
 	def write_assessment_meta(self, assessment_file_name_list):
 		# Generate imsmanifest.xml
 		assessment_meta_etree = assessment_meta.generate_assessment_meta(self.package_name, assessment_file_name_list)
@@ -109,7 +111,6 @@ class EngineClass(base_package_maker.BaseEngine):
 		return
 
 	#==============
-
 	def write_manifest(self, assessment_file_name_list):
 		# Generate imsmanifest.xml
 		manifest_etree = qti_manifest.generate_manifest(self.package_name,
@@ -122,7 +123,6 @@ class EngineClass(base_package_maker.BaseEngine):
 		return
 
 	#==============
-
 	def save_package(self, item_bank, outfile: str=None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.

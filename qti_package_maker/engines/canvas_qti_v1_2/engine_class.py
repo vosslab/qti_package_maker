@@ -10,14 +10,14 @@ import lxml.etree
 
 # QTI Package Maker
 from qti_package_maker.common import qti_manifest
-from qti_package_maker.common import base_package_maker
+from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.canvas_qti_v1_2 import write_item
 from qti_package_maker.engines.canvas_qti_v1_2 import assessment_meta
 from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 
 #==============
 
-class EngineClass(base_package_maker.BaseEngine):
+class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		self.write_item = write_item
@@ -37,7 +37,10 @@ class EngineClass(base_package_maker.BaseEngine):
 		self.manifest_file_path = os.path.join(self.output_dir, "imsmanifest.xml")
 
 	#==============
+	def read_package(self, infile: str):
+		raise NotImplementedError
 
+	#==============
 	def write_assessment_items(self, item_bank):
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
@@ -76,7 +79,6 @@ class EngineClass(base_package_maker.BaseEngine):
 		return
 
 	#==============
-
 	def write_assessment_meta(self):
 		# Generate imsmanifest.xml
 		assessment_meta_etree = assessment_meta.generate_assessment_meta(self.package_name)
@@ -87,7 +89,6 @@ class EngineClass(base_package_maker.BaseEngine):
 		return
 
 	#==============
-
 	def write_manifest(self):
 		# Generate imsmanifest.xml
 		file_list = [self.assessment_items_base_path, ]
@@ -126,7 +127,6 @@ class EngineClass(base_package_maker.BaseEngine):
 			print(f"Saved {self.save_count} assessment items to {outfile}")
 
 	#==============
-
 	def clean_temp_files(self):
 		"""
 		Delete temporary files created during package generation.

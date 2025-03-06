@@ -4,16 +4,20 @@
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.common import base_package_maker
+from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.html_selftest import write_item
 
-class EngineClass(base_package_maker.BaseEngine):
+class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
 		super().__init__(package_name, verbose)
 		# Verify that the correct write_item module is imported
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "html_selftest":
-			raise ImportError("Incorrect write_item module imported for HTMLSelfTest engine")
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
 		self.write_item = write_item
+
+	#==============
+	def read_package(self, infile: str):
+		raise NotImplementedError
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):

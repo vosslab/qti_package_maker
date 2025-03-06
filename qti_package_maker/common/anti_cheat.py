@@ -23,13 +23,14 @@ autoBlur = True
 hidden_term_bank = None
 
 #==========================
-def get_git_root(path=None):
+def get_git_root():
 	"""Return the absolute path of the repository root."""
-	if path is None:
-		# Use the path of the script
-		path = os.path.dirname(os.path.abspath(__file__))
+	import subprocess
 	try:
-		base = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], cwd=path, universal_newlines=True).strip()
+		# Run git command to find the root of the repository
+		base = subprocess.check_output(
+			["git", "rev-parse", "--show-toplevel"], text=True
+		).strip()
 		return base
 	except subprocess.CalledProcessError:
 		# Not inside a git repository
