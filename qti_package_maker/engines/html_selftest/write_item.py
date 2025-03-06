@@ -28,21 +28,25 @@ def MATCH(item_number: int, crc16_text: str, question_text: str, prompts_list: l
 def NUM(item_number: int, crc16_text: str, question_text: str, answer_float: float,
 		  tolerance_float: float, tolerance_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	return add_NUM.generate_html(item_number, crc16_text, question_text, answer_float, tolerance_float, tolerance_message)
+	#return add_NUM.generate_html(item_number, crc16_text, question_text, answer_float, tolerance_float, tolerance_message)
+	pass
 
 #==============================================================
 def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	return add_FIB.generate_html(item_number, crc16_text, question_text, answers_list)
+	#return add_FIB.generate_html(item_number, crc16_text, question_text, answers_list)
+	pass
 
 #==============================================================
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	return add_MULTI_FIB.generate_html(item_number, crc16_text, question_text, answer_map)
+	#return add_MULTI_FIB.generate_html(item_number, crc16_text, question_text, answer_map)
+	pass
 
 #==============================================================
 def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	return add_ORDER.generate_html(item_number, crc16_text, question_text, ordered_answers_list)
+	#return add_ORDER.generate_html(item_number, crc16_text, question_text, ordered_answers_list)
+	pass
 

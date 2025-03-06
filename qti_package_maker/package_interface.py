@@ -7,7 +7,6 @@ import re
 
 # QTI Package Maker
 from qti_package_maker.item_bank import ItemBank
-from qti_package_maker.assessment_items import assessment_items
 from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
 
 class QTIPackageInterface:
@@ -18,7 +17,7 @@ class QTIPackageInterface:
 		self.item_bank = ItemBank()
 		if not package_name:
 			raise ValueError("package_name not defined")
-		_init_engine(input_engine_name, verbose)
+		self._init_engine(input_engine_name, verbose)
 
 	#=====================================================================
 	def _init_engine(self, input_engine_name: str, verbose: bool = False):

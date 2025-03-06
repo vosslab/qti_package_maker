@@ -225,7 +225,7 @@ def write_html_color_table(filename, num_colors=None):
 			light_hex = light_colors[i]
 			extra_light_hex = extra_light_colors[i]
 			shifted_dark_hex = dark_colors[(i + num_colors // 2) % num_colors]
-			shifted_light_hex = light_colors[(i + num_colors // 2) % num_colors]
+			#shifted_light_hex = light_colors[(i + num_colors // 2) % num_colors]
 			f.write("<tr>\n")
 			# Column 1: Color name (white background, black text)
 			f.write(_generate_table_td("ffffff", "000000", color_name))

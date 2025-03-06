@@ -1,57 +1,39 @@
 
+# Standard Library
 import inspect
-from qti_package_maker.assessment_items import base_item
+
+# Pip3 Library
+
+# QTI Package Maker
+from qti_package_maker.assessment_items import item_types
 
 class ItemBank:
 	"""
-	A centralized storage system for assessment items.
+	A centralized storage system for assessment items using a dictionary keyed by CRC codes.
 	"""
-	def __init__(self, allow_mixed: bool=False):
+	def __init__(self, allow_mixed: bool = False):
 		"""Initialize an empty item bank."""
-		self.items_tree = []
-		self.item_classes = self._discover_item_classes()
+		# Boolean if mixed item types are allow in the same item bank
 		self.allow_mixed = allow_mixed
+		# Dictionary to store items keyed by item_crc
+		self.items_dict = {}
+		# item_types and their class definitions
+		self.item_classes = self._discover_item_classes()
 		# Track the first added item type
-		self.item_type = None
+		self.first_item_type = None
 
 	#============================================
 	def _discover_item_classes(self):
 		"""
-		Dynamically find all assessment item classes in base_item.py.
+		Dynamically find all assessment item classes in item_types.py.
 		Returns:
 			dict: Mapping of item type names to their corresponding classes.
 		"""
 		classes = {}
-		for name, obj in inspect.getmembers(base_item, inspect.isclass):
-			if issubclass(obj, base_item.BaseItem) and obj is not base_item.BaseItem:
+		for name, obj in inspect.getmembers(item_types, inspect.isclass):
+			if issubclass(obj, item_types.BaseItem) and obj is not item_types.BaseItem:
 				classes[name.upper()] = obj
 		return classes
-
-	#============================================
-	def add_item(self, item_type: str, item_tuple: tuple):
-		"""
-		General method to add an assessment item to the bank.
-
-		Args:
-			item_type (str): The type of assessment item.
-			item_tuple (tuple): The parameters needed to create the item.
-		"""
-		item_type = item_type.upper()
-		if item_type not in self.item_classes:
-			self.show_available_item_types()
-			raise NotImplementedError(f"Error: Unsupported assessment item type '{item_type}'")
-
-		# Ensure consistency if allow_mixed is False
-		if not self.allow_mixed:
-			if self.item_type is None:
-				self.item_type = item_type  # Set the first item type
-			elif self.item_type != item_type:
-				raise ValueError("Error: Mixing item types is not allowed. "
-					+ f"First type was '{self.item_type}', attempted to add '{item_type}'")
-
-		# Instantiate the assessment item and add it to the item bank
-		item_instance = self.item_classes[item_type](*item_tuple)
-		self.items.append(item_instance)
 
 	#============================================
 	def get_available_item_types(self):
@@ -66,9 +48,43 @@ class ItemBank:
 			print(f"- {item_type}")
 
 	#============================================
-	def __or__(self, other):
+	def _validate_item_type(self, item_type):
 		"""
-		Merges two ItemBank objects, removing duplicates based on question text.
+		Ensures consistency of item types if allow_mixed is False.
+		"""
+		if self.allow_mixed:
+			return
+		if self.first_item_type is None:
+			# Set the first item type
+			self.first_item_type = item_type
+			return
+		if self.first_item_type == item_type:
+			return
+		raise ValueError("Error: Mixing item types is not allowed. "
+			+ f"First type was '{self.first_item_type}', attempted to add '{item_type}'")
+
+	#============================================
+	def add_item(self, item_type: str, item_tuple: tuple):
+		"""
+		General method to add an assessment item to the bank.
+		Args:
+			item_type (str): The type of assessment item.
+			item_tuple (tuple): The parameters needed to create the item.
+		"""
+		item_type = item_type.upper()
+		if item_type not in self.item_classes:
+			self.show_available_item_types()
+			raise NotImplementedError(f"Error: Unsupported assessment item type '{item_type}'")
+		self._validate_item_type(item_type)
+		# Instantiate the assessment item
+		item_instance = self.item_classes[item_type](*item_tuple)
+		# Store in dictionary using item_crc as key to prevent duplicates
+		self.items_dict[item_instance.item_crc] = item_instance
+
+	#============================================
+	def merge(self, other):
+		"""
+		Merges two ItemBank objects, ensuring no duplicate items.
 		Args:
 			other (ItemBank): Another ItemBank to merge with.
 		Returns:
@@ -76,21 +92,29 @@ class ItemBank:
 		"""
 		if not isinstance(other, ItemBank):
 			raise TypeError("Can only merge with another ItemBank instance")
-
 		# Ensure mixed types are not allowed if allow_mixed is False
-		if not self.allow_mixed and other.items:
-			first_type = self.items[0].__class__.__name__ if self.items else None
-			for item in other.items:
-				if first_type and item.__class__.__name__ != first_type:
-					raise ValueError("Error: Mixing item types is not allowed. "
-					  + f"Found '{item.__class__.__name__}' in merged bank.")
-
+		self._validate_item_type(other.first_item_type)
 		merged_bank = ItemBank(allow_mixed=self.allow_mixed)
-		unique_items = {item.question_text: item for item in self.items + other.items}
-		merged_bank.items = list(unique_items.values())
+		# Merge dictionaries
+		merged_bank.items_dict = {**self.items_dict, **other.items_dict}
 		return merged_bank
+
+	#============================================
+	def union(self, other):
+		"""Alias for merging two ItemBank"""
+		return self.merge(other)
+
+	#============================================
+	def __or__(self, other):
+		"""Alias for merging two ItemBank objects using the `|` operator."""
+		return self.merge(other)
+
+	#============================================
+	def __add__(self, other):
+		"""Alias for merging two ItemBank objects using the `+` operator."""
+		return self.merge(other)
 
 	#============================================
 	def __len__(self):
 		"""Returns the number of items in the ItemBank."""
-		return len(self.items)
+		return len(self.items_dict)

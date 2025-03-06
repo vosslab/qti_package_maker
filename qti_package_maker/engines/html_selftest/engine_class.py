@@ -1,6 +1,5 @@
 
 # Standard Library
-import os
 import random
 
 # Pip3 Library
