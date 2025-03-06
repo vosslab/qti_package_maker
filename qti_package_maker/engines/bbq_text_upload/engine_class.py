@@ -15,8 +15,7 @@ class EngineClass(base_engine.BaseEngine):
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "bbq_text_upload":
 			raise ImportError("Incorrect write_item module imported for BBQTextEngine engine")
 		self.write_item = write_item
-		self.read_package = read_package
-		self.validate_modules()
+		self.validate_write_item_module()
 
 	#==============
 	def read_package(self, infile: str):
