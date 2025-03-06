@@ -61,29 +61,6 @@ class BaseEngine:
 		return assessment_items_tree
 
 	#==============
-	# Wrapper functions
-	def MC(self, question_text: str, choices_list: list, answer_text: str):
-		self.process_assessment_item("MC", question_text, choices_list, answer_text)
-	#==============
-	def MA(self, question_text: str, choices_list: list, answers_list: list):
-		self.process_assessment_item("MA", question_text, choices_list, answers_list)
-	#==============
-	def MATCH(self, question_text: str, prompts_list: list, choices_list: list):
-		self.process_assessment_item("MATCH", question_text, prompts_list, choices_list)
-	#==============
-	def NUM(self, question_text: str, answer_float: float, tolerance_float: float, tolerance_message=True):
-		self.process_assessment_item("NUM", question_text, answer_float, tolerance_float, tolerance_message)
-	#==============
-	def FIB(self, question_text: str, answers_list: list):
-		self.process_assessment_item("FIB", question_text, answers_list)
-	#==============
-	def MULTI_FIB(self, question_text: str, answer_map: dict):
-		self.process_assessment_item("MULTI_FIB", question_text, answer_map)
-	#==============
-	def ORDER(self, question_text: str, ordered_answers_list: list):
-		self.process_assessment_item("ORDER", question_text, ordered_answers_list)
-
-	#==============
 	def get_available_question_types(self) -> list:
 		""" Returns a list of available question types based on callable methods in `write_item`. """
 		if not self.write_item:

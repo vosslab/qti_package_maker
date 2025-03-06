@@ -2,4 +2,5 @@ lxml
 crcmod
 num2words
 pyyaml
+tabulate
 #BeautifulSoup4

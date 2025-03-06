@@ -3,17 +3,36 @@ _A deep dive into the architecture and philosophy behind the QTI Package Maker_
 
 ---
 
-## **📌 Introduction**
+## **Introduction**
 This document provides a **high-level overview** of how the QTI Package Maker is structured, including how it **reads**, **stores**, and **writes** assessment item data across multiple formats.
 
 The system is designed to be:
-- ✅ **Extensible** – New formats can be added easily.
-- ✅ **Modular** – Components are independent but work together.
-- ✅ **Format-agnostic** – The internal structure remains the same, regardless of file format.
+- **Extensible** – New formats can be added easily.
+- **Modular** – Components are independent but work together.
+- **Format-agnostic** – The internal structure remains the same, regardless of file format.
 
----
+## **Designed Usage**
 
-## **🛠️ Architectural Overview**
+``` python3
+# import the main interface
+from qti_package_maker import package_interface
+# create a interface class instance
+pmaker = package_interface.QTIPackageInterface()
+# some member functions
+pmaker.show_available_engines()
+# read function opens engine qti21 and reads that type of input file
+pmaker.read_package('input_blackboard_qti21.zip', engine_name='qti21', verbose=True)
+# assessment_item item_type classes are stored in an item_bank.ItemBank
+# read 99 questions from file
+pmaker.summarize_item_bank()
+pmaker.print_item_bank_histogram()
+#MC 45 questions
+#MATCH 44 questions
+pmaker.write_package('output_canvas_qti12.zip', engine_name='qti12', verbose=True)
+#wrote 99 questions
+```
+
+## **Architectural Overview**
 
 ### **Core Components**
 The project consists of **four main layers**:

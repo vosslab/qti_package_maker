@@ -39,6 +39,7 @@ dependencies = [
     "lxml",
     "num2words",
     "pyyaml",
+    "tabulate",
 ]
 
 [tool.setuptools]

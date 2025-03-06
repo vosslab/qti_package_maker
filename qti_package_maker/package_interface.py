@@ -6,7 +6,7 @@ import re
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.item_bank import ItemBank
+from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
 
 class QTIPackageInterface:
@@ -14,13 +14,22 @@ class QTIPackageInterface:
 	def __init__(self, package_name: str, input_engine_name: str, verbose: bool = False):
 		package_name = package_name.strip()
 		self.verbose = verbose
-		self.item_bank = ItemBank()
+		self.item_bank = item_bank.ItemBank()
 		if not package_name:
 			raise ValueError("package_name not defined")
-		self._init_engine(input_engine_name, verbose)
+		self.engine_data = []
+		for engine_info in ENGINE_REGISTRY.values()
+			{
+					"name": engine_info["engine_name"],
+					"can_read": engine_info["can_read"],
+					"can_write": engine_info["can_write"],
+					"class": engine_info["engine_class"]
+			}
+
+    ]
 
 	#=====================================================================
-	def _init_engine(self, input_engine_name: str, verbose: bool = False):
+	def init_engine(self, input_engine_name: str, verbose: bool = False):
 		"""Initialize the engine based on the given engine name."""
 		# Normalize engine name
 		input_engine_name = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
@@ -28,38 +37,58 @@ class QTIPackageInterface:
 		for key, engine_info in ENGINE_REGISTRY.items():
 			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["engine_name"].lower())
 			if input_engine_name.startswith(key) or input_engine_name.startswith(engine_name):
-				self.engine = engine_info["engine_class"](self.package_name, verbose)
+				engine_cls = engine_info["engine_class"](self.package_name, verbose)
 				break
 		else:
 			raise ValueError(f"Unknown engine: {input_engine_name}")
 		if self.verbose:
-			print(f"Initialized Engine: {self.engine.__class__.__name__} ({engine_info['engine_name']})")
+			print(f"Initialized Engine: {engine_cls.__class__.__name__} ({engine_info['engine_name']})")
+		return engine_cls
 
 	#=====================================================================
 	def show_available_engines(self):
-		"""Print all registered engines and their capabilities."""
-		print("Available Engines:")
+		"""
+		Print all registered engines and their capabilities in a formatted tabulate table.
+		"""
+		engine_data = []
 		for key, engine_info in ENGINE_REGISTRY.items():
-			print(f"- {engine_info['engine_name']}"
-				f"(can_read = {engine_info['can_read']})"
-				f"(can_write = {engine_info['can_write']})"
-			)
+			engine_data.append([
+				engine_info["engine_name"],
+				engine_info["can_read"],
+				engine_info["can_write"]
+			])
+
+		# Print the engine table
+		print("\nAvailable Engines")
+		print(tabulate(engine_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="grid"))
+
+	#=====================================================================
+	def summarize_item_bank(self):
+		"""Print all registered engines and their capabilities."""
+		self.item_bank.summarize_items()
+
+	#=====================================================================
+	def print_item_bank_histogram(self):
+		"""Print all registered engines and their capabilities."""
+		self.item_bank.print_histogram()
 
 	#=====================================================================
 	def add_item(self, item_type: str, item_tuple: tuple):
 		self.item_bank.add_item(item_type, item_tuple)
 
 	#=====================================================================
-	def read_package(self, input_file: str):
+	def read_package(self, input_file: str, engine_name: str):
 		"""
 		Reads an assessment package from the given input file and loads items into the item bank.
 		"""
+		engine_cls = self.load_engine(engine_name)
+
 		# Ensure the selected engine supports reading
-		if not hasattr(self.engine, "read_items"):
+		if not hasattr(engine_cls, "read_items"):
 			raise NotImplementedError(f"Engine {self.engine.__class__.__name__} does not support reading.")
 
 		# Retrieve the assessment items from the input file
-		new_item_bank = self.engine.read_items(input_file)
+		self.item_bank += engine_cls.read_items_from_file(input_file)
 
 		# If no items were read, notify the user and return
 		if not new_item_bank or len(new_item_bank) == 0:

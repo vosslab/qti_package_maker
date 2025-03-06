@@ -7,19 +7,43 @@
 from qti_package_maker.common import base_package_maker
 from qti_package_maker.engines.human_readable import write_item
 
-class HumanReadable(base_package_maker.BaseEngine):
-	def __init__(self, package_name: str, verbose: bool=False):
+# Standard Library
+import os
+
+# QTI Package Maker
+from qti_package_maker.engines import base_engine
+
+class TemplateEngine(base_engine.BaseEngine):
+	"""
+	Template engine class for developers to use as a reference.
+	This is not an actual engine but provides a structured example.
+	"""
+	ENGINE_NAME = "template_engine"
+
+	def __init__(self, package_name: str, verbose: bool = False):
+		"""
+		Initializes the template engine with the package name.
+		Args:
+			package_name (str): Name of the package being processed.
+			verbose (bool): Whether to print debug information.
+		"""
+		# Call the base engine constructor
 		super().__init__(package_name, verbose)
-		# Verify that the correct write_item module is imported
-		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "human_readable":
-			raise ImportError("Incorrect write_item module imported for HumanReadable engine")
-		self.write_item = write_item
+
+	#============================================
+	def read_package(self, infile: str):
+		"""
+		Placeholder method for reading a package.
+		Raises NotImplementedError since this is a template.
+		"""
+		raise NotImplementedError("read_package() must be implemented in a real engine class.")
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
+		raise NotImplementedError("save_package() must be implemented in a real engine class.")
 		outfile = self.get_outfile_name('human', 'txt', outfile)
 		assessment_items_tree = self.process_item_bank(item_bank)
 		# Write assessment items to the file
