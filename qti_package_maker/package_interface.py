@@ -2,19 +2,38 @@
 
 # Standard Library
 import re
+import tabulate
 
 # Pip3 Library
+
+#============================================
+def get_git_root():
+	"""Return the absolute path of the repository root."""
+	import subprocess
+	try:
+		# Run git command to find the root of the repository
+		base = subprocess.check_output(
+			["git", "rev-parse", "--show-toplevel"], text=True
+		).strip()
+		return base
+	except subprocess.CalledProcessError:
+		# Not inside a git repository
+		return None
+import sys
+sys.path.insert(0, get_git_root())
+
 
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
 
+
 class QTIPackageInterface:
 	#=====================================================================
-	def __init__(self, package_name: str, input_engine_name: str, verbose: bool = False):
+	def __init__(self, package_name: str, verbose: bool = False, allow_mixed: bool = False):
 		package_name = package_name.strip()
 		self.verbose = verbose
-		self.item_bank = item_bank.ItemBank()
+		self.item_bank = item_bank.ItemBank(allow_mixed)
 		if not package_name:
 			raise ValueError("package_name not defined")
 		self._set_engine_data()
@@ -23,8 +42,7 @@ class QTIPackageInterface:
 	def _set_engine_data(self):
 		self.engine_data = {}
 		for engine_info in ENGINE_REGISTRY.values():
-			self.engine_data['name'] =
-				{
+			self.engine_data['name'] = {
 					"name": engine_info["engine_name"],
 					"can_read": engine_info["can_read"],
 					"can_write": engine_info["can_write"],
@@ -34,12 +52,11 @@ class QTIPackageInterface:
 	#=====================================================================
 	def init_engine(self, input_engine_name: str):
 		"""Retrieve the engine class based on the given engine name."""
-		input_engine_name = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
-
+		input_engine_name_low = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
 		# Use preloaded engine data
-		for engine_info in self.engine_data:
+		for engine_info in self.engine_data.values():
 			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["name"].lower())
-			if input_engine_name.startswith(engine_name):
+			if engine_name.startswith(input_engine_name_low):
 				engine_cls = engine_info["class"](self.package_name, self.verbose)
 				if self.verbose:
 					print(f"Initialized Engine: {engine_cls.__class__.__name__} ({engine_info['name']})")
@@ -62,7 +79,7 @@ class QTIPackageInterface:
 
 		# Print the engine table
 		print("\nAvailable Engines")
-		print(tabulate(engine_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="grid"))
+		print(tabulate.tabulate(engine_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="rounded_outline"))
 
 	#=====================================================================
 	def summarize_item_bank(self):
@@ -127,17 +144,16 @@ class QTIPackageInterface:
 			)
 		engine_cls.save_package(self.item_bank, outfile)
 
-#===========================================================
-# This function serves as the entry point for generating and saving questions.
+
+#============================================
+# If this script is run directly
+#============================================
 def main():
-	"""
-	Main function that orchestrates question generation and file output.
-	"""
 
 	# Parse arguments from the command line
 	#args = parse_arguments()
 
-	qti_packer = QTIPackageInterface('example_pool_from_test_maker')
+	qti_packer = QTIPackageInterface('example_pool_from_test_maker', allow_mixed=True)
 	qti_packer.show_available_engines()
 
 	question_text = 'What is your favorite color?'
@@ -150,7 +166,7 @@ def main():
 	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
 	qti_packer.add_item("MA", (question_text, choices_list, answers_list))
 
-	qti_packer.save_package()
+	qti_packer.save_package('blackboard')
 
 if __name__ == "__main__":
 	main()
