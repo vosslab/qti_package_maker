@@ -169,10 +169,11 @@ def main():
 	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
 	qti_packer.add_item("MA", (question_text, choices_list, answers_list))
 
-	import random
-	engine_name = random.choice(qti_packer.get_available_engines())
-
-	qti_packer.save_package(engine_name)
+	import time
+	for engine_name in qti_packer.get_available_engines():
+		print(f"\n\n... {engine_name} ...")
+		qti_packer.save_package(engine_name)
+		time.sleep(1)
 
 if __name__ == "__main__":
 	main()

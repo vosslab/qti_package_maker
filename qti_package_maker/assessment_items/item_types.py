@@ -28,6 +28,7 @@ class BaseItem:
 		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
 		# Store the time of item creation
 		self.timestamp = time.time()
+		self.item_number = 0
 		# Store the question text
 		self.question_text = question_text
 		# Compute CRC16 hash for the question text

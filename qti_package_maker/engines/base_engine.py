@@ -52,7 +52,7 @@ class BaseEngine:
 		"""
 		Processes the given ItemBank and converts assessment items into the required format.
 		"""
-		if len(self.item_bank) == 0:
+		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
 		item_cls = random.choice(item_bank.get_item_list())

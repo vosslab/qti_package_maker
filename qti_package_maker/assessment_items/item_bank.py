@@ -177,6 +177,7 @@ class ItemBank:
 		self._validate_item_type(item_type)
 		# Instantiate the assessment item
 		item_instance = self.item_classes[item_type](*item_tuple)
+		item_instance.item_number = len(self.items_dict) + 1
 		# Validate CRC16 format pattern of (4-character hex pairs separated by underscores)
 		item_crc16 = item_instance.item_crc16
 		if not self.crc16_pattern.fullmatch(item_crc16):

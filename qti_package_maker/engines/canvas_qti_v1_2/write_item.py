@@ -38,7 +38,7 @@ def MC(item_cls):
 
 #==============================================================
 def MA(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_list: list):
+	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""Create a Multiple Answer (Checkboxes) question."""
 	# Create the root <item> element with a unique identifier and title
 	assessment_item_etree = lxml.etree.Element("item",
@@ -53,7 +53,7 @@ def MA(item_cls):
 	# Generate the <response_lid> section to store answer choices (checkboxes)
 	response_lid_etree = item_xml_helpers.create_choice_response_lid(item_cls.choices_list, cardinality="Multiple")
 	# Generate the <resprocessing> section to handle scoring and correctness logic
-	resprocessing_etree = item_xml_helpers.create_MA_resprocessing(item_cls.choices_list, item_cls.answer_list)
+	resprocessing_etree = item_xml_helpers.create_MA_resprocessing(item_cls.choices_list, item_cls.answers_list)
 	# Assemble the XML structure by appending elements in the correct order
 	presentation_etree.append(material_mattext_etree)
 	presentation_etree.append(response_lid_etree)

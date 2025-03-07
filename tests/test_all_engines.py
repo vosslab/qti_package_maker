@@ -7,16 +7,8 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.insert(0, project_root)
 
-from qti_package_maker.package_maker import MasterQTIPackage
+from qti_package_maker import package_interface
 
-# List of all available engines
-ENGINE_NAMES = [
-	'canvas_qti_v1_2',
-	'blackboard_qti_v2_1',
-	'human_readable',
-	'bbq_text_upload',
-	'html_selftest',
-]
 
 # List of all question types with sample data
 QUESTION_TYPES = {
@@ -31,17 +23,20 @@ QUESTION_TYPES = {
 
 def main():
 	final_results = {}
+	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=True)
 
-	for engine_name in ENGINE_NAMES:
+	# List of all available engines
+	qti_packer.show_available_engines()
+
+	for engine_name in qti_packer.get_available_engines():
 		print("\n" + "="*60)
 		print(f"🚀 Testing Engine: {engine_name}")
 		print("="*60)
 
 		package_name = f"dummy_{engine_name}"
-		qti_packer = MasterQTIPackage(package_name, engine_name)
 
 		# Show available question types
-		available_question_types = qti_packer.engine.get_available_question_types()
+		available_question_types = qti_packer.get_available_question_types()
 		print(f"✅ Available question types: {', '.join(available_question_types)}")
 
 		# Store results for this engine
