@@ -23,7 +23,7 @@ class EngineClass(base_engine.BaseEngine):
 		self.write_item = write_item
 		# Verify that the correct write_item module is imported
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "canvas_qti_v1_2":
-			raise ImportError("Incorrect write_item module imported for QTIv1Engine engine")
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")

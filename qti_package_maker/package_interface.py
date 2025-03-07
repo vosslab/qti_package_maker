@@ -31,7 +31,7 @@ from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
 class QTIPackageInterface:
 	#=====================================================================
 	def __init__(self, package_name: str, verbose: bool = False, allow_mixed: bool = False):
-		package_name = package_name.strip()
+		self.package_name = package_name.strip()
 		self.verbose = verbose
 		self.item_bank = item_bank.ItemBank(allow_mixed)
 		if not package_name:
@@ -40,14 +40,15 @@ class QTIPackageInterface:
 
 	#=====================================================================
 	def _set_engine_data(self):
-		self.engine_data = {}
-		for engine_info in ENGINE_REGISTRY.values():
-			self.engine_data['name'] = {
-					"name": engine_info["engine_name"],
-					"can_read": engine_info["can_read"],
-					"can_write": engine_info["can_write"],
-					"class": engine_info["engine_class"]
-				}
+		"""Loads engine data from ENGINE_REGISTRY into self.engine_data."""
+		self.engine_data = {}  # Reset engine data dictionary
+		for engine_name, engine_info in ENGINE_REGISTRY.items():
+			self.engine_data[engine_name] = {
+				"name": engine_info["engine_name"],
+				"can_read": engine_info["can_read"],
+				"can_write": engine_info["can_write"],
+				"class": engine_info["engine_class"]
+			}
 
 	#=====================================================================
 	def init_engine(self, input_engine_name: str):
@@ -59,7 +60,7 @@ class QTIPackageInterface:
 			if engine_name.startswith(input_engine_name_low):
 				engine_cls = engine_info["class"](self.package_name, self.verbose)
 				if self.verbose:
-					print(f"Initialized Engine: {engine_cls.__class__.__name__} ({engine_info['name']})")
+					print(f"Initialized Engine: {engine_cls.name} ({engine_info['name']})")
 				return engine_cls
 
 		raise ValueError(f"Unknown engine: {input_engine_name}")
@@ -69,17 +70,20 @@ class QTIPackageInterface:
 		"""
 		Print all registered engines and their capabilities in a formatted tabulate table.
 		"""
-		engine_data = []
-		for key, engine_info in ENGINE_REGISTRY.items():
-			engine_data.append([
-				engine_info["engine_name"],
+		engine_table_data = []
+		for engine_name, engine_info in self.engine_data.items():
+			engine_table_data.append([
+				engine_name,
 				engine_info["can_read"],
 				engine_info["can_write"]
 			])
-
 		# Print the engine table
 		print("\nAvailable Engines")
-		print(tabulate.tabulate(engine_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="rounded_outline"))
+		print(tabulate.tabulate(engine_table_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="rounded_outline"))
+
+	#=====================================================================
+	def get_available_engines(self):
+		return list(self.engine_data.keys())
 
 	#=====================================================================
 	def summarize_item_bank(self):
@@ -107,7 +111,7 @@ class QTIPackageInterface:
 			raise NotImplementedError(f"Engine {self.engine.__class__.__name__} does not support reading.")
 
 		# Retrieve the assessment items from the input file
-		self.item_bank += engine_cls.read_items_from_file(input_file)
+		new_item_bank = engine_cls.read_items_from_file(input_file)
 
 		# If no items were read, notify the user and return
 		if not new_item_bank or len(new_item_bank) == 0:
@@ -115,7 +119,7 @@ class QTIPackageInterface:
 			return
 
 		# Merge the newly read items into the existing item bank, avoiding duplicates
-		self.item_bank |= new_item_bank
+		self.item_bank += new_item_bank
 
 		# Provide detailed output if verbosity is enabled
 		if self.verbose:
@@ -152,8 +156,7 @@ def main():
 
 	# Parse arguments from the command line
 	#args = parse_arguments()
-
-	qti_packer = QTIPackageInterface('example_pool_from_test_maker', allow_mixed=True)
+	qti_packer = QTIPackageInterface('test_qti_maker', verbose=True, allow_mixed=True)
 	qti_packer.show_available_engines()
 
 	question_text = 'What is your favorite color?'
@@ -166,7 +169,10 @@ def main():
 	choices_list = ['orange', 'banana', 'apple', 'lettuce', 'spinach']
 	qti_packer.add_item("MA", (question_text, choices_list, answers_list))
 
-	qti_packer.save_package('blackboard')
+	import random
+	engine_name = random.choice(qti_packer.get_available_engines())
+
+	qti_packer.save_package(engine_name)
 
 if __name__ == "__main__":
 	main()

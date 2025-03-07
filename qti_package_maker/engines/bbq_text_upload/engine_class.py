@@ -13,7 +13,7 @@ class EngineClass(base_engine.BaseEngine):
 		super().__init__(package_name, verbose)
 		# Verify that the correct write_item module is imported
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "bbq_text_upload":
-			raise ImportError("Incorrect write_item module imported for BBQTextEngine engine")
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
 		self.write_item = write_item
 		self.validate_write_item_module()
 

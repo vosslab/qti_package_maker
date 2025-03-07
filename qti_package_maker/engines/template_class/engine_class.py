@@ -5,7 +5,7 @@
 
 # QTI Package Maker
 from qti_package_maker.engines import base_engine
-#from qti_package_maker.engines.human_readable import write_item
+from qti_package_maker.engines.template_class import write_item
 
 class EngineClass(base_engine.BaseEngine):
 	"""
@@ -21,6 +21,10 @@ class EngineClass(base_engine.BaseEngine):
 		"""
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
+		# Verify that the correct write_item module is imported
+		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "template_class":
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
+		self.write_item = write_item
 
 	#============================================
 	def read_package(self, infile: str):

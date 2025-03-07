@@ -178,11 +178,11 @@ class ItemBank:
 		# Instantiate the assessment item
 		item_instance = self.item_classes[item_type](*item_tuple)
 		# Validate CRC16 format pattern of (4-character hex pairs separated by underscores)
-		item_crc = item_instance.item_crc
-		if not self.crc16_pattern.fullmatch(item_crc):
-			raise ValueError(f"Invalid CRC16 format: '{item_crc}'")
+		item_crc16 = item_instance.item_crc16
+		if not self.crc16_pattern.fullmatch(item_crc16):
+			raise ValueError(f"Invalid CRC16 format: '{item_crc16}'")
 		# Store in dictionary using item_crc as key to prevent duplicates
-		self.items_dict[item_crc] = item_instance
+		self.items_dict[item_crc16] = item_instance
 		self.used_item_types_set.add(item_type)
 
 	#============================================

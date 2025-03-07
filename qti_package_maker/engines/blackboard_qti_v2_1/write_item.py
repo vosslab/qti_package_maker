@@ -8,14 +8,14 @@ ENGINE_NAME = "blackboard_qti_v2_1"
 from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
 #==============================================================
-def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
+def MC(item_cls):
 	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
-	assessment_item_etree = item_xml_helpers.create_assessment_item_header(crc16_text)
-	answer_id = f"answer_{choices_list.index(answer_text) + 1}"
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
+	answer_id = f"answer_{item_cls.answer_index+1:03d}"
 	# takes a list as input
 	response_declaration = item_xml_helpers.create_response_declaration([answer_id, ])
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
-	item_body = item_xml_helpers.create_item_body(question_text, choices_list, max_choices=1)
+	item_body = item_xml_helpers.create_item_body(item_cls.question_text, item_cls.choices_list, max_choices=1)
 	response_processing = item_xml_helpers.create_response_processing()
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
@@ -26,17 +26,18 @@ def MC(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	return assessment_item_etree
 
 #==============================================================
-def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
+def MA(item_cls):
 	"""Create a Multiple Answer (Checkboxes) question."""
-	assessment_item_etree = item_xml_helpers.create_assessment_item_header(crc16_text)
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	answer_id_list = []
-	for answer_text in answers_list:
-		answer_id = f"answer_{choices_list.index(answer_text) + 1}"
+	for answer_index in item_cls.answer_index_list:
+		answer_id = f"answer_{answer_index+1:03d}"
 		answer_id_list.append(answer_id)
 	answer_id_list.sort()
 	response_declaration = item_xml_helpers.create_response_declaration(answer_id_list)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
-	item_body = item_xml_helpers.create_item_body(question_text, choices_list, max_choices=len(answers_list))
+	item_body = item_xml_helpers.create_item_body(item_cls.question_text,
+		item_cls.choices_list, max_choices=len(item_cls.answers_list))
 	response_processing = item_xml_helpers.create_response_processing()
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
@@ -47,23 +48,26 @@ def MA(item_number: int, crc16_text: str, question_text: str, choices_list: list
 	return assessment_item_etree
 
 #==============================================================
-def MATCH(item_number: int, crc16_text: str, question_text: str, answers_list: list, matching_list: list):
+def MATCH(item_cls):
+	#crc16_text: str, question_text: str, answers_list: list, matching_list: list):
 	"""Create a Matching question where users match items from two lists."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
-def NUM(item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
+def NUM(item_cls):
+	#crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
-def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: list):
+def FIB(item_cls):
+	#crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	assessment_item_etree = item_xml_helpers.create_assessment_item_header(crc16_text)
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	# takes a list as input
-	response_declaration = item_xml_helpers.create_response_declaration_FIB(answers_list)
+	response_declaration = item_xml_helpers.create_response_declaration_FIB(item_cls.answers_list)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
-	item_body = item_xml_helpers.create_item_body_FIB(question_text, answers_list)
+	item_body = item_xml_helpers.create_item_body_FIB(item_cls.question_text, item_cls.answers_list)
 	response_processing = item_xml_helpers.create_response_processing()
 	# Assemble the XML tree
 	assessment_item_etree.append(response_declaration)
@@ -74,11 +78,13 @@ def FIB(item_number: int, crc16_text: str, question_text: str, answers_list: lis
 	return assessment_item_etree
 
 #==============================================================
-def MULTI_FIB(item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
+def MULTI_FIB(item_cls):
+	#crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	pass
+	raise NotImplementedError
 
 #==============================================================
-def ORDER(item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
+def ORDER(item_cls):
+	#crc16_text: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	pass
+	raise NotImplementedError

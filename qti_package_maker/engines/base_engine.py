@@ -24,7 +24,10 @@ class BaseEngine:
 		Returns the engine's directory name, assuming the engine class is inside:
 		qti_package_maker/engines/<engine_name>/engine_class.py
 		"""
-		return pathlib.Path(__file__).resolve().parent.name  # Cleaner & direct
+		# Extract module path as a string
+		module_string = self.__class__.__module__
+		# Get the second-to-last element, which should be the engine folder name
+		return module_string.split(".")[-2]
 
 	#==============
 	def validate_write_item_module(self):

@@ -23,7 +23,7 @@ class EngineClass(base_engine.BaseEngine):
 		self.write_item = write_item
 		# Verify that the correct write_item module is imported
 		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "blackboard_qti_v2_1":
-			raise ImportError("Incorrect write_item module imported for QTIv2Engine engine")
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
 
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI21-{package_name}_package_{current_time}")
@@ -49,7 +49,7 @@ class EngineClass(base_engine.BaseEngine):
 		Returns:
 			list: A list of relative paths to the saved assessment item XML files.
 		"""
-		if len(self.item_bank) == 0:
+		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
 

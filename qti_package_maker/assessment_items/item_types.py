@@ -33,9 +33,9 @@ class BaseItem:
 		# Compute CRC16 hash for the question text
 		self.question_crc16 = string_functions.get_crc16_from_string(question_text)
 		# Combine question CRC16 with options CRC16 to create a unique item CRC
-		self.item_crc = f"{self.question_crc16}_{self.secondary_crc16}"
-		if not self.crc16_pattern.fullmatch(self.item_crc):
-			raise ValueError(f"Invalid CRC16 format: '{self.item_crc}'")
+		self.item_crc16 = f"{self.question_crc16}_{self.secondary_crc16}"
+		if not self.crc16_pattern.fullmatch(self.item_crc16):
+			raise ValueError(f"Invalid CRC16 format: '{self.item_crc16}'")
 		# Validate the item using the appropriate validation function
 		self._validate()
 
