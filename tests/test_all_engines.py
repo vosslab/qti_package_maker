@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 
+# Standard Library
 import os
-import sys
-from collections import defaultdict
 
+# Pip3 Library
 import tabulate
 
 # Set sys.path to the directory containing the 'qti_package_maker' folder
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, project_root)
+import sys, subprocess
+git_root = subprocess.run(
+	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
+).stdout.strip() or ".."
+sys.path.insert(0, git_root)
 
+# QTI Package Maker
 from qti_package_maker import package_interface
 
 # List of all question types with sample data

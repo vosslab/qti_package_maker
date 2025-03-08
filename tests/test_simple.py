@@ -4,8 +4,11 @@ import os
 import sys
 
 # Set sys.path to the directory containing the 'qti_package_maker' folder
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-sys.path.insert(0, project_root)
+import sys, subprocess
+git_root = subprocess.run(
+	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
+).stdout.strip() or ".."
+sys.path.insert(0, git_root)
 
 # Now you can import your modules
 from qti_package_maker.package_maker import MasterQTIPackage

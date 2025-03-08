@@ -89,17 +89,18 @@ except ModuleNotFoundError:
 
 #============================================
 def get_git_root():
-	"""Return the absolute path of the repository root."""
+	# Set sys.path to the directory containing the 'qti_package_maker' folder
 	import subprocess
-	try:
-		# Run git command to find the root of the repository
-		base = subprocess.check_output(
-			["git", "rev-parse", "--show-toplevel"], text=True
-		).strip()
-		return base
-	except subprocess.CalledProcessError:
-		# Not inside a git repository
-		return None
+	return subprocess.run(
+		["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
+	).stdout.strip() or ".."
+
+# Define ANSI color codes for green (pass) and red (fail)
+GREEN = "\033[92m"
+RED = "\033[91m"
+RESET = "\033[0m"    # Reset color
+PLUS = f"{GREEN}+{RESET}" # Green +
+CROSS = f"{RED}X{RESET}" # Red X
 
 #============================================
 # If this script is run directly, print the available engines
@@ -110,9 +111,12 @@ def main():
 	if ENGINE_REGISTRY:
 		engine_data = []
 		for info in ENGINE_REGISTRY.values():
-			engine_data.append([info["engine_name"], info["can_read"], info["can_write"]])
+			# Convert True/False to colored + or X
+			can_read = PLUS if info["can_read"] else CROSS
+			can_write = PLUS if info["can_write"] else CROSS
+			engine_data.append([info["engine_name"], can_read, can_write])
 		print("\nRegistered Engines:")
-		headers=["Engine Name", "Can Read", "Can Write"]
+		headers = ["Engine Name", "Can Read", "Can Write"]
 		print(tabulate.tabulate(engine_data, headers, tablefmt="rounded_outline"))
 	else:
 		print("No engines found.")

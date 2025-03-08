@@ -3,22 +3,6 @@
 
 # Pip3 Library
 
-#============================================
-def get_git_root():
-	"""Return the absolute path of the repository root."""
-	import subprocess
-	try:
-		# Run git command to find the root of the repository
-		base = subprocess.check_output(
-			["git", "rev-parse", "--show-toplevel"], text=True
-		).strip()
-		return base
-	except subprocess.CalledProcessError:
-		# Not inside a git repository
-		return None
-import sys
-sys.path.insert(0, get_git_root())
-
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.assessment_items import item_types

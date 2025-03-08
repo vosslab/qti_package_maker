@@ -2,13 +2,15 @@
 
 import os
 import re
-import sys
 import random
 import argparse
 
 # Set sys.path to the directory containing the 'qti_package_maker' folder
-project_root = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
-sys.path.insert(0, project_root)
+import sys, subprocess
+git_root = subprocess.run(
+	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
+).stdout.strip() or ".."
+sys.path.insert(0, git_root)
 
 from qti_package_maker.package_maker import MasterQTIPackage
 
@@ -260,7 +262,7 @@ def main():
 
 	engine_list = []
 	for output_format in args.output_format:
-		short_name = format_shortcuts[output_format][1]
+		#short_name = format_shortcuts[output_format][1]
 		#package_name = f"{short_name}-{content_name}"
 		package_name = f"{content_name}"
 		qti_packer = MasterQTIPackage(package_name, output_format, args.verbose)
