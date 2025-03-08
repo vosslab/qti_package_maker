@@ -60,8 +60,12 @@ class BaseEngine:
 		if not write_item_function:
 			print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
 			return
-		item_engine_data = write_item_function(item_cls)
-		return item_engine_data
+		random.shuffle(item_bank)
+		for item_cls in item_bank:
+			item_engine_data = write_item_function(item_cls)
+			if item_engine_data is not None:
+				return item_engine_data
+		return None
 
 	#=============
 	def process_item_bank(self, item_bank):
@@ -78,7 +82,8 @@ class BaseEngine:
 				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
 				continue
 			item_engine_data = write_item_function(item_cls)
-			assessment_items_tree.append(item_engine_data)
+			if item_engine_data is not None:
+				assessment_items_tree.append(item_engine_data)
 		return assessment_items_tree
 
 	#==============
