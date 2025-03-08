@@ -157,6 +157,30 @@ The package supports multiple output formats via engines. Each engine correspond
 - **File Output:** A self-contained HTML file
 - **Use Case:** Used for creating self-assessment quizzes without LMS integration
 
+## Engines Capabilities
+
+### Read and Write
+
+| Engine Name         | Can Read   | Can Write   |
+|---------------------|------------|-------------|
+| bbq_text_upload     | +          | +           |
+| blackboard_qti_v2_1 | X          | +           |
+| canvas_qti_v1_2     | X          | +           |
+| html_selftest       | X          | +           |
+| human_readable      | X          | +           |
+
+### Assessment Item Types
+
+| Item Type   | bbq_text_upload   | blackboard_qti_v2_1   | canvas_qti_v1_2   | html_selftest   | human_readable   |
+|-------------|-------------------|-----------------------|-------------------|-----------------|------------------|
+| FIB         | +                 | +                     | X                 | X               | +                |
+| MA          | +                 | +                     | +                 | +               | +                |
+| MATCH       | +                 | X                     | +                 | +               | +                |
+| MC          | +                 | +                     | +                 | +               | +                |
+| MULTI_FIB   | +                 | X                     | X                 | X               | +                |
+| NUM         | +                 | X                     | X                 | X               | +                |
+| ORDER       | +                 | X                     | X                 | X               | +                |
+
 ## Usage
 
 ### Primary Supported Input Format
@@ -336,7 +360,8 @@ If not, see <http://www.gnu.org/licenses/>.
 - [Github](https://github.com/vosslab)
 - [Bluesky](https://bsky.app/profile/neilvosslab.bsky.social)
 - [Facebook](https://fb.me/neilvosslab)
-- [LinkedIn](https://www.linkedin.com/in/vosslab) 
+- [LinkedIn](https://www.linkedin.com/in/vosslab)
+
 
 ## Acknowledgments
 - Based on the IMS Global QTI specification

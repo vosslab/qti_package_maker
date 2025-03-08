@@ -81,6 +81,21 @@ def register_engines():
 			ENGINE_REGISTRY[module_name] = engine_dict
 
 #============================================
+def print_engine_table(tablefmt: str="fancy_outline"):
+	if ENGINE_REGISTRY:
+		engine_data = []
+		for info in ENGINE_REGISTRY.values():
+			# Convert True/False to colored + or X
+			can_read = PLUS if info["can_read"] else CROSS
+			can_write = PLUS if info["can_write"] else CROSS
+			engine_data.append([info["engine_name"], can_read, can_write])
+		print("\nRegistered Engines:")
+		headers = ["Engine Name", "Can Read", "Can Write"]
+		print(tabulate.tabulate(engine_data, headers, tablefmt=tablefmt))
+	else:
+		print("No engines found.")
+
+#============================================
 # Run the registration when imported
 try:
 	register_engines()
@@ -108,18 +123,7 @@ CROSS = f"{RED}X{RESET}" # Red X
 def main():
 	sys.path.insert(0, get_git_root())
 	register_engines()
-	if ENGINE_REGISTRY:
-		engine_data = []
-		for info in ENGINE_REGISTRY.values():
-			# Convert True/False to colored + or X
-			can_read = PLUS if info["can_read"] else CROSS
-			can_write = PLUS if info["can_write"] else CROSS
-			engine_data.append([info["engine_name"], can_read, can_write])
-		print("\nRegistered Engines:")
-		headers = ["Engine Name", "Can Read", "Can Write"]
-		print(tabulate.tabulate(engine_data, headers, tablefmt="rounded_outline"))
-	else:
-		print("No engines found.")
+	print_engine_table()
 
 if __name__ == "__main__":
 	main()

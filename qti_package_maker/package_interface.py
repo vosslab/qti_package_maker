@@ -15,7 +15,7 @@ sys.path.insert(0, git_root)
 
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
-from qti_package_maker.engines.engine_registration import ENGINE_REGISTRY
+from qti_package_maker.engines import engine_registration
 
 class QTIPackageInterface:
 	#=====================================================================
@@ -32,7 +32,7 @@ class QTIPackageInterface:
 	def _set_engine_data(self):
 		"""Loads engine data from ENGINE_REGISTRY into self.engine_data."""
 		self.engine_data = {}  # Reset engine data dictionary
-		for engine_name, engine_info in ENGINE_REGISTRY.items():
+		for engine_name, engine_info in engine_registration.ENGINE_REGISTRY.items():
 			self.engine_data[engine_name] = {
 				"name": engine_info["engine_name"],
 				"can_read": engine_info["can_read"],
@@ -62,20 +62,11 @@ class QTIPackageInterface:
 		raise ValueError(f"Unknown engine: {input_engine_name}")
 
 	#=====================================================================
-	def show_available_engines(self):
+	def show_available_engines(self, tablefmt: str="fancy_outline"):
 		"""
 		Print all registered engines and their capabilities in a formatted tabulate table.
 		"""
-		engine_table_data = []
-		for engine_name, engine_info in self.engine_data.items():
-			engine_table_data.append([
-				engine_name,
-				engine_info["can_read"],
-				engine_info["can_write"]
-			])
-		# Print the engine table
-		print("\nAvailable Engines")
-		print(tabulate.tabulate(engine_table_data, headers=["Engine Name", "Can Read", "Can Write"], tablefmt="rounded_outline"))
+		engine_registration.print_engine_table(tablefmt)
 
 	#=====================================================================
 	def get_available_engines(self):

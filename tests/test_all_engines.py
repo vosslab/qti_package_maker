@@ -37,7 +37,6 @@ def main():
 	# Create an instance of the QTI packager
 	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=False)
 	# Get available engines
-	qti_packer.show_available_engines()
 	engine_name_list = qti_packer.get_available_engines()
 	# Get available item types
 	available_item_types = qti_packer.get_available_item_types()
@@ -69,11 +68,14 @@ def main():
 		# Reset the item bank for the next test
 		qti_packer.reset_item_bank()
 	# Print test results with swapped columns and rows
+	qti_packer.show_available_engines(tablefmt)
 	print("\nWrite Test Results:")
 	headers = ["Item Type"] + engine_name_list  # First row: headers
-	print(tabulate.tabulate(table_data, headers=headers, tablefmt="rounded_outline"))
+	print(tabulate.tabulate(table_data, headers=headers, tablefmt=tablefmt))
 
-
+#tablefmt = "rounded_outline"
+tablefmt = "github"
+#tablefmt = "fancy_outline"
 
 if __name__ == '__main__':
 	main()
