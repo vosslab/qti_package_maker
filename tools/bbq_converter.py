@@ -2,7 +2,6 @@
 
 import os
 import re
-import random
 import argparse
 
 # Set sys.path to the directory containing the 'qti_package_maker' folder
@@ -129,7 +128,7 @@ def main():
 	qti_packer.trim_item_bank(args.question_limit)
 
 	if args.output_file:
-		qti_packer.save_package(output_format, args.output_file)
+		qti_packer.save_package(args.output_format[0], args.output_file)
 	else:
 		for engine_name in args.output_format:
 			#format_data = format_shortcuts[engine_name]
