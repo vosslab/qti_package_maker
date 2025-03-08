@@ -15,22 +15,6 @@ sys.path.insert(0, git_root)
 from qti_package_maker import package_interface
 
 #=====================================================
-def limit_questions(question_items: list, question_limit: int) -> list:
-	"""
-	Limit the number of questions processed, if a limit is set.
-	"""
-
-	# Step 3: Apply question limit if specified
-	if question_limit and len(question_items) > question_limit:
-		# Randomly shuffle questions to ensure variety in selection
-		random.shuffle(question_items)
-
-		# Limit the number of questions processed
-		question_items = question_items[:question_limit]
-
-	return question_items
-
-#=====================================================
 def parse_args(format_shortcuts) -> argparse.Namespace:
 	"""
 	Parses command-line arguments.
@@ -142,15 +126,15 @@ def main():
 	qti_packer.read_package(args.input_file, "bbq_text")
 
 	# Step 2: Apply question limit if specified
-	#question_items = qti_packer.limit_items(question_items, args.question_limit)
+	qti_packer.trim_item_bank(args.question_limit)
 
 	if args.output_file:
 		qti_packer.save_package(output_format, args.output_file)
 	else:
-		for output_format in args.output_format:
-			#format_data = format_shortcuts[output_format]
+		for engine_name in args.output_format:
+			#format_data = format_shortcuts[engine_name]
 			#short_name = format_data[1]
-			qti_packer.save_package(output_format)
+			qti_packer.save_package(engine_name)
 
 
 #==============

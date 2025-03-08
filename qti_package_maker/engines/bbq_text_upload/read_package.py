@@ -160,7 +160,8 @@ def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
 			if not item_cls:
 				continue
 			# Store the processed question type and its associated parts
-			new_item_bank.add(item_cls)
+			#print(f"len(new_item_bank) = {len(new_item_bank)}")
+			new_item_bank.add_item_cls(item_cls)
 	return new_item_bank
 
 #=====================================================

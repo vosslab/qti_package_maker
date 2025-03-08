@@ -2,6 +2,7 @@
 
 # Standard Library
 import re
+import random
 
 # Pip3 Library
 
@@ -73,6 +74,8 @@ class QTIPackageInterface:
 
 	#=====================================================================
 	def trim_item_bank(self, item_limit: int):
+		if not item_limit:
+			return
 		if not isinstance(item_limit, int):
 			raise ValueError
 		if len(self.item_bank) <= item_limit:
@@ -107,11 +110,11 @@ class QTIPackageInterface:
 		"""
 		Reads an assessment package from the given input file and loads items into the item bank.
 		"""
-		engine_cls = self.load_engine(engine_name)
+		engine_cls = self.init_engine(engine_name)
 
 		# Ensure the selected engine supports reading
-		if not hasattr(engine_cls, "read_items"):
-			raise NotImplementedError(f"Engine {self.engine.__class__.__name__} does not support reading.")
+		if not hasattr(engine_cls, "read_items_from_file"):
+			raise NotImplementedError(f"Engine {engine_cls.__class__.__name__} does not support reading.")
 
 		# Retrieve the assessment items from the input file
 		new_item_bank = engine_cls.read_items_from_file(input_file)

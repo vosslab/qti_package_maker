@@ -51,7 +51,7 @@ def process_engine(module_name, ispkg):
 		return None
 
 	# Determine read/write capabilities dynamically
-	can_read = is_method_implemented(engine_class, "read_package")
+	can_read = is_method_implemented(engine_class, "read_items_from_file")
 	can_write = is_method_implemented(engine_class, "save_package")
 
 	# Register engine using folder name as engine_name

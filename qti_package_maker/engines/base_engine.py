@@ -55,7 +55,7 @@ class BaseEngine:
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
-		item_cls = random.choice(item_bank.get_item_list())
+		item_cls = random.choice(item_bank)
 		write_item_function = getattr(self.write_item, item_cls.item_type, None)
 		if not write_item_function:
 			print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
@@ -72,7 +72,7 @@ class BaseEngine:
 			print("No items to write, skipping processing.")
 			return []
 		assessment_items_tree = []
-		for item_cls in item_bank.get_item_list():
+		for item_cls in item_bank:
 			write_item_function = getattr(self.write_item, item_cls.item_type, None)
 			if not write_item_function:
 				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
