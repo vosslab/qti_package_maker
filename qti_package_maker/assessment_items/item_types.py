@@ -40,6 +40,28 @@ class BaseItem:
 		# Validate the item using the appropriate validation function
 		self._validate()
 
+	#============================================
+	def __lt__(self, other):
+		"""Defines sorting based on item_crc16."""
+		# Sort by CRC
+		return self.item_crc16 < other.item_crc16
+
+	#============================================
+	def __eq__(self, other):
+		if not isinstance(other, BaseItem):
+			return False
+		# Compare by CRC16
+		return self.item_crc16 == other.item_crc16
+
+	#============================================
+	def __repr__(self):
+		"""
+		Returns a compact yet informative string representation of the item.
+		Includes item type, CRC, and question preview.
+		"""
+		preview_text = self.question_text[:30] + "..." if len(self.question_text) > 30 else self.question_text
+		return f"<Item: {self.item_type}: {self.item_crc16}, '{preview_text}'>"
+
 	#==============
 	@property
 	def item_type(self):
