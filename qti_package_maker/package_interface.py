@@ -2,7 +2,6 @@
 
 # Standard Library
 import re
-import tabulate
 
 # Pip3 Library
 

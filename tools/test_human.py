@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import os
-
 # Set sys.path to the directory containing the 'qti_package_maker' folder
 import sys, subprocess
 git_root = subprocess.run(

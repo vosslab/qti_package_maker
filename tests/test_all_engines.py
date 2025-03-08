@@ -75,7 +75,7 @@ def main():
 
 #tablefmt = "rounded_outline"
 tablefmt = "github"
-#tablefmt = "fancy_outline"
+tablefmt = "fancy_outline"
 
 if __name__ == '__main__':
 	main()
