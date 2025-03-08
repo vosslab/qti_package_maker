@@ -148,6 +148,7 @@ class EngineClass(base_engine.BaseEngine):
 		self.clean_temp_files()
 		if self.verbose is True:
 			print(f"Saved {self.save_count} assessment items to {outfile}")
+		return outfile
 
 	#==============
 

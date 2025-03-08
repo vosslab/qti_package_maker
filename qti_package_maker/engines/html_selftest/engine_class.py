@@ -35,3 +35,4 @@ class EngineClass(base_engine.BaseEngine):
 			f.write(formatted_html_text)
 		if self.verbose is True:
 			print(f"Saved one assessment item to {outfile}")
+		return outfile

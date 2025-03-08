@@ -55,3 +55,4 @@ class EngineClass(base_engine.BaseEngine):
 				count += 1
 		if self.verbose is True:
 			print(f"Saved {count} assessment items to {outfile}")
+		return outfile

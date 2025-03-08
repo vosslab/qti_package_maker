@@ -33,7 +33,8 @@ class QTIPackageInterface:
 	def __init__(self, package_name: str, verbose: bool = False, allow_mixed: bool = False):
 		self.package_name = package_name.strip()
 		self.verbose = verbose
-		self.item_bank = item_bank.ItemBank(allow_mixed)
+		self.allow_mixed = allow_mixed
+		self.item_bank = item_bank.ItemBank(self.allow_mixed)
 		if not package_name:
 			raise ValueError("package_name not defined")
 		self._set_engine_data()
@@ -49,6 +50,12 @@ class QTIPackageInterface:
 				"can_write": engine_info["can_write"],
 				"class": engine_info["engine_class"]
 			}
+
+	#=====================================================================
+	def reset_item_bank(self):
+		# mostly for testing
+		del self.item_bank
+		self.item_bank = item_bank.ItemBank(self.allow_mixed)
 
 	#=====================================================================
 	def init_engine(self, input_engine_name: str):
@@ -94,6 +101,10 @@ class QTIPackageInterface:
 	def print_item_bank_histogram(self):
 		"""Print all registered engines and their capabilities."""
 		self.item_bank.print_histogram()
+
+	#=====================================================================
+	def get_available_item_types(self):
+		return self.item_bank.get_available_item_types()
 
 	#=====================================================================
 	def add_item(self, item_type: str, item_tuple: tuple):
@@ -146,7 +157,8 @@ class QTIPackageInterface:
 				f"Saving package {engine_cls.name}\n"
 				f"  with {len(self.item_bank)} assessment items."
 			)
-		engine_cls.save_package(self.item_bank, outfile)
+		outfile = engine_cls.save_package(self.item_bank, outfile)
+		return outfile
 
 
 #============================================
