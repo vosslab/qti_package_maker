@@ -12,7 +12,6 @@ sys.path.insert(0, project_root)
 
 from qti_package_maker import package_interface
 
-
 # List of all question types with sample data
 ITEM_TYPE_EXAMPLES = {
 	"MC": ("What is your favorite color?", ["blue", "red", "yellow"], "blue"),
@@ -24,54 +23,52 @@ ITEM_TYPE_EXAMPLES = {
 	"ORDER": ("Arrange the planets by size.", ["Mercury", "Mars", "Venus", "Earth"]),
 }
 
+# Define ANSI color codes
+GREEN = "\033[92m"   # Green for pass
+RED = "\033[91m"     # Red for fail
+YELLOW = "\033[93m"  # Yellow for unknown
+RESET = "\033[0m"    # Reset color
+
 def main():
 	# Create an instance of the QTI packager
-	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=True)
-
+	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=False)
 	# Get available engines
 	qti_packer.show_available_engines()
 	engine_name_list = qti_packer.get_available_engines()
-
 	# Get available item types
 	available_item_types = qti_packer.get_available_item_types()
-	print(f"✅ Available question types: {', '.join(available_item_types)}")
-
-	# Initialize results dictionary
-	#final_results = {engine: {item: "-" for item in available_item_types} for engine in engine_name_list}
-	# Initialize results dictionary with "-" as the default value
-	final_results = defaultdict(lambda: defaultdict(lambda: "-"))
-
-	# Test each engine with all available item types
-	for engine_name in engine_name_list:
-		for item_type in available_item_types:
-			print(f"Adding {item_type} to engine {engine_name}...")
-
-			# Add item to the packager
-			item_tuple = ITEM_TYPE_EXAMPLES[item_type]
-			qti_packer.add_item(item_type, item_tuple)
-
+	print(f"Available question types: {', '.join(available_item_types)}")
+	# Create results list directly in final table format
+	table_data = []
+	# Test each question type and store results directly in table_data
+	for item_type in available_item_types:
+		print(f"Adding {item_type}...")
+		row = [item_type]  # First column: question type
+		# Add item to the packager
+		item_tuple = ITEM_TYPE_EXAMPLES[item_type]
+		qti_packer.add_item(item_type, item_tuple)
+		for engine_name in engine_name_list:
+			print(f"- Writing file using {engine_name}...")
 			# Attempt to save the package
 			try:
 				output_file = qti_packer.save_package(engine_name)
-				# Validate file creation and update results
+				# Validate file creation and update row results
 				if os.path.exists(output_file):
-					final_results[engine_name][item_type] = "Y"
+					row.append(f"{GREEN}+{RESET}")  # Success
 					os.remove(output_file)  # Cleanup
 				else:
-					final_results[engine_name][item_type] = "?"
+					row.append(f"{YELLOW}?{RESET}")  # Unknown issue
 			except NotImplementedError:
-				final_results[engine_name][item_type] = "N"
-			# Reset the item bank for the next test
-			qti_packer.reset_item_bank()
-
-	# Convert dictionary results into a wide table format
-	table_data = [[engine] + [final_results[engine][item] for item in available_item_types]
-	              for engine in engine_name_list]
-
-	# Print test results as a wide table
-	print("\nTest Results:")
-	headers = ["Engine"] + list(available_item_types)
+				row.append(f"{RED}X{RESET}")  # Not implemented
+		# Append completed row to table data
+		table_data.append(row)
+		# Reset the item bank for the next test
+		qti_packer.reset_item_bank()
+	# Print test results with swapped columns and rows
+	print("\nWrite Test Results:")
+	headers = ["Item Type"] + engine_name_list  # First row: headers
 	print(tabulate.tabulate(table_data, headers=headers, tablefmt="rounded_outline"))
+
 
 
 if __name__ == '__main__':
