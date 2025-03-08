@@ -31,11 +31,10 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 	parser.add_argument("-n", "--limit", "--question_limit", type=int,
 			dest="question_limit", help="Limit the number of input items.")
 
-	parser.add_argument("-q", "--quiet", dest="verbose",
-		action="store_false", help="Disable verbose output")
-	parser.add_argument("-v", "--verbose", dest="verbose",
-		action="store_true", help="Enable verbose output")
-	parser.set_defaults(verbose=True)
+	verbose_group = parser.add_mutually_exclusive_group()
+	verbose_group.add_argument("-q", "--quiet", dest="verbose", action="store_false", help="Disable verbose output")
+	verbose_group.add_argument("-v", "--verbose", dest="verbose", action="store_true", help="Enable verbose output")
+	verbose_group.set_defaults(verbose=True)
 
 	# Boolean flag for allowing mixed question types
 	parser.add_argument("--allow-mixed", dest="allow_mixed", help="Allow mixed question types",
@@ -85,7 +84,7 @@ def extract_core_name(bbq_file_name):
 		bbq_file_basename = bbq_file_name
 	match = re.search(r'^bbq-(.+?)-questions\.txt$', bbq_file_basename)
 	if not match:
-		raise ValueError
+		raise ValueError(f"Filename '{bbq_file_name}' does not match expected pattern.")
 	bbq_core_name = match.group(1)
 	return bbq_core_name
 
