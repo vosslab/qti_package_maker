@@ -22,7 +22,7 @@ class EngineClass(base_engine.BaseEngine):
 		super().__init__(package_name, verbose)
 		self.write_item = write_item
 		# Verify that the correct write_item module is imported
-		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != "blackboard_qti_v2_1":
+		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != self.name:
 			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
 
 		current_time = time.strftime("%H%M")
