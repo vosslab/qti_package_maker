@@ -127,14 +127,17 @@ def main():
 	# Step 2: Apply question limit if specified
 	qti_packer.trim_item_bank(args.question_limit)
 
+	count = 0
 	if args.output_file:
 		qti_packer.save_package(args.output_format[0], args.output_file)
+		count += 1
 	else:
 		for engine_name in args.output_format:
 			#format_data = format_shortcuts[engine_name]
 			#short_name = format_data[1]
 			qti_packer.save_package(engine_name)
-
+			count += 1
+	print(f"DONE, saved {count} files")
 
 #==============
 
