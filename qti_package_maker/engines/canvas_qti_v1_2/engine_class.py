@@ -19,13 +19,19 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 
 class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
+		# Call the base engine constructor
 		super().__init__(package_name, verbose)
+		# set the write_item module (required)
 		self.write_item = write_item
 		# Verify that the correct write_item module is imported
-		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != self.name:
-			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
+		self.validate_write_item_module()
+		# Setup Directories
+		self._setup_diretories()
+
+	#==============
+	def _setup_diretories(self):
 		current_time = time.strftime("%H%M")
-		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{package_name}_package_{current_time}")
+		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{self.package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
 		# Create necessary directories
 		self.assessment_base_name = "canvas_qti12_questions"

@@ -21,10 +21,10 @@ class EngineClass(base_engine.BaseEngine):
 		"""
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
-		# Verify that the correct write_item module is imported
-		if not hasattr(write_item, "ENGINE_NAME") or write_item.ENGINE_NAME != self.name:
-			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
+		# set the write_item module (required)
 		self.write_item = write_item
+		# Verify that the correct write_item module is imported
+		self.validate_write_item_module()
 
 	#============================================
 	def read_package(self, infile: str):
