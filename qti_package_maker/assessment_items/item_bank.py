@@ -218,13 +218,6 @@ class ItemBank:
 		self.used_item_types_set.add(item_cls.item_type)
 
 	#============================================
-	def get_item_list(self):
-		"""
-		Returns a list of all assessment item objects in the bank.
-		"""
-		return list(self.items_dict.values())
-
-	#============================================
 	def merge(self, other):
 		"""
 		Merges two ItemBank objects, ensuring no duplicate items.
@@ -284,14 +277,24 @@ class ItemBank:
 	#============================================
 	def __getitem__(self, index):
 		"""
-		Returns the item at the given index in the ordered key list.
-		This allows sorting/shuffling to operate on full items.
+		Supports both direct indexing and slicing.
+		- If given an integer, returns the single item.
+		- If given a slice, returns a new ItemBank with a subset of items.
 		"""
-		# Get the ordered key
-		key = self.items_dict_key_list[index]
-		# Return the full item class
-		item_cls = self.items_dict[key]
-		return item_cls
+		if isinstance(index, slice):  # Handle slicing
+			new_bank = ItemBank(self.allow_mixed)
+			# Slice the ordered list
+			for key in self.items_dict_key_list[index]:
+				new_bank.add_item_cls(self.items_dict[key])
+			# Returns a new trimmed ItemBank
+			return new_bank
+		elif isinstance(index, int):
+			# Handle single index access
+			key = self.items_dict_key_list[index]
+			# Returns the full item
+			return self.items_dict[key]
+		else:
+			raise TypeError(f"Invalid index type: {type(index)}. Expected int or slice.")
 
 	#============================================
 	def __setitem__(self, index, item_cls):

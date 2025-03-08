@@ -40,12 +40,6 @@ class QTIPackageInterface:
 			}
 
 	#=====================================================================
-	def reset_item_bank(self):
-		# mostly for testing
-		del self.item_bank
-		self.item_bank = item_bank.ItemBank(self.allow_mixed)
-
-	#=====================================================================
 	def init_engine(self, input_engine_name: str):
 		"""Retrieve the engine class based on the given engine name."""
 		input_engine_name_low = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
@@ -70,6 +64,25 @@ class QTIPackageInterface:
 	#=====================================================================
 	def get_available_engines(self):
 		return list(self.engine_data.keys())
+
+	#=====================================================================
+	def reset_item_bank(self):
+		# mostly for testing
+		del self.item_bank
+		self.item_bank = item_bank.ItemBank(self.allow_mixed)
+
+	#=====================================================================
+	def trim_item_bank(self, item_limit: int):
+		if not isinstance(item_limit, int):
+			raise ValueError
+		if len(self.item_bank) <= item_limit:
+			return
+		# Randomly shuffle questions to ensure variety in selection
+		random.shuffle(self.item_bank)
+		# Limit the number of questions processed
+		# Directly slice the ItemBank, thanks to __getitem__()
+		self.item_bank = self.item_bank[:item_limit]
+		return
 
 	#=====================================================================
 	def summarize_item_bank(self):
