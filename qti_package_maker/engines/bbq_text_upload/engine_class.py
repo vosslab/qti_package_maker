@@ -6,7 +6,7 @@
 # QTI Package Maker
 from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.bbq_text_upload import write_item
-#from qti_package_maker.engines.bbq_text_upload import read_package
+from qti_package_maker.engines.bbq_text_upload import read_package
 
 class EngineClass(base_engine.BaseEngine):
 	def __init__(self, package_name: str, verbose: bool=False):
@@ -19,7 +19,8 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_package(self, infile: str):
-		raise NotImplementedError
+		new_item_bank = read_package.read_items_from_file(infile)
+		return new_item_bank
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
