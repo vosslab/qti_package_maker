@@ -8,11 +8,10 @@ git_root = subprocess.run(
 sys.path.insert(0, git_root)
 
 # Now you can import your modules
-from qti_package_maker.package_maker import MasterQTIPackage
+from qti_package_maker import package_interface
 
 def main():
-	qti_packer = MasterQTIPackage('dummy_canvas_qti_v1', 'QTI_v1')
-	#qti_packer = MasterQTIPackage('pool_human_readable', 'HumanRead')
+	qti_packer = package_interface.QTIPackageInterface('dummy')
 	qti_packer.show_available_question_types()
 	question_text = 'What is your favorite color?'
 	answer_text = 'blue'
@@ -25,11 +24,11 @@ def main():
 	qti_packer.add_MA(question_text, choices_list, answers_list)
 
 	question_text = 'Match item to color.'
-	prompts_list = ['orange', 'banana', 'lettuce',]
-	choices_list = ['orange', 'yellow', 'green', 'distractor']
-	qti_packer.add_MATCH(question_text, prompts_list, choices_list)
+	answers_list = ['orange', 'banana', 'lettuce',]
+	matching_list = ['orange', 'yellow', 'green',]
+	qti_packer.add_MATCH(question_text, answers_list, matching_list)
 
-	qti_packer.save_package()
+	qti_packer.save_package('human')
 
 if __name__ == '__main__':
     main()
