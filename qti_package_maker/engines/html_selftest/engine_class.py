@@ -25,9 +25,6 @@ class EngineClass(base_engine.BaseEngine):
 		"""
 		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
 		"""
-		if len(item_bank) == 0:
-			print("No items to write out skipping")
-			return
 		outfile = self.get_outfile_name('selftest', 'html', outfile)
 		# Write assessment items to the file
 		formatted_html_text = self.process_one_item_from_item_bank(item_bank)
