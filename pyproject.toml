@@ -49,6 +49,9 @@ license-files = []
 [tool.setuptools.packages.find]
 include = ["qti_package_maker*"]
 
+[tool.setuptools.package-data]
+qti_package_maker = ["data/*"]
+
 [project.urls]
 Homepage = "https://biologyproblems.org"
 Repository = "https://github.com/vosslab/qti_package_maker"
