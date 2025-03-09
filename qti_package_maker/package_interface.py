@@ -47,7 +47,7 @@ class QTIPackageInterface:
 				if self.verbose:
 					print(f"Initialized Engine: {engine_cls.name} ({engine_info['name']})")
 				return engine_cls
-
+		self.show_available_engines()
 		raise ValueError(f"Unknown engine: {input_engine_name}")
 
 	#=====================================================================

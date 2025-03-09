@@ -10,7 +10,7 @@ import re
 #============================================
 def format_question_text(crc16_text: str, question_text: str):
 	# Replace adjacent paragraph tags with a line break for cleaner formatting
-	question_text = re.sub(r'</p>\s*<p>', '<br/>', question_text)
+	question_text = re.sub(r'</p>\s*<p>', '<br/>', question_text, flags=re.MULTILINE)
 	# Add the question text inside another uniquely identified div
 	html_content = f"<div id=\"statement_text_{crc16_text}\">{question_text}</div>\n"
 	return html_content

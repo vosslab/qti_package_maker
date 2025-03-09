@@ -39,7 +39,7 @@ def add_reset_game_javascript(crc16_text: str):
 
 	# Reset all dropzones
 	javascript_text += '\t\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
-	javascript_text += '\t\t\tzone.innerHTML = "Drop Your Choice Here";\n'
+	javascript_text += '\t\t\tzone.textContent = "Drop Your Choice Here";\n'
 	javascript_text += '\t\t\tdelete zone.dataset.value;\n'
 	javascript_text += '\t\t\tzone.style.backgroundColor = "#f8f8f8";\n'
 	javascript_text += '\t\t\tzone.style.border = "2px dashed #bbb";\n'
@@ -49,7 +49,7 @@ def add_reset_game_javascript(crc16_text: str):
 
 	# Clear the feedback column AND reset its color
 	javascript_text += '\t\tdocument.querySelectorAll(".feedback").forEach(cell => {\n'
-	javascript_text += '\t\t\tcell.innerHTML = "";\n'
+	javascript_text += '\t\t\tcell.textContent = "";\n'
 	javascript_text += '\t\t\tcell.style.backgroundColor = "white";\n'
 	javascript_text += "\t\t});\n"
 

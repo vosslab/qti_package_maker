@@ -21,7 +21,11 @@ def main():
 	choices_list = ['orange', 'yellow', 'green', 'distractor']
 	qti_packer.add_item("MATCH", (question_text, prompts_list, choices_list))
 
-	qti_packer.save_package('canvas')
+	output_file = qti_packer.save_package('canvas')
+	if output_file and os.path.exists(output_file):
+		print(f"Successfully saved {output_file}")
+	else:
+		print("Error: Output file was not created.")
 
 if __name__ == '__main__':
     main()
