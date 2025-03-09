@@ -2,12 +2,31 @@
 # Standard Library
 import re
 import time
+import copy
 
 # Pip3 Library
 
 # QTI Package Maker
 from qti_package_maker.common import string_functions
 from qti_package_maker.assessment_items import validator
+
+#============================================
+# TODO: Future Enhancements for Assessment Items
+#============================================
+#
+# 1. **Feedback for Correct/Incorrect Responses**
+#    - Add `self.feedback_correct` and `self.feedback_incorrect` attributes.
+#    - Ensure `get_tuple()` includes feedback data.
+#
+# 2. **Shuffle Choices Boolean for MC/MA Questions**
+#    - Introduce `self.shuffle_choices = False` to allow randomized choices.
+#    - Ensure answer order randomization is handled when exporting.
+#
+# 3. **Hints for Students**
+#    - Add `self.hint` to provide optional hints before answering.
+#    - Ensure `get_tuple()` includes hint data.
+#
+#============================================
 
 class BaseItem:
 	"""
@@ -62,6 +81,17 @@ class BaseItem:
 		preview_text = self.question_text[:30] + "..." if len(self.question_text) > 30 else self.question_text
 		return f"<Item: {self.item_type}: {self.item_crc16}, '{preview_text}'>"
 
+	#============================================
+	def copy(self):
+		"""
+		Creates a deep copy of the assessment item.
+		- Ensures that modifying the copy does not affect the original.
+		- Works for all subclasses without modification.
+		Returns:
+				BaseItem: A new independent copy of the object.
+		"""
+		return copy.deepcopy(self)
+
 	#==============
 	@property
 	def item_type(self):
@@ -83,24 +113,30 @@ class BaseItem:
 		# Call the validation function with question text and item-specific parameters
 		validate_function(self.question_text, *self.get_tuple())
 
-#============================================
-# TODO: Future Enhancements for Assessment Items
-#============================================
-#
-# 1. **Feedback for Correct/Incorrect Responses**
-#    - Add `self.feedback_correct` and `self.feedback_incorrect` attributes.
-#    - Ensure `get_tuple()` includes feedback data.
-#
-# 2. **Shuffle Choices Boolean for MC/MA Questions**
-#    - Introduce `self.shuffle_choices = False` to allow randomized choices.
-#    - Ensure answer order randomization is handled when exporting.
-#
-# 3. **Hints for Students**
-#    - Add `self.hint` to provide optional hints before answering.
-#    - Ensure `get_tuple()` includes hint data.
-#
-#============================================
+	#==============
+	def get_supporting_field_names(self):
+		"""
+		Returns a list of attribute names that are part of the supporting elements
+		of the assessment item (everything that is NOT the question_text).
+		"""
+		raise NotImplementedError("Subclasses must implement get_supporting_field_names().")
 
+	#==============
+	def get_tuple(self):
+		"""
+		Dynamically constructs and returns a tuple of supporting fields.
+		"""
+		supporting_field_data = []
+		for field_name in self.get_supporting_field_names():
+			data = getattr(self, field_name)
+			if data is None or data == "":
+				raise ValueError(f"Invalid empty value detected in {self.item_type}, {self}")
+			supporting_field_data.append(data)
+		return tuple(supporting_field_data)
+
+#============================================
+#============================================
+#============================================
 #============================================
 class MC(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answer_text: str):
@@ -111,8 +147,8 @@ class MC(BaseItem):
 		self.answer_index = choices_list.index(answer_text)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.choices_list, self.answer_text)
+	def get_supporting_field_names(self):
+		return ("choices_list", "answer_text")
 
 #============================================
 class MA(BaseItem):
@@ -124,8 +160,8 @@ class MA(BaseItem):
 		self.answer_index_list = [choices_list.index(answer_text) for answer_text in answers_list]
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.choices_list, self.answers_list)
+	def get_supporting_field_names(self):
+		return ("choices_list", "answers_list")
 
 #============================================
 class MATCH(BaseItem):
@@ -136,8 +172,8 @@ class MATCH(BaseItem):
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.prompts_list, self.choices_list)
+	def get_supporting_field_names(self):
+		return ("prompts_list", "choices_list")
 
 #============================================
 class NUM(BaseItem):
@@ -149,8 +185,8 @@ class NUM(BaseItem):
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.answer_float, self.tolerance_float, self.tolerance_message)
+	def get_supporting_field_names(self):
+		return ("answer_float", "tolerance_float", "tolerance_message")
 
 #============================================
 class FIB(BaseItem):
@@ -160,8 +196,8 @@ class FIB(BaseItem):
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.answers_list,)
+	def get_supporting_field_names(self):
+		return ("answers_list",)
 
 #============================================
 class MULTI_FIB(BaseItem):
@@ -171,8 +207,8 @@ class MULTI_FIB(BaseItem):
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.answer_map,)
+	def get_supporting_field_names(self):
+		return ("answer_map",)
 
 #============================================
 class ORDER(BaseItem):
@@ -182,5 +218,5 @@ class ORDER(BaseItem):
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
 	#================
-	def get_tuple(self):
-		return (self.ordered_answers_list,)
+	def get_supporting_field_names(self):
+		return ("ordered_answers_list",)
