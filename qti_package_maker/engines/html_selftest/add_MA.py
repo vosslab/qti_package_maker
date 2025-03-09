@@ -23,19 +23,19 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 	html_content += f"<ul id=\"choices_{crc16_text}\">\n"
 	# Loop through each answer choice
 	# Loop through each answer choice
-	for idx, choice_text in enumerate(choices_list):
+	for idx, choice_text in enumerate(choices_list, start=1):
 		# Extract the choice text and whether it is the correct answer
 		is_correct_bool = (choice_text in answers_list)
 		# Add a list item to contain the checkbox button and label
 		html_content += "  <li>\n"
 		# Add an input element of type "checkbox"
-		html_content += f"    <input type=\"checkbox\" id=\"option{idx}\" "
+		html_content += f"    <input type=\"checkbox\" id=\"option_{crc16_text}_{idx}\" "
 		# Set the name attribute to group checkbox buttons together under the question's hex value
 		html_content += f" name=\"answer_{crc16_text}\" "
 		# Store whether the choice is correct as a custom data attribute
 		html_content += f" data-correct=\"{str(is_correct_bool).lower()}\">\n"
 		# Add a label for the checkbox button, associated by its ID
-		html_content += f"    <label for=\"option{idx}\">{choice_text}</label>\n"
+		html_content += f"    <label for=\"option_{crc16_text}_{idx}\">{choice_text}</label>\n"
 		# Close the list item
 		html_content += "  </li>\n"
 	# Close the unordered list of choices
@@ -126,11 +126,12 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, choices
 	Main conversion function to generate HTML and JavaScript
 	"""
 	# Generate the HTML content for the question
-	html_content = generate_core_html(crc16_text, question_text, choices_list, answer_text)
+	raw_html = generate_core_html(crc16_text, question_text, choices_list, answer_text)
 	# Format the generated HTML for better readability, do not use for JavaScript
-	html_content = string_functions.format_html_lxml(html_content)
-	# Append the generated JavaScript to the HTML content
-	html_content += generate_javascript(crc16_text)
-	html_content += javascript_functions.add_clear_selection_javascript(crc16_text)
-	return html_content
+	formatted_html = string_functions.format_html_lxml(raw_html)
+	# Append JavaScript AFTER formatting (to avoid breaking <script> tags)
+	full_page_html = formatted_html
+	full_page_html += generate_javascript(crc16_text)
+	full_page_html += javascript_functions.add_clear_selection_javascript(crc16_text)
+	return full_page_html
 

@@ -24,6 +24,8 @@ class QTIPackageInterface:
 	#=====================================================================
 	def _set_engine_data(self):
 		"""Loads engine data from ENGINE_REGISTRY into self.engine_data."""
+		if hasattr(self, "engine_data"):
+			raise AttributeError("engine_data already exists")
 		self.engine_data = {}  # Reset engine data dictionary
 		for engine_name, engine_info in engine_registration.ENGINE_REGISTRY.items():
 			self.engine_data[engine_name] = {
@@ -142,6 +144,7 @@ class QTIPackageInterface:
 		if len(self.item_bank) == 0:
 			print("No assessment items to write, skipping save_package()")
 			return
+		self.item_bank.renumber_items()
 
 		engine_cls = self.init_engine(engine_name)  # Initialize the engine
 		if not hasattr(engine_cls, "save_package"):

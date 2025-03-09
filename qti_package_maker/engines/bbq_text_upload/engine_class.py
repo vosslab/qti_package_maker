@@ -24,9 +24,6 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
-		"""
-		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
-		"""
 		outfile = self.get_outfile_name('bbq', 'txt', outfile)
 		assessment_items_tree = self.process_item_bank(item_bank)
 		# Write assessment items to the file

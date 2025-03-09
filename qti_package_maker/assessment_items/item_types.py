@@ -6,8 +6,8 @@ import time
 # Pip3 Library
 
 # QTI Package Maker
-from qti_package_maker.common import validator
 from qti_package_maker.common import string_functions
+from qti_package_maker.assessment_items import validator
 
 class BaseItem:
 	"""

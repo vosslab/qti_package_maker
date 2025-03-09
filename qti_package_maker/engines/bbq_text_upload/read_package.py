@@ -13,6 +13,7 @@ and returns an new item bank from the input.
 
 for QTI the input is a zip file,
 but for BBQ text upload the format is a text file
+https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
 """
 
 #=====================================================
@@ -107,7 +108,11 @@ def read_MULTI_FIB(parts):
 def read_NUM(parts):
 	question_text = parts[1].strip()
 	answer_float = float(parts[2].strip())  # Convert answer to float
-	tolerance_float = float(parts[3].strip()) if len(parts) > 3 else 0.0  # Default tolerance = 0.0
+	if len(parts) > 3:
+		tolerance_float = float(parts[3].strip())
+	else:
+		# Default tolerance = None
+		tolerance_float = None
 	item_cls = item_types.NUM(question_text, answer_float, tolerance_float)
 	return item_cls
 
@@ -140,8 +145,7 @@ def make_item_cls_from_line(text_line: str):
 	# Look up the function for the given question type
 	read_function = question_function_map.get(bbq_question_header)
 	if read_function is None:
-		print(f"Error: Unsupported question type '{bbq_question_header}' encountered.")
-		return None
+		raise ValueError(f"Unsupported question type: '{bbq_question_header}' in line: {text_line}")
 	# Call the function and return the created item
 	item_cls = read_function(parts)
 	return item_cls

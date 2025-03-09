@@ -37,7 +37,8 @@ class EngineClass(base_engine.BaseEngine):
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
 		"""
-		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
+		Placeholder method for reading a package.
+		Raises NotImplementedError since this is a template.
 		"""
 		raise NotImplementedError("save_package() must be implemented in a real engine class.")
 		outfile = self.get_outfile_name('human', 'txt', outfile)
@@ -45,13 +46,8 @@ class EngineClass(base_engine.BaseEngine):
 		# Write assessment items to the file
 		with open(outfile, "w") as f:
 			count = 0
-			for item_number, assessment_item_dict in enumerate(assessment_items_tree, start=1):
-				item_type = assessment_item_dict['item_type']
-				assessment_text = assessment_item_dict['assessment_item_data']
-				if item_type.lower() == 'match':
-					f.write(f"match {item_number}. {assessment_text}")
-				else:
-					f.write(f"{item_number}. {assessment_text}")
+			for item_number, item_data in enumerate(assessment_items_tree, start=1):
+				f.write(item_data)
 				count += 1
 		if self.verbose is True:
 			print(f"Saved {count} assessment items to {outfile}")

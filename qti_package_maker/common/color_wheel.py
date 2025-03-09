@@ -121,7 +121,7 @@ def get_indices_for_color_wheel(num_colors, color_wheel_length):
 	# Select the required number of indices (`num_colors`)
 	for _ in range(num_colors):
 		# If no indices are available, raise an error
-		if not available_indices:
+		if len(available_indices) == 0:
 			raise ValueError("Cannot select further colors within min_distance constraints")
 
 		# Randomly choose an index from the available indices
@@ -258,7 +258,8 @@ def default_color_wheel_calc(num_colors=4):
 
 #====================================================================
 def make_color_wheel(r, g, b, degree_step=40): # Assumption: r, g, b in [0, 255]
-	r, g, b = map(lambda x: x/255., [r, g, b]) # Convert to [0, 1]
+	# Convert to [0, 1]
+	r, g, b = r/255., g/255., b/255.
 	#print('rgb: {0:.2f}, {1:.2f}, {2:.2f}'.format(r, g, b))
 	hue, l, s = colorsys.rgb_to_hls(r, g, b)     # RGB -> HLS
 	#print('hsl: {0:.2f}, {1:.2f}, {2:.2f}'.format(hue, s, l))
@@ -285,6 +286,8 @@ def make_color_wheel(r, g, b, degree_step=40): # Assumption: r, g, b in [0, 255]
 
 #====================================================================
 def _cubic(t, a, b):
+	if not (0 <= t <= 1):
+		raise ValueError(f"Invalid t value: {t}. Must be between 0 and 1.")
 	weight = t * t * (3 - 2*t)
 	return a + weight * (b - a)
 

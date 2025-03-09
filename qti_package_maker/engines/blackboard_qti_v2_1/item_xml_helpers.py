@@ -10,13 +10,6 @@ import lxml.etree
 def create_assessment_item_header(question_crc16: str):
 	"""
 	Create the root <assessmentItem> element with common namespaces and attributes.
-
-	Args:
-		N (int): Question ID.
-		title (str): Title of the question.
-
-	Returns:
-		lxml.etree.Element: The root <assessmentItem> element.
 	"""
 	rand_crc16 = f"{random.randrange(16**4):04x}"
 	identifier = f"{question_crc16}_{rand_crc16}"

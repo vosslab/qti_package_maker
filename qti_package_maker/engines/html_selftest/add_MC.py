@@ -106,9 +106,10 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, choices
 	Main conversion function to generate HTML and JavaScript
 	"""
 	# Generate the HTML content for the question
-	html_content = generate_core_html(crc16_text, question_text, choices_list, answer_text)
+	raw_html = generate_core_html(crc16_text, question_text, choices_list, answer_text)
 	# Format the generated HTML for better readability, do not use for JavaScript
-	html_content = string_functions.format_html_lxml(html_content)
-	# Append the generated JavaScript to the HTML content
-	html_content += generate_javascript(crc16_text)
-	return html_content
+	formatted_html = string_functions.format_html_lxml(raw_html)
+	# Append JavaScript AFTER formatting (to avoid breaking <script> tags)
+	full_page_html = formatted_html
+	full_page_html += generate_javascript(crc16_text)
+	return full_page_html

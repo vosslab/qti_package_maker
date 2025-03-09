@@ -20,7 +20,10 @@ def add_clear_selection_javascript(crc16_text: str):
 	javascript_text += "\t\tArray.from(checkboxes).forEach(checkbox => checkbox.checked = false);\n"
 	# Clear the result div if it exists
 	javascript_text += f"\t\tconst resultDiv = document.getElementById('result_{crc16_text}');\n"
-	javascript_text += "\t\tif (resultDiv) resultDiv.textContent = '';\n"  # Clear result message
+	javascript_text += "\t\tif (resultDiv) {"
+	javascript_text += "\t\t\tresultDiv.textContent = '';\n"  # Clear result message
+	javascript_text += "\t\t\tresultDiv.style.color = 'inherit';\n"  # Clear result message
+	javascript_text += "\t\t}"
 	# Close function
 	javascript_text += "\t}\n"
 	# Close script tag

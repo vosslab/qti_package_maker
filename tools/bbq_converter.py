@@ -64,7 +64,8 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 		parser.error("At least one output format must be specified. Use -f, -a, or a shortcut.")
 
 	if args.output_file and len(args.output_format) > 1:
-		parser.error("Output file, only works with one output engine.")
+		parser.error("The --output-file option can only be used with a single output format. "
+			"Specify only one format with -f or remove -o.")
 
 	return args
 
@@ -99,6 +100,9 @@ def main():
 	args = parse_args(format_shortcuts)
 	# documentation website:
 	# https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
+
+	if not os.path.exists(args.input_file):
+		raise FileNotFoundError(f"Error: Input file '{args.input_file}' not found.")
 
 	# general format of input_file = "bbq-(content_name)-questions.txt"
 	content_name = extract_core_name(args.input_file)

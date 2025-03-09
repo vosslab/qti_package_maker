@@ -108,8 +108,6 @@ def generate_check_answers_js(crc16_text: str):
 	js_content += "\t\t});\n\n"
 
 	# Update feedback text
-	js_content += "\t\tfeedbackText += `Total Score: ${score} out of ${possible}`;\n"
-
 	js_content += "\t\tfeedbackText = `Total Score: ${score} out of ${possible}`;\n";
 	js_content += "\t\tconst resultDiv = document.getElementById('result_"+crc16_text+"');\n";
 
@@ -233,11 +231,12 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, prompts
 	Main conversion function to generate HTML and JavaScript
 	"""
 	# Generate the HTML content for the question
-	html_content = generate_core_html(crc16_text, question_text, prompts_list, choices_list)
+	raw_html = generate_core_html(crc16_text, question_text, prompts_list, choices_list)
 	# Format the generated HTML for better readability, do not use for JavaScript
-	html_content = string_functions.format_html_lxml(html_content)
-	# Append the generated JavaScript to the HTML content
-	html_content += generate_drag_and_drop_js()
-	html_content += generate_check_answers_js(crc16_text)
-	html_content += javascript_functions.add_reset_game_javascript(crc16_text)
-	return html_content
+	formatted_html = string_functions.format_html_lxml(raw_html)
+	# Append JavaScript AFTER formatting (to avoid breaking <script> tags)
+	full_page_html = formatted_html
+	full_page_html += generate_drag_and_drop_js()
+	full_page_html += generate_check_answers_js(crc16_text)
+	full_page_html += javascript_functions.add_reset_game_javascript(crc16_text)
+	return full_page_html

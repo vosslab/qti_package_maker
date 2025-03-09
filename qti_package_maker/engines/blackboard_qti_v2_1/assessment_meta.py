@@ -15,6 +15,9 @@ def generate_assessment_meta(package_name: str, assessment_file_name_list: list)
 	Returns:
 		lxml.etree.ElementTree: The generated XML tree for assessment_meta.xml.
 	"""
+	if not assessment_file_name_list or len(assessment_file_name_list) == 0:
+		raise ValueError("Cannot generate assessment meta: No assessment files provided.")
+
 	assessment_meta = create_assessment_meta_header(package_name)
 	assessment_section = create_assessment_section(assessment_file_name_list)
 	assessment_meta.append(assessment_section)

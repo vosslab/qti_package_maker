@@ -194,6 +194,7 @@ class ItemBank:
 			raise TypeError(f"Expected a BaseItem, got {type(item_cls).__name__}")
 		# Assign an item number
 		item_cls.item_number = len(self.items_dict) + 1
+		self._validate_item_type(item_cls.item_type)
 		# Validate CRC16 format (must be 4-character hex pairs separated by underscores)
 		item_crc16 = item_cls.item_crc16
 		if not self.crc16_pattern.fullmatch(item_crc16):
@@ -211,6 +212,12 @@ class ItemBank:
 		self.used_item_types_set.add(item_cls.item_type)
 
 	#============================================
+	def renumber_items(self):
+		for number, item_cls in enumerate(self.items_dict.values(), start=1):
+			item_cls.item_number = number
+		return
+
+	#============================================
 	def merge(self, other):
 		"""
 		Merges two ItemBank objects, ensuring no duplicate items.
@@ -225,9 +232,10 @@ class ItemBank:
 		# Determine the new allow_mixed value after merging
 		merged_allow_mixed = self.allow_mixed or other.allow_mixed
 		# Ensure mixed types are not allowed if allow_mixed is False
-		if not merged_allow_mixed and self.first_item_type != other.first_item_type:
-			raise ValueError("Error: Mixing item types is not allowed. "
-				+ f"allowed type is '{self.first_item_type}', attempted to add '{other.first_item_type}'")
+		if not merged_allow_mixed:
+			if self.first_item_type is not None and self.first_item_type != other.first_item_type:
+				raise ValueError("Error: Mixing item types is not allowed. "
+					+ f"allowed type is '{self.first_item_type}', attempted to add '{other.first_item_type}'")
 		# Create a new merged ItemBank with the determined allow_mixed setting
 		merged_bank = ItemBank(allow_mixed=merged_allow_mixed)
 		# Merge dictionaries, ensuring no duplicate items

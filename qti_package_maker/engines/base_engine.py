@@ -35,17 +35,20 @@ class BaseEngine:
 		Validates that the correct write_item and read_package modules are imported.
 		This should be called in subclasses after setting self.write_item and self.read_package.
 		"""
+		if not self.write_item:
+			raise ImportError(f"No write_item module assigned for {self.name} engine.")
 		write_item_path = pathlib.Path(self.write_item.__file__).resolve()
 		if self.name not in write_item_path.parts:
-			raise ImportError(f"Incorrect write_item module imported for {self.name} engine")
+			raise ImportError(f"Incorrect write_item module imported for {self.name} engine. "
+					f"Expected to find {self.name} in {write_item_path}.")
 
 	#==============
 	def read_package(self, infile: str):
-		raise NotImplementedError
+		raise NotImplementedError("Subclasses must implement read_package().")
 
 	#==============
 	def save_package(self, item_bank, outfile: str=None):
-		raise NotImplementedError
+		raise NotImplementedError("Subclasses must implement save_package().")
 
 	#==============
 	def process_one_item_from_item_bank(self, item_bank):
@@ -55,13 +58,12 @@ class BaseEngine:
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
-		item_cls = random.choice(item_bank)
-		write_item_function = getattr(self.write_item, item_cls.item_type, None)
-		if not write_item_function:
-			print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
-			return
 		random.shuffle(item_bank)
 		for item_cls in item_bank:
+			write_item_function = getattr(self.write_item, item_cls.item_type, None)
+			if not write_item_function:
+				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
+				continue
 			item_engine_data = write_item_function(item_cls)
 			if item_engine_data is not None:
 				return item_engine_data
@@ -90,7 +92,7 @@ class BaseEngine:
 	def get_available_question_types(self) -> list:
 		""" Returns a list of available question types based on callable methods in `write_item`. """
 		if not self.write_item:
-			print(f"No write_item module assigned for engine {self.engine_name}.")
+			print(f"No write_item module assigned for engine {self.name}.")
 			return []
 		# Extract function names dynamically
 		functions = [
@@ -106,7 +108,7 @@ class BaseEngine:
 		if available_types:
 			print(f"Available question types: {', '.join(available_types)}")
 		else:
-			print(f"No available question types found for engine {self.engine_name}.")
+			print(f"No available question types found for engine {self.name}.")
 
 	#==============
 	def get_outfile_name(self, prefix: str, extension: str, outfile: str = None) -> str:

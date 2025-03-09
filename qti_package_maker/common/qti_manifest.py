@@ -19,7 +19,7 @@ def generate_manifest(
 		lxml.etree.ElementTree: The generated XML tree for imsmanifest.xml.
 	"""
 	if not assessment_file_name_list:
-		raise ValueError("no assessment files provided")
+		raise ValueError("Cannot generate manifest: No assessment files provided.")
 	if version.startswith("1"):
 		if len(assessment_file_name_list) > 1:
 			raise ValueError("QTI version 1, only supports one assessment_file")

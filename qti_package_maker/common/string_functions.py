@@ -21,7 +21,7 @@ def number_to_letter(integer):
 	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	#letters = 'abcdefghijklmnopqrstuvwxyz'
 	letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	if integer < 1 or integer > len(letters):
+	if not (1 <= integer <= len(letters)):
 		raise ValueError(f"Invalid input: {integer}. Must be between 1 and {len(letters)}.")
 	return letters[integer-1]
 assert number_to_letter(3) == 'C'
@@ -33,8 +33,8 @@ def number_to_lowercase(integer):
 	"""
 	#letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 	lowercase_letters = 'abcdefghijklmnopqrstuvwxyz'
-	if integer < 1 or integer > len(lowercase_letters):
-		raise ValueError
+	if not (1 <= integer <= len(lowercase_letters)):
+		raise ValueError(f"Invalid input: {integer}. Must be between 1 and {len(lowercase_letters)}.")
 	return lowercase_letters[integer-1]
 assert number_to_lowercase(3) == 'c'
 
@@ -95,7 +95,8 @@ def has_prefix(choices_list: list) -> bool:
 		# Remove proper HTML tags before checking for prefix
 		cleaned_choice = re.sub(html_tag_pattern, '', choice)
 		if not prefix_pattern.match(cleaned_choice):
-			return False  # If any choice does not match, return False
+			# If any choice does not match, return False
+			return False
 	# If all choices have a recognized prefix, return True
 	return True
 
@@ -104,9 +105,9 @@ def get_crc16_from_string(mystr):
 	crc16 = crcmod.predefined.Crc('xmodem')
 	try:
 		crc16.update(mystr.encode('ascii', errors='strict'))
-	except UnicodeEncodeError:
+	except UnicodeEncodeError as e:
 		check_ascii(mystr)
-		raise ValueError
+		raise ValueError(f"Cannot encode string to ASCII: {mystr}. Original error: {e}")
 	return crc16.hexdigest().lower()
 
 #==========================
@@ -138,8 +139,7 @@ def make_question_pretty(question):
 	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
-		raise ValueError
-		pass
+		raise ValueError("Table tag detected but not processed.")
 	#print(len(pretty_question))
 	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
 	pretty_question = re.sub(r'<h[0-9]\>', '<p>', pretty_question)
@@ -154,6 +154,7 @@ def make_question_pretty(question):
 	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
 	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
 	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
+	pretty_question = re.sub(r'\<\/?[^>]+\>', '', pretty_question)
 	pretty_question = re.sub('\n\n', '\n', pretty_question)
 	pretty_question = re.sub('  *', ' ', pretty_question)
 
@@ -198,6 +199,8 @@ def format_html_lxml(html_string):
 	Returns:
 		str: The formatted HTML string.
 	"""
+	if '<script' in html_string or '</script>' in html_string:
+		raise ValueError("format_html_lxml() with cause syntax errors in JavaScript.")
 	# Create an HTML parser that removes blank text nodes
 	parser = lxml.html.HTMLParser(remove_blank_text=True)
 	# Parse the input HTML string into an HTML tree

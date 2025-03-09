@@ -26,10 +26,10 @@ class EngineClass(base_engine.BaseEngine):
 		# Verify that the correct write_item module is imported
 		self.validate_write_item_module()
 		# Setup Directories
-		self._setup_diretories()
+		self._setup_directories()
 
 	#==============
-	def _setup_diretories(self):
+	def _setup_directories(self):
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI21-{self.package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
