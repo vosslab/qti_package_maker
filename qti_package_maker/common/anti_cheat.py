@@ -1,12 +1,13 @@
 
 # Standard Library
-import os
 import re
 import random
+import importlib.resources
 
 # Pip3 Library
 
 # QTI Package Maker
+import qti_package_maker
 from qti_package_maker.common import string_functions
 
 # =====================================================================================
@@ -28,7 +29,8 @@ class AntiCheat:
 		# 1. Hidden Terms: Inserts nearly invisible words to detect unauthorized content-sharing.
 		self.use_insert_hidden_terms = hidden_terms
 		self.hidden_term_density = 0.7  # Probability of inserting hidden terms
-		self.hidden_term_bank = self._load_hidden_term_bank()
+		self._load_hidden_term_bank()
+		self.exclude_tags = ["table", "code", "script", "blockquote", "pre", "math"]
 
 		# 2. No-Click Div: Prevents right-click, text selection, copying, and context menu.
 		# Enable/Disable anti-click div wrapper
@@ -103,7 +105,6 @@ class AntiCheat:
 	# Anti-Copy JavaScript: Disables printing, copying, and screenshots
 	# =======================================================================
 
-
 	def get_anticopy_js_function(self):
 		"""
 		Generates JavaScript to prevent various forms of content theft.
@@ -136,7 +137,7 @@ class AntiCheat:
 	# =======================================================================
 
 	# ============
-	def _load_hidden_term_bank():
+	def _load_hidden_term_bank(self):
 		"""
 		Loads a list of hidden words from a predefined file.
 
@@ -145,48 +146,70 @@ class AntiCheat:
 		Returns:
 			list: A list of words to be hidden in the text.
 		"""
-		git_root = string_functions.get_git_root(string_functions.__file__)
-		data_file_path = os.path.join(git_root, 'data/all_short_words.txt')
-		with open(data_file_path, 'r') as file:
-			terms = file.readlines()
-		return [term.strip() for term in terms]
+		with importlib.resources.files(qti_package_maker) as pkg_files:
+			data_file = pkg_files.joinpath("data/all_short_words.txt")
+			with data_file.open("r") as file:
+				terms = file.readlines()
+		self.hidden_term_bank = [term.strip() for term in terms]
+		return
 
 	# ============
-	def insert_hidden_terms(self, text_content):
+	def insert_hidden_terms(self, text_content: str) -> str:
 		"""
 		Randomly inserts hidden words into the text to detect unauthorized distribution.
 
 		- Invisible words are added inside `<span>` elements with `font-size: 1px; color: white;`
 		- Spaces between words are replaced with '@' to create valid insertion points.
-		- Words inside `<table>` and `<code>` blocks are left untouched to avoid breaking syntax.
+		- Words inside specified HTML tags are left untouched to avoid breaking syntax.
 
 		Args:
 			text_content (str): The original assessment content.
+			exclude_tags (list[str], optional): List of HTML tags to exclude from modification.
+				Defaults to `["table", "code"]`.
 
 		Returns:
 			str: The modified content with hidden words.
 		"""
 		if self.hidden_term_bank is None:
-			raise ValueError()
-		# Split the content into sections, preserving tables and code blocks
-		parts = re.split(r'(<table>.*?</table>|<code>.*?</code>)', text_content, flags=re.DOTALL)
+			raise ValueError("Hidden term bank is not initialized.")
+		# Default tags to exclude if none are provided
+		# Create a regex pattern to match any of the excluded tags
+		tag_pattern = r"(" + "|".join(f"<{tag}>.*?</{tag}>" for tag in self.exclude_tags) + r")"
+		# Split the content into sections, preserving excluded blocks
+		parts = re.split(tag_pattern, text_content, flags=re.DOTALL | re.IGNORECASE)
 		new_parts = []
 		for part in parts:
-			if part.startswith('<table>') or part.startswith('<code>'):
-				new_parts.append(part)  # Keep structured content unchanged
+			if any(part.lower().startswith(f"<{tag}") for tag in self.exclude_tags):
+				new_parts.append(part)
 			else:
-				part = re.sub(r'([a-z]) +([a-z])(?![^<>]*>)', r'\1@\2', part)  # Preserve inline elements
-				words = part.split('@')  # Split words where spaces were
-				new_words = []
-				for word in words:
-					new_words.append(word)
-					if random.random() < self.hidden_term_density:
-						hidden_term = random.choice(self.hidden_term_bank)
-						new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
-					else:
-						new_words.append(" ")  # Restore spaces
-				new_parts.append(''.join(new_words))
-		return ''.join(new_parts)
+				new_parts.append(self.process_text_segment(part))
+		return "".join(new_parts)
+
+	# ============
+	def process_text_segment(self, segment: str) -> str:
+		"""
+		Processes a segment of text by inserting hidden terms at random positions.
+
+		Args:
+			segment (str): A non-excluded text segment.
+
+		Returns:
+			str: The processed segment with hidden terms inserted.
+		"""
+		# Preserve inline elements
+		segment = re.sub(r"([a-z]) +([a-z])(?![^<>]*>)", r"\1@\2", segment)
+		# Split words where spaces were
+		words = segment.split("@")
+		new_words = []
+		for word in words:
+			new_words.append(word)
+			if random.random() < self.hidden_term_density:
+				hidden_term = random.choice(self.hidden_term_bank)
+				new_words.append(f"<span style='font-size: 1px; color: white;'>{hidden_term}</span>")
+			else:
+				# Restore spaces
+				new_words.append(" ")
+		return "".join(new_words)
 
 # =======================================================================
 # Anti-Copy Protection: Prevents text selection, copying, right-clicking
