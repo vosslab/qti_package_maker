@@ -146,10 +146,9 @@ class AntiCheat:
 		Returns:
 			list: A list of words to be hidden in the text.
 		"""
-		with importlib.resources.files(qti_package_maker) as pkg_files:
-			data_file = pkg_files.joinpath("data/all_short_words.txt")
-			with data_file.open("r") as file:
-				terms = file.readlines()
+		data_file = importlib.resources.files(qti_package_maker).joinpath("data/all_short_words.txt")
+		with data_file.open("r") as file:
+			terms = file.readlines()
 		self.hidden_term_bank = [term.strip() for term in terms]
 		return
 
@@ -244,7 +243,54 @@ def wrap_text_in_no_click_div(string_text):
 	output += '</div>'
 	return output
 
+# ============
+def main():
+	"""
+	Unit test for the AntiCheat class.
+	"""
+	print("\n===== Running AntiCheat Unit Tests =====")
 
+	# Create AntiCheat instances with different settings
+	term_adder = AntiCheat(hidden_terms=True, no_click_div=False, anticopy_script=False)
+	div_adder = AntiCheat(hidden_terms=False, no_click_div=True, anticopy_script=False)
+
+	# Sample text for testing
+	original_text = """
+	<p>This is a test paragraph. It should have hidden terms.</p>
+	<table><tr><td>Do not modify this table content.</td></tr></table>
+	<code>print('This should not be changed')</code>
+	"""
+
+	# ========= Test insert_hidden_terms() (term_adder) =========
+	print("\n-- Testing insert_hidden_terms() --")
+	modified_text = term_adder.insert_hidden_terms(original_text)
+
+	# Ensure text was modified (hidden terms added)
+	assert modified_text != original_text, "insert_hidden_terms() failed to modify text."
+
+	# Ensure text length increased (hidden terms were inserted)
+	assert len(modified_text) > len(original_text), "Hidden terms were not inserted properly."
+
+	# Ensure <table> and <code> blocks remain unchanged
+	assert "<table><tr><td>Do not modify this table content.</td></tr></table>" in modified_text
+	assert "<code>print('This should not be changed')</code>" in modified_text
+
+	print("✅ insert_hidden_terms() passed all tests.")
+
+	# ========= Test wrap_text_in_no_click_div() (div_adder) =========
+	print("\n-- Testing wrap_text_in_no_click_div() --")
+	protected_text = div_adder.modify_string("Protected text")
+
+	# Ensure the text is wrapped in a <div>
+	assert protected_text.startswith("<div "), "wrap_text_in_no_click_div() did not wrap correctly."
+	assert protected_text.endswith("</div>"), "wrap_text_in_no_click_div() did not wrap correctly."
+
+	print("✅ wrap_text_in_no_click_div() passed all tests.")
+
+	print("\n✅ All tests passed successfully!")
+
+if __name__ == "__main__":
+	main()
 
 
 
