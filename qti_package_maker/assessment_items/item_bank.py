@@ -8,13 +8,6 @@ from tabulate import tabulate
 
 # Pip3 Library
 
-# Set sys.path to the directory containing the 'qti_package_maker' folder
-import sys, subprocess
-git_root = subprocess.run(
-	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
-).stdout.strip() or ".."
-sys.path.insert(0, git_root)
-
 # QTI Package Maker
 from qti_package_maker.common import string_functions
 from qti_package_maker.assessment_items import item_types
@@ -64,14 +57,13 @@ class ItemBank:
 			print(f"- {item_type}")
 
 	#============================================
-	def summarize_items(self):
+	def summarize_item_types(self):
 		"""
 		Generates a formatted ASCII table summarizing the count of each item type.
 		"""
 		item_type_counts = defaultdict(int)
 		# Count item types
-		for crc16_key in self.items_dict_key_list:
-			item_cls = self.items_dict[crc16_key]
+		for item_cls in self.items_dict.values():
 			item_type_counts[item_cls.item_type] += 1
 		# Sort the dictionary by item_type
 		sorted_items = sorted(item_type_counts.items(), key=lambda x: x[0])
@@ -79,7 +71,7 @@ class ItemBank:
 		data = [[item_type, count] for item_type, count in sorted_items]
 		# Print the summary table using tabulate
 		print("\nItem Bank Summary")
-		print(tabulate(data, headers=["Item Type", "Count"], tablefmt="rounded_outline"))
+		print(tabulate(data, headers=["Item Type", "Count"], tablefmt="fancy_outline"))
 
 	#============================================
 	def gather_histogram_data(self, item_type: str):
@@ -93,11 +85,11 @@ class ItemBank:
 				continue
 			if item_type == "MC":
 				answer_counts[item_cls.answer_index] += 1
-				return answer_counts
 			elif item_type == "MA":
 				for index in item_cls.answer_index_list:
 					answer_counts[index] += 1
-				return answer_counts
+		# Return after processing all items
+		return answer_counts
 
 	#============================================
 	def print_histogram(self):
@@ -135,13 +127,14 @@ class ItemBank:
 			item_type (str): The type of item to analyze.
 			title (str): Title of the histogram.
 		"""
-		answer_counts, total_answers = self.gather_histogram_data(item_type)
+		answer_counts = self.gather_histogram_data(item_type)
 		if not answer_counts:
 			print(f"No data available for {title} histogram.")
 			return
 
 		# Prepare data for tabulate
 		data = []
+		total_answers = sum(answer_counts.values())
 		max_index = max(answer_counts.keys())
 		for index in range(max_index + 1):
 			letter = string_functions.number_to_letter(index + 1)
@@ -151,7 +144,7 @@ class ItemBank:
 
 		# Print histogram using tabulate
 		print(f"\n{title} Histogram")
-		print(tabulate(data, headers=["Letter", "Count", "%"], tablefmt="rounded_outline"))
+		print(tabulate(data, headers=["Letter", "Count", "%"], tablefmt="fancy_outline"))
 
 	#============================================
 	def _validate_item_type(self, item_type):
@@ -167,7 +160,7 @@ class ItemBank:
 		if self.first_item_type == item_type:
 			return
 		raise ValueError("Error: Mixing item types is not allowed. "
-			+ f"First type was '{self.first_item_type}', attempted to add '{item_type}'")
+			+ f"allowed type is '{self.first_item_type}', attempted to add '{item_type}'")
 
 	#============================================
 	def add_item(self, item_type: str, item_tuple: tuple):
@@ -234,18 +227,20 @@ class ItemBank:
 		# Ensure mixed types are not allowed if allow_mixed is False
 		if not merged_allow_mixed and self.first_item_type != other.first_item_type:
 			raise ValueError("Error: Mixing item types is not allowed. "
-				+ f"First type was '{self.first_item_type}', attempted to add '{other.first_item_type}'")
+				+ f"allowed type is '{self.first_item_type}', attempted to add '{other.first_item_type}'")
 		# Create a new merged ItemBank with the determined allow_mixed setting
 		merged_bank = ItemBank(allow_mixed=merged_allow_mixed)
 		# Merge dictionaries, ensuring no duplicate items
 		merged_bank.items_dict = {**self.items_dict, **other.items_dict}
-		# Merge item keys while maintaining order
-		merged_bank.items_dict_key_list = list(self.items_dict_key_list)  # Copy original keys
+		# Make a new list of keys
+		new_items_dict_key_list = self.items_dict_key_list.copy()
+		# Merge item keys while maintaining order and avoiding duplicates
+		existing_keys = set(new_items_dict_key_list)
 		for key in other.items_dict_key_list:
-			if key not in merged_bank.items_dict:  # Skip keys that were not merged
-				continue
-			if key not in merged_bank.items_dict_key_list:
-				merged_bank.items_dict_key_list.append(key)  # Append new keys
+			if key not in existing_keys:
+				new_items_dict_key_list.append(key)
+				existing_keys.add(key)
+		merged_bank.items_dict_key_list = new_items_dict_key_list
 		# Ensure consistency: length of keys list should match items_dict
 		if len(merged_bank.items_dict) != len(merged_bank.items_dict_key_list):
 			raise ValueError("Mismatch between items_dict and items_dict_key_list after merge.")
@@ -302,14 +297,21 @@ class ItemBank:
 		Allows modifying the location of a key in the list order.
 		Only moves an existing item by its key.
 		"""
+		if not (0 <= index < len(self.items_dict_key_list)):
+			raise IndexError(f"Index {index} is out of bounds for item bank.")
 		if not isinstance(item_cls, item_types.BaseItem):
 			raise TypeError(f"Expected a Item instance, got {type(item_cls).__name__}")
 		key = item_cls.item_crc16
 		if key not in self.items_dict:
-			raise ValueError(f"Key '{key}' not found in the item bank.")
-		# Remove the key from its current position and insert it at the new index
-		self.items_dict_key_list.remove(key)
-		self.items_dict_key_list.insert(index, key)
+			# Situation 1: New Item -> Add at the specified index
+			self.items_dict[key] = item_cls
+			# Insert at requested index
+			self.items_dict_key_list.insert(index, key)
+		else:
+			# Situation 2: Existing Item -> Move it to the new position
+			self.items_dict_key_list.remove(key)
+			# Insert at requested index
+			self.items_dict_key_list.insert(index, key)
 
 	#============================================
 	def __repr__(self):
@@ -324,8 +326,7 @@ class ItemBank:
 		"""
 		Sorts the items in the bank based on their item_crc16 values.
 		"""
-		# Uses __lt__ of BaseItem
-		self.items_dict_key_list.sort(key=lambda key: self.items_dict[key])
+		self.items_dict_key_list.sort()
 
 	#============================================
 	def __eq__(self, other):
@@ -336,12 +337,16 @@ class ItemBank:
 		2. They contain the same items (same keys)
 			- The key itself is a hash of the value,
 			  so checking only keys is sufficient.
+		3. Two lists are the same if they have the same keys
+			- even if the keys are in a different order
 		"""
+		# Can't compare to non-ItemBank objects
 		if not isinstance(other, ItemBank):
-			return False  # Can't compare to non-ItemBank objects
+			return False
+		# Check the lengths first because it is faster than set comparison
 		if len(self.items_dict) != len(other.items_dict):
 			return False
-		# Order-independent
+		# Order-independent comparison
 		return set(self.items_dict.keys()) == set(other.items_dict.keys())
 
 	#============================================
@@ -412,6 +417,7 @@ def main():
 	merged_bank = bank1.merge(bank2)
 	print(f"merged_bank: {merged_bank}")
 	assert len(merged_bank) == len(bank1) + len(bank2) - 1
+	merged_bank.print_histogram()
 
 	#==========================
 	# Edge Cases & Error Handling
@@ -450,6 +456,21 @@ def main():
 	# Error Handling Tests
 	#==========================
 
+	# Attempting to merge different item types with allow_mixed=True
+	mixed_bank = ItemBank(allow_mixed=True)
+	mixed_bank.add_item("NUM", ("Pi Approximation?", 3.14, 0.01))
+	bank1.merge(mixed_bank)
+	mixed_bank = mixed_bank.merge(bank1)
+	mixed_bank.summarize_item_types()
+
+	try:
+		# Attempting to merge different item types without allow_mixed=True
+		mixed_bank = ItemBank()
+		mixed_bank.add_item("NUM", ("Pi Approximation?", 3.14, 0.01))
+		bank1.merge(mixed_bank)  # Should raise ValueError
+	except ValueError as e:
+		print(f"Expected Error: {e}")
+
 	try:
 		# Trying to add an unsupported item type
 		bank1.add_item("INVALID", ("Bad Question", ["X", "Y"], "X"))
@@ -462,19 +483,9 @@ def main():
 	except TypeError as e:
 		print(f"Expected Error: {e}")
 
-	# Attempting to merge different item types with allow_mixed=True
-	mixed_bank = ItemBank(allow_mixed=True)
-	mixed_bank.add_item("NUM", ("Pi Approximation?", 3.14, 0.01))
-	mixed_bank.merge(bank1)
-	bank1.merge(mixed_bank)
 
-	try:
-		# Attempting to merge different item types without allow_mixed=True
-		mixed_bank = ItemBank()
-		mixed_bank.add_item("NUM", ("Pi Approximation?", 3.14, 0.01))
-		bank1.merge(mixed_bank)  # Should raise ValueError
-	except ValueError as e:
-		print(f"Expected Error: {e}")
+
+
 
 if __name__ == "__main__":
 	main()
