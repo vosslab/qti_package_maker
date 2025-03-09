@@ -201,7 +201,10 @@ class ItemBank:
 			raise ValueError(f"Invalid CRC16 format: '{item_crc16}'")
 		# Prevent duplicates
 		if item_crc16 in self.items_dict:
-			raise ValueError(f"Duplicate item with CRC16 '{item_crc16}' detected.")
+			#raise ValueError(f"Duplicate item with CRC16 '{item_crc16}' detected.")
+			print(f"Warning: Duplicate item with CRC16 '{item_crc16}' detected.")
+			print("skipping...")
+			return
 		# Store the item and track the key order
 		self.items_dict[item_crc16] = item_cls
 		self.items_dict_key_list.append(item_crc16)

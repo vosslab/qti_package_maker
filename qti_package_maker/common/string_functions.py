@@ -200,7 +200,9 @@ def format_html_lxml(html_string):
 		str: The formatted HTML string.
 	"""
 	if '<script' in html_string or '</script>' in html_string:
-		raise ValueError("format_html_lxml() with cause syntax errors in JavaScript.")
+		print("Warning: format_html_lxml() will cause syntax errors in JavaScript.")
+		print("skipping...")
+		return html_string
 	# Create an HTML parser that removes blank text nodes
 	parser = lxml.html.HTMLParser(remove_blank_text=True)
 	# Parse the input HTML string into an HTML tree
