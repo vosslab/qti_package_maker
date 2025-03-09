@@ -26,7 +26,7 @@ class UniqueKeyLoader(yaml.SafeLoader):
 		return super().construct_mapping(node, deep)
 
 #=======================
-def readYamlFile(yaml_file):
+def read_yaml_file(yaml_file):
 	if not os.path.exists(yaml_file):
 		raise FileNotFoundError(f"YAML file not found: {yaml_file}")
 	print("Processing YAML file: ", yaml_file)
