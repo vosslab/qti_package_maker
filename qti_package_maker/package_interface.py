@@ -6,13 +6,6 @@ import random
 
 # Pip3 Library
 
-# Set sys.path to the directory containing the 'qti_package_maker' folder
-import sys, subprocess
-git_root = subprocess.run(
-	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
-).stdout.strip() or ".."
-sys.path.insert(0, git_root)
-
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.engines import engine_registration
@@ -65,6 +58,13 @@ class QTIPackageInterface:
 	#=====================================================================
 	def get_available_engines(self):
 		return list(self.engine_data.keys())
+
+	#=====================================================================
+	def show_available_item_types(self):
+		"""
+		Print all registered engines and their capabilities in a formatted tabulate table.
+		"""
+		self.item_bank.show_available_item_types()
 
 	#=====================================================================
 	def reset_item_bank(self):

@@ -6,13 +6,6 @@ import os
 # Pip3 Library
 import tabulate
 
-# Set sys.path to the directory containing the 'qti_package_maker' folder
-import sys, subprocess
-git_root = subprocess.run(
-	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
-).stdout.strip() or ".."
-sys.path.insert(0, git_root)
-
 # QTI Package Maker
 from qti_package_maker import package_interface
 
@@ -32,6 +25,10 @@ GREEN = "\033[92m"   # Green for pass
 RED = "\033[91m"     # Red for fail
 YELLOW = "\033[93m"  # Yellow for unknown
 RESET = "\033[0m"    # Reset color
+
+#tablefmt = "rounded_outline"
+tablefmt = "github"
+tablefmt = "fancy_outline"
 
 def main():
 	# Create an instance of the QTI packager
@@ -73,9 +70,7 @@ def main():
 	headers = ["Item Type"] + engine_name_list  # First row: headers
 	print(tabulate.tabulate(table_data, headers=headers, tablefmt=tablefmt))
 
-#tablefmt = "rounded_outline"
-tablefmt = "github"
-tablefmt = "fancy_outline"
+
 
 if __name__ == '__main__':
 	main()

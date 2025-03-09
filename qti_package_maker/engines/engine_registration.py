@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import inspect
 import pathlib
 import pkgutil
@@ -102,14 +101,6 @@ try:
 except ModuleNotFoundError:
 	pass
 
-#============================================
-def get_git_root():
-	# Set sys.path to the directory containing the 'qti_package_maker' folder
-	import subprocess
-	return subprocess.run(
-		["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
-	).stdout.strip() or ".."
-
 # Define ANSI color codes for green (pass) and red (fail)
 GREEN = "\033[92m"
 RED = "\033[91m"
@@ -121,7 +112,6 @@ CROSS = f"{RED}X{RESET}" # Red X
 # If this script is run directly, print the available engines
 #============================================
 def main():
-	sys.path.insert(0, get_git_root())
 	register_engines()
 	print_engine_table()
 

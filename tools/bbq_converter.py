@@ -4,13 +4,6 @@ import os
 import re
 import argparse
 
-# Set sys.path to the directory containing the 'qti_package_maker' folder
-import sys, subprocess
-git_root = subprocess.run(
-	["git", "rev-parse", "--show-toplevel"], text=True, capture_output=True
-).stdout.strip() or ".."
-sys.path.insert(0, git_root)
-
 from qti_package_maker import package_interface
 
 #=====================================================
