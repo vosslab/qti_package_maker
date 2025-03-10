@@ -6,6 +6,7 @@
 # QTI Package Maker
 from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.template_class import write_item
+from qti_package_maker.engines.template_class import read_package
 
 class EngineClass(base_engine.BaseEngine):
 	"""
@@ -27,12 +28,14 @@ class EngineClass(base_engine.BaseEngine):
 		self.validate_write_item_module()
 
 	#============================================
-	def read_package(self, infile: str):
+	def read_items_from_file(self, infile: str):
 		"""
 		Placeholder method for reading a package.
 		Raises NotImplementedError since this is a template.
 		"""
-		raise NotImplementedError("read_package() must be implemented in a real engine class.")
+		raise NotImplementedError("read_items_from_file() must be implemented in a real engine class.")
+		new_item_bank = read_package.read_items_from_file(infile)
+		return new_item_bank
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
