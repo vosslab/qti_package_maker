@@ -174,18 +174,19 @@ The package supports multiple output formats via engines. Each engine correspond
 | canvas_qti_v1_2     | ❌         | ✅          |
 | html_selftest       | ❌         | ✅          |
 | human_readable      | ❌         | ✅          |
+| text2qti            | ✅         | ✅          |
 
 ### Assessment Item Types
 
-| Item Type   | bbq text upload   | blackboard qti v2_1   | canvas qti v1_2   | html selftest   | human readable   |
-|-------------|-------------------|-----------------------|-------------------|-----------------|------------------|
-| FIB         | ✅                | ✅                    | ❌                | ❌              | ✅               |
-| MA          | ✅                | ✅                    | ✅                | ✅              | ✅               |
-| MATCH       | ✅                | ❌                    | ✅                | ✅              | ✅               |
-| MC          | ✅                | ✅                    | ✅                | ✅              | ✅               |
-| MULTI_FIB   | ✅                | ❌                    | ❌                | ❌              | ✅               |
-| NUM         | ✅                | ❌                    | ❌                | ❌              | ✅               |
-| ORDER       | ✅                | ❌                    | ❌                | ❌              | ✅               |
+| Item Type   | bbq text upload   | blackboard qti v2.1   | canvas qti v1.2   | html selftest   | human readable   | text2qti   |
+|-------------|-------------------|-----------------------|-------------------|-----------------|------------------|------------|
+| FIB         | ✅                | ✅                    | ❌                | ❌             | ✅               | ✅         |
+| MA          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
+| MATCH       | ✅                | ❌                    | ✅                | ✅             | ✅               | ❌         |
+| MC          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
+| MULTI_FIB   | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
+| NUM         | ✅                | ❌                    | ❌                | ❌             | ✅               | ✅         |
+| ORDER       | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
 
 ## Usage
 
