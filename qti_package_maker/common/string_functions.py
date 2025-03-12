@@ -111,6 +111,11 @@ def get_crc16_from_string(mystr):
 	return crc16.hexdigest().lower()
 
 #==========================
+def get_random_crc16():
+	rand_crc16 = f"{random.randrange(16**4):04x}"
+	return rand_crc16
+
+#==========================
 def check_ascii(mystr):
 	#destructive function
 	mystr = mystr.replace('. ', '\n')

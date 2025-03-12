@@ -10,7 +10,7 @@ import random
 # QTI Package Maker (if applicable, add specific imports here)
 from qti_package_maker.common import string_functions
 
-shuffle = True
+shuffle = False
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 
 """
@@ -40,7 +40,7 @@ def MC(item_cls):
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
 	# Shuffle choices if shuffle is enabled
 	already_has_prefix = string_functions.has_prefix(item_cls.choices_list)
-	if shuffle and not already_has_prefix:
+	if shuffle is True and not already_has_prefix:
 		random.shuffle(item_cls.choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):
@@ -68,7 +68,7 @@ def MA(item_cls):
 	question_text = clean_text_for_bbq(item_cls.question_text)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
 	already_has_prefix = string_functions.has_prefix(item_cls.choices_list)
-	if shuffle and not already_has_prefix:
+	if shuffle is True and not already_has_prefix:
 		random.shuffle(item_cls.choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):

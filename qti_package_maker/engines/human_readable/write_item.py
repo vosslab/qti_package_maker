@@ -12,6 +12,7 @@ def is_valid_content(content_text):
 		return False
 	return True
 
+#====================
 def is_valid_list(list_of_strings):
 	for content_text in list_of_strings:
 		if not is_valid_content(content_text):

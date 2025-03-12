@@ -29,12 +29,18 @@ RESET = "\033[0m"    # Reset color
 #tablefmt = "rounded_outline"
 tablefmt = "github"
 tablefmt = "fancy_outline"
+success = "✅"
+success = f"{GREEN}+{RESET}"
+fail = "❌"
+fail = f"{RED}X{RESET}"
+caution = "⚠️"
+caution = f"{YELLOW}?{RESET}"
 
 def main():
 	# Create an instance of the QTI packager
 	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=False)
 	# Get available engines
-	engine_name_list = qti_packer.get_available_engines()
+	engine_name_list = [item.replace('_', ' ') for item in qti_packer.get_available_engines()]
 	# Get available item types
 	available_item_types = qti_packer.get_available_item_types()
 	print(f"Available question types: {', '.join(available_item_types)}")
@@ -54,12 +60,12 @@ def main():
 				output_file = qti_packer.save_package(engine_name)
 				# Validate file creation and update row results
 				if os.path.exists(output_file):
-					row.append(f"{GREEN}+{RESET}")  # Success
+					row.append(success)  # Success
 					os.remove(output_file)  # Cleanup
 				else:
-					row.append(f"{YELLOW}?{RESET}")  # Unknown issue
+					row.append(caution)  # Unknown issue
 			except NotImplementedError:
-				row.append(f"{RED}X{RESET}")  # Not implemented
+				row.append(fail)  # Not implemented
 		# Append completed row to table data
 		table_data.append(row)
 		# Reset the item bank for the next test
@@ -69,8 +75,6 @@ def main():
 	print("\nWrite Test Results:")
 	headers = ["Item Type"] + engine_name_list  # First row: headers
 	print(tabulate.tabulate(table_data, headers=headers, tablefmt=tablefmt))
-
-
 
 if __name__ == '__main__':
 	main()

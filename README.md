@@ -47,7 +47,9 @@ This tool is primarily intended for educators and developers who need to convert
   - [Supported BBQ Question Formats](#supported-bbq-question-formats)
 - [BBQ Converter Command Options](#bbq-converter-command-options)
   - [Complete BBQ Converter Options](#complete-bbq-converter-options)
-  - [Python API Usage](#python-api-usage)
+- [Python API Usage](#python-api-usage)
+  - [Creating an Assessment Package](#creating-an-assessment-package)
+    - [Saving the Package](#saving-the-package)
 - [Development & Contribution](#development--contribution)
 - [Roadmap and Planned Features](#roadmap-and-planned-features)
 - [Related Projects](#related-projects)
@@ -172,18 +174,19 @@ The package supports multiple output formats via engines. Each engine correspond
 | canvas_qti_v1_2     | ❌         | ✅          |
 | html_selftest       | ❌         | ✅          |
 | human_readable      | ❌         | ✅          |
+| text2qti            | ✅         | ✅          |
 
 ### Assessment Item Types
 
-| Item Type   | bbq text upload   | blackboard qti v2_1   | canvas qti v1_2   | html selftest   | human readable   |
-|-------------|-------------------|-----------------------|-------------------|-----------------|------------------|
-| FIB         | ✅                | ✅                    | ❌                | ❌              | ✅               |
-| MA          | ✅                | ✅                    | ✅                | ✅              | ✅               |
-| MATCH       | ✅                | ❌                    | ✅                | ✅              | ✅               |
-| MC          | ✅                | ✅                    | ✅                | ✅              | ✅               |
-| MULTI_FIB   | ✅                | ❌                    | ❌                | ❌              | ✅               |
-| NUM         | ✅                | ❌                    | ❌                | ❌              | ✅               |
-| ORDER       | ✅                | ❌                    | ❌                | ❌              | ✅               |
+| Item Type   | bbq text upload   | blackboard qti v2.1   | canvas qti v1.2   | html selftest   | human readable   | text2qti   |
+|-------------|-------------------|-----------------------|-------------------|-----------------|------------------|------------|
+| FIB         | ✅                | ✅                    | ❌                | ❌             | ✅               | ✅         |
+| MA          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
+| MATCH       | ✅                | ❌                    | ✅                | ✅             | ✅               | ❌         |
+| MC          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
+| MULTI_FIB   | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
+| NUM         | ✅                | ❌                    | ❌                | ❌             | ✅               | ✅         |
+| ORDER       | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
 
 ## Usage
 
@@ -260,19 +263,31 @@ options:
                         Set output format to HTML self-test.
 ```
 
-### Python API Usage
-```python
-from qti_package_maker.package_maker import MasterQTIPackage
+## Python API Usage
 
-# Initialize the package with the desired format engine
-qti_packer = MasterQTIPackage("example_pool", engine="qti_v2")
+### Creating an Assessment Package
+
+```python
+from qti_package_maker.package_interface import QTIPackageInterface
+
+# Initialize the package with a name
+qti_packer = QTIPackageInterface("example_assessment", verbose=True)
 
 # Add a multiple-choice question
-qti_packer.add_MC("What is your favorite color?", ["blue", "red", "yellow"], "blue")
+qti_packer.add_item("MC", ("What is your favorite color?", ["blue", "red", "yellow"], "blue"))
 
-# Save the package
-qti_packer.save_package()
+# Add a multiple-answer question
+qti_packer.add_item("MA", ("Which of these are fruits?", ["apple", "carrot", "banana", "broccoli"], ["apple", "banana"]))
 ```
+
+#### Saving the Package
+```python
+# Save as Canvas QTI v1.2
+qti_packer.save_package("canvas_qti_v1_2")
+
+# Save as Blackboard QTI v2.1
+qti_packer.save_package("blackboard_qti_v2_1")
+``````
 This will create a Blackboard-compatible QTI v2.1 ZIP file.
 
 ## Development & Contribution

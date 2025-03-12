@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qti_package_maker"
-version = "0.7.3"
+version = "0.8.4"
 description = "A package to create, manage, and convert QTI packages for quizzes and assessments in Canvas, Blackboard, Moodle, and LibreTexts ADAPT."
 readme = "README.md"
 authors = [{ name = "Dr. Neil Voss"}]
@@ -48,6 +48,9 @@ license-files = []
 # This will include all sub-packages
 [tool.setuptools.packages.find]
 include = ["qti_package_maker*"]
+
+[tool.setuptools.package-data]
+qti_package_maker = ["data/*"]
 
 [project.urls]
 Homepage = "https://biologyproblems.org"
