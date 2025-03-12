@@ -26,6 +26,9 @@ class BaseItem:
 			)
 		self.crc16_pattern = re.compile(r"\b([0-9a-f]{4})(?:_[0-9a-f]{4})*\b")
 		self.item_type_pattern = re.compile(r"^[A-Z_]+$")
+		# feedback
+		self.feedback_correct = None
+		self.feedback_incorrect = None
 		# Store the time of item creation
 		self.timestamp = time.time()
 		self.item_number = 0
