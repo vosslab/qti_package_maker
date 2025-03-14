@@ -11,7 +11,7 @@
             </qtimetadatafield>
             <qtimetadatafield>
               <fieldlabel>original_answer_ids</fieldlabel>
-              <fieldentry>1804,5148,3761,9340</fieldentry>
+              <fieldentry>1804</fieldentry>
             </qtimetadatafield>
             <qtimetadatafield>
               <fieldlabel>assessment_question_identifierref</fieldlabel>
@@ -33,12 +33,6 @@
           <outcomes>
             <decvar maxvalue="100" minvalue="0" varname="SCORE" vartype="Decimal"/>
           </outcomes>
-          <respcondition continue="Yes">
-            <conditionvar>
-              <other/>
-            </conditionvar>
-            <displayfeedback feedbacktype="Response" linkrefid="general_fb"/>
-          </respcondition>
           <respcondition continue="No">
             <conditionvar>
               <or>
@@ -52,51 +46,6 @@
             <setvar action="Set" varname="SCORE">100</setvar>
             <displayfeedback feedbacktype="Response" linkrefid="1804_fb"/>
             <displayfeedback feedbacktype="Response" linkrefid="correct_fb"/>
-          </respcondition>
-          <respcondition continue="No">
-            <conditionvar>
-              <or>
-                <varequal respident="response1">0.0</varequal>
-                <and>
-                  <vargte respident="response1">0.0</vargte>
-                  <varlte respident="response1">0.0</varlte>
-                </and>
-              </or>
-            </conditionvar>
-            <setvar action="Set" varname="SCORE">100</setvar>
-            <displayfeedback feedbacktype="Response" linkrefid="correct_fb"/>
-          </respcondition>
-          <respcondition continue="No">
-            <conditionvar>
-              <or>
-                <varequal respident="response1">0.0</varequal>
-                <and>
-                  <vargte respident="response1">0.0</vargte>
-                  <varlte respident="response1">0.0</varlte>
-                </and>
-              </or>
-            </conditionvar>
-            <setvar action="Set" varname="SCORE">100</setvar>
-            <displayfeedback feedbacktype="Response" linkrefid="correct_fb"/>
-          </respcondition>
-          <respcondition continue="No">
-            <conditionvar>
-              <or>
-                <varequal respident="response1">0.0</varequal>
-                <and>
-                  <vargte respident="response1">0.0</vargte>
-                  <varlte respident="response1">0.0</varlte>
-                </and>
-              </or>
-            </conditionvar>
-            <setvar action="Set" varname="SCORE">100</setvar>
-            <displayfeedback feedbacktype="Response" linkrefid="correct_fb"/>
-          </respcondition>
-          <respcondition continue="Yes">
-            <conditionvar>
-              <other/>
-            </conditionvar>
-            <displayfeedback feedbacktype="Response" linkrefid="general_incorrect_fb"/>
           </respcondition>
         </resprocessing>
         <itemfeedback ident="general_fb">
