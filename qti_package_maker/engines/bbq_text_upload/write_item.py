@@ -63,7 +63,7 @@ def MA(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, item_cls.choices_list: list, item_cls.answers_list: list) -> str:
 	"""Multiple Answer question."""
 	# Initialize the question format with MC (Multiple Answer) identifier
-	bb_question = 'MC\t'
+	bb_question = 'MA\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
 	question_text = clean_text_for_bbq(item_cls.question_text)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
