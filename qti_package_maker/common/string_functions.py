@@ -82,6 +82,34 @@ assert number_to_roman(9) == 'IX'
 assert number_to_roman(44) == 'XLIV'
 assert number_to_roman(1999) == 'MCMXCIX'
 
+#============================
+def strip_crc_prefix(question_text: str) -> str:
+	"""
+	Removes leading CRC-style identifiers (e.g., 'b5b6', '6902_b5b6', '<p>b5b6</p>', etc.)
+	from question text. CRCs may be wrapped in <p> tags or prefixed by a number and dot.
+
+	Args:
+		question_text (str): The full question text (HTML or plain).
+
+	Returns:
+		str: Question text without the leading CRC prefix.
+	"""
+	crc_pattern = re.compile(
+		r'^\s*'                # leading whitespace
+		r'(\d{1,3}\.\s*)?'     # optional numeric prefix like '34. '
+		r'(?:<p>)?'            # optional opening <p>
+		r'([a-f0-9_]{4,16})'   # the CRC prefix
+		r'(?:</p>)?'           # optional closing </p>
+		r'\s*',                # trailing whitespace
+	)
+	return re.sub(crc_pattern, '', question_text, count=1)
+assert strip_crc_prefix("34. b5b6 banana") == "banana"
+assert strip_crc_prefix("11. <p>b5b6</p> banana") == "banana"
+assert strip_crc_prefix("<p>b5b6</p> banana") == "banana"
+assert strip_crc_prefix("<p>6902_b5b6</p> <p><strong>banana</strong></p>") == "<p><strong>banana</strong></p>"
+assert strip_crc_prefix("b5b6 banana") == "banana"
+assert strip_crc_prefix("b5b6_6902 banana") == "banana"
+
 #==============================================================
 # Check if choices in choices_list start with a prefix pattern.
 def has_prefix(choices_list: list) -> bool:
@@ -99,6 +127,54 @@ def has_prefix(choices_list: list) -> bool:
 			return False
 	# If all choices have a recognized prefix, return True
 	return True
+
+#==============================================================
+def remove_prefix_from_list(choices_list: list) -> list:
+	"""
+	Removes prefix like 'A. ', '1)', etc. from the content of HTML-wrapped choices,
+	while preserving the outer HTML tags.
+	"""
+	if not has_prefix(choices_list):
+		return choices_list
+	cleaned_choice_list = []
+	for choice_text in choices_list:
+			cleaned_choice_text = strip_prefix_from_string(choice_text)
+			cleaned_choice_list.append(cleaned_choice_text)
+	return cleaned_choice_list
+
+#==============================================================
+def strip_prefix_from_string(choice: str) -> str:
+	"""
+	Removes a prefix like 'A. ', '1)', etc. from a string,
+	while preserving surrounding HTML if present.
+	"""
+	prefix_pattern = re.compile(r'^([A-Za-z0-9][\.\:\)])\s*')
+	outer_tag_pattern = re.compile(r'^<(?P<tag>\w+)([^>]*)>(?P<inner>.*)</\1>$', re.IGNORECASE)
+
+	match = outer_tag_pattern.match(choice)
+	if match:
+		tag = match.group('tag')
+		attrs = match.group(2)
+		inner = match.group('inner')
+		inner_clean = re.sub(prefix_pattern, '', inner, count=1)
+		return f'<{tag}{attrs}>{inner_clean}</{tag}>'
+	else:
+		return re.sub(prefix_pattern, '', choice, count=1)
+
+#============================
+# Simple text prefixes
+assert strip_prefix_from_string('A. Glucose') == 'Glucose'
+assert strip_prefix_from_string('B. Fructose') == 'Fructose'
+assert strip_prefix_from_string('2) Fructose') == 'Fructose'
+assert strip_prefix_from_string('b: Option B') == 'Option B'
+#============================
+# HTML-wrapped prefixes
+assert strip_prefix_from_string('<p>A. Glucose</p>') == '<p>Glucose</p>'
+assert strip_prefix_from_string('<span style="color:red">A. Glucose</span>') == '<span style="color:red">Glucose</span>'
+#============================
+# No prefix should be a no-op
+assert strip_prefix_from_string('Glucose') == 'Glucose'
+assert strip_prefix_from_string('<span>Glucose</span>') == '<span>Glucose</span>'
 
 #==========================
 def get_crc16_from_string(mystr):
@@ -168,7 +244,7 @@ def make_question_pretty(question):
 
 	pretty_question = html.unescape(pretty_question)
 	#print(len(pretty_question))
-	return pretty_question
+	return pretty_question.strip()
 
 #=====================
 def convert_sub_sup(pretty_question):
