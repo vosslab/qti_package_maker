@@ -226,7 +226,11 @@ def validate_MATCH(question_text: str, prompts_list: list, choices_list: list):
 	validate_list_of_strings(prompts_list, 'prompts_list', 2)
 	validate_list_of_strings(choices_list, 'choices_list', 2)
 	if len(prompts_list) > len(choices_list):
-		raise ValueError("choices_list must be greater or equal to the prompts_list.")
+		for i, p in enumerate(prompts_list):
+			print(f"p{i+1}: {p[:30]}")
+		for i, c in enumerate(choices_list):
+			print(f"c{i+1}: {c[:30]}")
+		raise ValueError(f"choices_list {len(choices_list)} must be greater or equal to the prompts_list {len(prompts_list)}.")
 	return True
 assert validate_MATCH("Match the fruit to their color?", ["orange", "strawberry"], ["orange", "red"]) == True
 
