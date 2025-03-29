@@ -26,10 +26,11 @@ class UniqueKeyLoader(yaml.SafeLoader):
 		return super().construct_mapping(node, deep)
 
 #=======================
-def read_yaml_file(yaml_file):
+def read_yaml_file(yaml_file, msg=True):
 	if not os.path.exists(yaml_file):
 		raise FileNotFoundError(f"YAML file not found: {yaml_file}")
-	print("Processing YAML file: ", yaml_file)
+	if msg is True:
+		print("Processing YAML file: ", yaml_file)
 	yaml.allow_duplicate_keys = False
 	with open(yaml_file, 'r') as yaml_file_pointer:
 		yaml_text = yaml_file_pointer.read()
