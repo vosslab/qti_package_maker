@@ -39,16 +39,12 @@ def MC(item_cls):
 	question_text = clean_text_for_bbq(item_cls.question_text)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
 	# Shuffle choices if shuffle is enabled
-	already_has_prefix = string_functions.has_prefix(item_cls.choices_list)
-	if shuffle is True and not already_has_prefix:
+	if shuffle is True:
 		random.shuffle(item_cls.choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):
-		if already_has_prefix:
-			bb_question += f'\t{clean_text_for_bbq(choice_text)}'
-		else:
-			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
+		letter_prefix = string_functions.number_to_letter(i+1)
+		bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
 		# Check if the current choice is the correct answer
 		if choice_text == item_cls.answer_text:
 			bb_question += '\tCorrect'
@@ -67,16 +63,12 @@ def MA(item_cls):
 	# Append the question text with a unique identifier (item_cls.item_crc16)
 	question_text = clean_text_for_bbq(item_cls.question_text)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
-	already_has_prefix = string_functions.has_prefix(item_cls.choices_list)
-	if shuffle is True and not already_has_prefix:
+	if shuffle is True:
 		random.shuffle(item_cls.choices_list)
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):
-		if already_has_prefix:
-			bb_question += f'\t{clean_text_for_bbq(choice_text)}'
-		else:
-			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
+		letter_prefix = string_functions.number_to_letter(i+1)
+		bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
 		# Check if the current choice is in the correct answer list
 		if choice_text in item_cls.answers_list:
 			bb_question += '\tCorrect'
@@ -95,8 +87,6 @@ def MATCH(item_cls):
 	# Append the question text with a unique identifier (item_cls.item_crc16)
 	question_text = clean_text_for_bbq(item_cls.question_text)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'
-	already_has_prefix = (string_functions.has_prefix(item_cls.prompts_list)
-				or string_functions.has_prefix(item_cls.choices_list))
 	# Ensure prompts and choices are the same length
 	if len(item_cls.prompts_list) < len(item_cls.choices_list):
 		print("Warning: bbq upload format does not allow extra distractors")
@@ -104,11 +94,7 @@ def MATCH(item_cls):
 	for i in range(len(item_cls.prompts_list)):
 		prompt_text = clean_text_for_bbq(item_cls.prompts_list[i])
 		choice_text = clean_text_for_bbq(item_cls.choices_list[i])
-		if already_has_prefix:
-			bb_question += f'\t{prompt_text}\t{choice_text}'
-		else:
-			letter_prefix = string_functions.number_to_letter(i+1)
-			bb_question += f"- {letter_prefix}. {prompt_text}\t{i+1}. {choice_text}"
+		bb_question += f'\t{prompt_text}\t{choice_text}'
 	# Return the formatted question
 	return bb_question + '\n'
 
