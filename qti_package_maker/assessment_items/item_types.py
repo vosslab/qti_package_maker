@@ -52,9 +52,9 @@ class BaseItem:
 		self.timestamp = time.time()
 		self.item_number = 0
 		# Store the question text
-		self.question_text = question_text
+		self.question_text = string_functions.strip_crc_prefix(question_text)
 		# Compute CRC16 hash for the question text
-		self.question_crc16 = string_functions.get_crc16_from_string(question_text)
+		self.question_crc16 = string_functions.get_crc16_from_string(self.question_text)
 		# Combine question CRC16 with options CRC16 to create a unique item CRC
 		self.item_crc16 = f"{self.question_crc16}_{self.secondary_crc16}"
 		if not self.crc16_pattern.fullmatch(self.item_crc16):
@@ -143,8 +143,8 @@ class BaseItem:
 #============================================
 class MC(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answer_text: str):
-		self.choices_list = choices_list
-		self.answer_text = answer_text
+		self.choices_list = string_functions.remove_prefix_from_list(choices_list)
+		self.answer_text = string_functions.strip_prefix_from_string(answer_text)
 		secondary_string = "|".join(choices_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		self.answer_index = choices_list.index(answer_text)
@@ -156,8 +156,8 @@ class MC(BaseItem):
 #============================================
 class MA(BaseItem):
 	def __init__(self, question_text: str, choices_list: list, answers_list: list):
-		self.choices_list = choices_list
-		self.answers_list = answers_list
+		self.choices_list = string_functions.remove_prefix_from_list(choices_list)
+		self.answers_list = string_functions.remove_prefix_from_list(answers_list)
 		secondary_string = "|".join(choices_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		self.answer_index_list = [choices_list.index(answer_text) for answer_text in answers_list]
@@ -169,8 +169,8 @@ class MA(BaseItem):
 #============================================
 class MATCH(BaseItem):
 	def __init__(self, question_text: str, prompts_list: list, choices_list: list):
-		self.prompts_list = prompts_list
-		self.choices_list = choices_list
+		self.prompts_list = string_functions.remove_prefix_from_list(prompts_list)
+		self.choices_list = string_functions.remove_prefix_from_list(choices_list)
 		secondary_string = "|".join(prompts_list+choices_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
@@ -194,7 +194,7 @@ class NUM(BaseItem):
 #============================================
 class FIB(BaseItem):
 	def __init__(self, question_text: str, answers_list: list):
-		self.answers_list = answers_list
+		self.answers_list = string_functions.remove_prefix_from_list(answers_list)
 		secondary_string = "|".join(answers_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
@@ -216,7 +216,7 @@ class MULTI_FIB(BaseItem):
 #============================================
 class ORDER(BaseItem):
 	def __init__(self, question_text: str, ordered_answers_list: list):
-		self.ordered_answers_list = ordered_answers_list
+		self.ordered_answers_list = string_functions.remove_prefix_from_list(ordered_answers_list)
 		secondary_string = "|".join(ordered_answers_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		super().__init__(question_text)
