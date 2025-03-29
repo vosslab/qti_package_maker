@@ -1,4 +1,5 @@
 # Import modules from the standard library
+import random
 
 # Import modules from external pypi libraries
 
@@ -157,9 +158,9 @@ def generate_prompts_table(crc16_text: str, prompts_list: list):
 	# Generate rows for each prompt
 	for index, prompt_text in enumerate(prompts_list, start=1):
 		# Assign code for data-correct
-		choice_data_value = crc16_text + "_" + string_functions.number_to_letter(index)
-		table_content += "\t\t<tr>\n"
-		table_content += "\t\t\t<td class=\"feedback\" style=\"border: 1px solid #999; text-align: center;\"></td>\n"
+		choice_data_value =  f"{crc16_text}_{index:03d}"
+		table_content += '\t\t<tr>\n'
+		table_content += "\t\t\t<td class=\"feedback\" style=\"border: 1px solid #999; text-align: center; padding: 3px;\"></td>\n"
 		table_content += f"\t\t\t<td class=\"dropzone\" data-correct=\"{choice_data_value}\" title=\"Drop Your Choice Here\" "
 		table_content += "style=\"border: 2px dashed #bbb; padding: 8px; text-align: center; background-color: #f8f8f8; "
 		table_content += "font-size: 12px; min-width: 120px; max-width: 200px; overflow: hidden; white-space: nowrap; "
@@ -190,16 +191,20 @@ def generate_choices_list(crc16_text: str, choices_list: list):
 		("#803300", "#f5e6cc"),  # Dark Brown/Beige
 		("#660033", "#ffccff")   # Dark Pink/Light Pink
 	]
+	# Zip choices with their original index (1-based)
+	original_choices = [(i, choice) for i, choice in enumerate(choices_list, start=1)]
+	random.shuffle(original_choices)  # Shuffle the display order
+
 	# Generate list items
-	for index, choice_text in enumerate(choices_list):
+	for display_index, (original_index, choice_text) in enumerate(original_choices, start=1):
 		clean_title = string_functions.make_question_pretty(choice_text)
-		letter_label = string_functions.number_to_letter(index + 1)  # Ensure 1-based index
-		choice_data_value = crc16_text + "_" + letter_label
-		text_color, bg_color = colors[index % len(colors)]  # Cycle through colors
+		letter_label = string_functions.number_to_letter(display_index)
+		choice_data_value =  f"{crc16_text}_{original_index:03d}"
+		text_color, bg_color = colors[display_index % len(colors)]  # Cycle through colors
 		html_content += f'\t<li class="draggable" draggable="true" data-value="{choice_data_value}" title="{clean_title}" '
 		html_content += 'style="border: 1px solid #999; padding: 8px; margin: 5px; cursor: grab; '
 		html_content += f'background-color: {bg_color}; display: inline-block;">\n'
-		html_content += f'\t\t<span style="color: {text_color}; font-weight: bold;">{letter_label}</span> - {choice_text}\n'
+		html_content += f'\t\t<span style="color: {text_color};"><strong>{letter_label}.</strong> {choice_text}</span>\n'
 		html_content += '\t</li>\n'
 	# Close list
 	html_content += "</ul>\n"
