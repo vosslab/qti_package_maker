@@ -87,7 +87,9 @@ def MATCH(item_cls):
 	assessment_text += '\n'
 	already_has_prefix = string_functions.has_prefix(item_cls.prompts_list) or string_functions.has_prefix(item_cls.choices_list)
 	num_items = min(len(item_cls.prompts_list), len(item_cls.choices_list))
-	max_prompt_length = max(len(prompt_text) for prompt_text in item_cls.prompts_list)
+	max_prompt_length = max(len(string_functions.make_question_pretty(text)) for text in item_cls.prompts_list)
+	#print(f"max_prompt_length = {max_prompt_length}")
+	#max_choice_length = max(len(text) for text in item_cls.choices_list)
 	for i in range(num_items):
 		prompt_text = string_functions.make_question_pretty(item_cls.prompts_list[i])
 		choice_text = string_functions.make_question_pretty(item_cls.choices_list[i])
@@ -95,7 +97,7 @@ def MATCH(item_cls):
 			assessment_text += f"- {prompt_text.rjust(max_prompt_length)} / {choice_text}\n"
 		else:
 			letter_prefix = string_functions.number_to_letter(i+1)
-			assessment_text += f"- {letter_prefix}. {prompt_text.rjust(max_prompt_length)} / {i+1}. {choice_text}\n"
+			assessment_text += f"- {i+1}. {prompt_text.rjust(max_prompt_length)} / {letter_prefix}. {choice_text}\n"
 	assessment_text += '\n\n'
 	return assessment_text
 
