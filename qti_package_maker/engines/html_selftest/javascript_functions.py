@@ -53,6 +53,9 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text += '\t\t\tcell.style.backgroundColor = "white";\n'
 	javascript_text += "\t\t});\n"
 
+	# Clear score result div
+	javascript_text += f'\t\tdocument.getElementById("result_{crc16_text}").innerHTML = "";\n'
+
 	# Close function
 	javascript_text += "\t}\n"
 	# Close script tag
