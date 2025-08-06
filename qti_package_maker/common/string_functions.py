@@ -215,33 +215,46 @@ def check_ascii(mystr):
 def make_question_pretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub(r'\<table .+\<\/table\>', '\n[TABLE]\n', pretty_question)
-	pretty_question = re.sub(r'\<table .*\<\/table\>', '\n[TABLE]\n', pretty_question)
+	pretty_question = re.sub(r'<table.*?</table>', '\n[TABLE]\n', pretty_question, flags=re.IGNORECASE)
 	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
 		raise ValueError("Table tag detected but not processed.")
 	#print(len(pretty_question))
-	pretty_question = re.sub('&nbsp;', ' ', pretty_question)
-	pretty_question = re.sub(r'<h[0-9]\>', '<p>', pretty_question)
-	pretty_question = re.sub('<br/>', '\n', pretty_question)
-	pretty_question = re.sub('<li>', '\n* ', pretty_question)
-	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question)
-	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question)
-	pretty_question = re.sub(r'<\/?[bi]>', ' ', pretty_question)
-	pretty_question = re.sub('</span>', '', pretty_question)
-	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question)
-	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question)
-	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question)
-	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question)
+	# Replace non-breaking spaces with regular spaces
+	pretty_question = re.sub('&nbsp;', ' ', pretty_question, flags=re.IGNORECASE)
+	# Convert all <h1> to <h9> tags into <p> tags
+	pretty_question = re.sub(r'<h[0-9]\>', '<p>', pretty_question, flags=re.IGNORECASE)
+	# Convert <br/> line breaks into newline characters
+	pretty_question = re.sub('<br/>', '\n', pretty_question, flags=re.IGNORECASE)
+	# Convert <li> tags into bullet points with newlines
+	pretty_question = re.sub('<li>', '\n* ', pretty_question, flags=re.IGNORECASE)
+	# Remove <span> tags but keep the content
+	pretty_question = re.sub('<span [^>]*>', ' ', pretty_question, flags=re.IGNORECASE)
+	# Remove <strong> and </strong> tags
+	pretty_question = re.sub(r'<\/?strong>', ' ', pretty_question, flags=re.IGNORECASE)
+	# Remove <b>, </b>, <i>, and </i> tags
+	pretty_question = re.sub(r'<\/?[bi]>', ' ', pretty_question, flags=re.IGNORECASE)
+	# Remove closing </span> tags
+	pretty_question = re.sub('</span>', '', pretty_question, flags=re.IGNORECASE)
+	# Remove horizontal rule tags
+	pretty_question = re.sub(r'\<hr\/\>', '', pretty_question, flags=re.IGNORECASE)
+	# Replace adjacent </p><p> blocks with a newline
+	pretty_question = re.sub(r'\<\/p\>\s*\<p\>', '\n', pretty_question, flags=re.IGNORECASE)
+	# Replace empty <p></p> blocks with a newline
+	pretty_question = re.sub(r'\<p\>\s*\<\/p\>', '\n', pretty_question, flags=re.IGNORECASE)
+	# Remove closing </p> tags that are preceded by a newline
+	pretty_question = re.sub(r'\n\<\/p\>', '', pretty_question, flags=re.IGNORECASE)
+	# Remove opening <p> tags that are preceded by a newline
+	pretty_question = re.sub(r'\n\<p\>', '\n', pretty_question, flags=re.IGNORECASE)
+	# Remove any remaining HTML tags
 	pretty_question = re.sub(r'\<\/?[^>]+\>', '', pretty_question)
+	# Collapse double newlines into a single newline
 	pretty_question = re.sub('\n\n', '\n', pretty_question)
+	# Collapse multiple spaces into a single space
 	pretty_question = re.sub('  *', ' ', pretty_question)
-
 	# Define subscript and superscript mappings
 	pretty_question = convert_sub_sup(pretty_question)
-
 	pretty_question = html.unescape(pretty_question)
 	#print(len(pretty_question))
 	return pretty_question.strip()
