@@ -5,13 +5,13 @@ from qti_package_maker.common import string_functions
 #==============================================================
 def is_valid_content(content_text):
 	if '<mathml' in content_text.lower():
-		print("problem contains mathml")
+		#print("problem contains mathml")
 		return False
 	if 'rdkit' in content_text.lower():
-		print("problem contains rdkit")
+		#print("problem contains rdkit")
 		return False
 	if '<table' in content_text.lower():
-		print("problem contains a table")
+		#print("problem contains a table")
 		return False
 	return True
 
