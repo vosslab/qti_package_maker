@@ -155,16 +155,17 @@ class MC(BaseItem):
 
 #============================================
 class MA(BaseItem):
-	def __init__(self, question_text: str, choices_list: list, answers_list: list):
+	def __init__(self, question_text: str, choices_list: list, answers_list: list, min_answers_required: int=2):
 		self.choices_list = string_functions.remove_prefix_from_list(choices_list)
 		self.answers_list = string_functions.remove_prefix_from_list(answers_list)
+		self.min_answers_required = min_answers_required
 		secondary_string = "|".join(choices_list)
 		self.secondary_crc16 = string_functions.get_crc16_from_string(secondary_string)
 		self.answer_index_list = [choices_list.index(answer_text) for answer_text in answers_list]
 		super().__init__(question_text)
 	#================
 	def get_supporting_field_names(self):
-		return ("choices_list", "answers_list")
+		return ("choices_list", "answers_list", "min_answers_required")
 
 #============================================
 class MATCH(BaseItem):

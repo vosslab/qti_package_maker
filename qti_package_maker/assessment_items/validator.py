@@ -148,7 +148,7 @@ def validate_MC(question_text: str, choices_list: list, answer_text: str):
 assert validate_MC("What is 2 + 2?", ["4", "3"], "4") == True
 
 #========================================================
-def validate_MA(question_text: str, choices_list: list, answers_list: list):
+def validate_MA(question_text: str, choices_list: list, answers_list: list, min_answers_required: int=2):
 	"""
 	Validate a Multiple Answer question.
 
@@ -159,7 +159,7 @@ def validate_MA(question_text: str, choices_list: list, answers_list: list):
 	"""
 	validate_string_text(question_text, 'question_text')
 	validate_list_of_strings(choices_list, 'choices_list', 3)
-	validate_list_of_strings(answers_list, 'answers_list', 2)
+	validate_list_of_strings(answers_list, 'answers_list', min_answers_required)
 	choices_set = set(choices_list)
 	answers_set = set(answers_list)
 	# Check that there is at least one non-answer (choice that is not in answers_set)
