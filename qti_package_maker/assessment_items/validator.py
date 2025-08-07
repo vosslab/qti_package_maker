@@ -148,7 +148,8 @@ def validate_MC(question_text: str, choices_list: list, answer_text: str):
 assert validate_MC("What is 2 + 2?", ["4", "3"], "4") == True
 
 #========================================================
-def validate_MA(question_text: str, choices_list: list, answers_list: list, min_answers_required: int=2):
+def validate_MA(question_text: str, choices_list: list, answers_list: list,
+		min_answers_required: int = 2, allow_all_correct: bool = False):
 	"""
 	Validate a Multiple Answer question.
 
@@ -163,7 +164,7 @@ def validate_MA(question_text: str, choices_list: list, answers_list: list, min_
 	choices_set = set(choices_list)
 	answers_set = set(answers_list)
 	# Check that there is at least one non-answer (choice that is not in answers_set)
-	if choices_set == answers_set:
+	if not allow_all_correct and choices_set == answers_set:
 		raise ValueError("There must be at least one non-answer choice.")
 	# Ensure all answers are valid choices
 	if not answers_set.issubset(choices_set):
