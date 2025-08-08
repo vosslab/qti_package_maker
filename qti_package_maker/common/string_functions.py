@@ -215,7 +215,16 @@ def check_ascii(mystr):
 def make_question_pretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
-	pretty_question = re.sub(r'<table.*?</table>', '\n[TABLE]\n', pretty_question, flags=re.IGNORECASE)
+	pattern = re.compile(
+		r'<table\b[^>]*>((?:(?!<table).)*?)</table>',
+		flags=re.IGNORECASE | re.DOTALL
+	)
+	# Keep replacing innermost tables until no more matches
+	while True:
+		new_pretty = pattern.sub(' [TABLE] ', pretty_question)
+		if new_pretty == pretty_question:
+			break
+		pretty_question = new_pretty
 	if '<table' in pretty_question or '</table' in pretty_question:
 		print("MISSED A TABLE")
 		print(pretty_question)
