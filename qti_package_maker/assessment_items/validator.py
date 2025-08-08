@@ -122,7 +122,7 @@ def validate_list_of_strings(list_of_strings: list, name: str, min_length: int =
 		validate_string_text(string_text, f'string_text from {name}', 1)
 	# Ensure there are no duplicate items
 	if len(list_of_strings) > len(set(list_of_strings)):
-		raise ValueError(f"'{name}' cannot contain duplicate items.")
+		raise ValueError(f"'{name}' cannot contain duplicate items:\n{list_of_strings}\n")
 	return True
 assert validate_list_of_strings(["4", "3"], 'assert') == True
 
