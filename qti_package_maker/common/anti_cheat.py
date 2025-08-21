@@ -66,7 +66,10 @@ class AntiCheat:
 		# Modify supporting fields dynamically
 		for field_name in item_copy.get_supporting_field_names():
 			value = getattr(item_copy, field_name)
-			if isinstance(value, str):
+			 # skip fields where we never want anti-cheat
+			if field_name.startswith('answer') or field_name.startswith('tolerance'):
+				continue
+			elif isinstance(value, str):
 				setattr(item_copy, field_name, self.modify_string(value))
 			elif isinstance(value, list):
 				setattr(item_copy, field_name, self.modify_list(value))
