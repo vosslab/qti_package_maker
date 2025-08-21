@@ -65,11 +65,13 @@ class AntiCheat:
 		item_copy.question_text = self.modify_string(item_copy.question_text)
 		# Modify supporting fields dynamically
 		for field_name in item_copy.get_supporting_field_names():
-				value = getattr(item_copy, field_name)
-				if isinstance(value, str):
-					setattr(item_copy, field_name, self.modify_string(value))
-				elif isinstance(value, list):
-					setattr(item_copy, field_name, self.modify_list(value))
+			value = getattr(item_copy, field_name)
+			if isinstance(value, str):
+				setattr(item_copy, field_name, self.modify_string(value))
+			elif isinstance(value, list):
+				setattr(item_copy, field_name, self.modify_list(value))
+			else:
+				print(f"Skipping field name, {field_name}")
 		return item_copy
 
 	# ============= MODIFY STRINGS/LISTS =============
@@ -92,7 +94,7 @@ class AntiCheat:
 				str: Modified text with anti-cheating protections.
 		"""
 		if self.use_insert_hidden_terms:
-			string_text = self.insert_hidden_terms(string_text, self.hidden_term_bank)
+			string_text = self.insert_hidden_terms(string_text)
 		if self.use_no_click_div:
 			string_text = wrap_text_in_no_click_div(string_text)
 		if self.use_anticopy_script:
