@@ -22,7 +22,7 @@ class AntiCheat:
 	- Injects anti-copy JavaScript to block printing and screenshots.
 	"""
 
-	def __init__(self, hidden_terms=False, no_click_div=False, anticopy_script=False):
+	def __init__(self, hidden_terms=True, no_click_div=True, anticopy_script=False):
 		"""
 		Initializes anti-cheating settings.
 		"""
