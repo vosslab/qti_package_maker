@@ -95,6 +95,7 @@ def main():
 		'human_readable':      ('-r', 'human', 	"Set output format to human-readable text"),
 		'bbq_text_upload':     ('-b', 'bbq',   	"Set output format to (B)lack(B)oard (Q)uestions"),
 		'html_selftest':       ('-s', 'selftest',	"Set output format to HTML self-test"),
+		'moodle_aiken':        ('-A', 'aiken',	   "Set output format to MOODLE aiken"),
 	}
 
 	args = parse_args(format_shortcuts)
