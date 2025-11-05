@@ -19,6 +19,13 @@ https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_R
 """
 
 #==============================================================
+def insert_prefix_inside_div(html: str, prefix: str) -> str:
+	"""
+	Insert the given prefix text immediately after the first <div ...> tag.
+	"""
+	return re.sub(r'(<div[^>]*>)', r'\1' + f'{prefix}. ', html, count=1)
+
+#==============================================================
 def clean_text_for_bbq(text):
 	# Remove newlines
 	text = text.replace('\n', ' ')
@@ -44,7 +51,7 @@ def MC(item_cls):
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):
 		letter_prefix = string_functions.number_to_letter(i+1)
-		bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
+		bb_question += '\t' + clean_text_for_bbq(insert_prefix_inside_div(choice_text, letter_prefix))
 		# Check if the current choice is the correct answer
 		if choice_text == item_cls.answer_text:
 			bb_question += '\tCorrect'
@@ -68,7 +75,7 @@ def MA(item_cls):
 	# Loop through answer choices and format them with letters
 	for i, choice_text in enumerate(item_cls.choices_list):
 		letter_prefix = string_functions.number_to_letter(i+1)
-		bb_question += f'\t{letter_prefix}. {clean_text_for_bbq(choice_text)}'
+		bb_question += '\t' + clean_text_for_bbq(insert_prefix_inside_div(choice_text, letter_prefix))
 		# Check if the current choice is in the correct answer list
 		if choice_text in item_cls.answers_list:
 			bb_question += '\tCorrect'
