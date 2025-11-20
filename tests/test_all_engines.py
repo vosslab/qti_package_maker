@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
 # Standard Library
+import argparse
 import os
+import sys
 
 # Pip3 Library
 import tabulate
 
 # QTI Package Maker
+# Allow running tests without installing the package
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from qti_package_maker import package_interface
 
 # List of all question types with sample data
@@ -36,7 +40,19 @@ fail = f"{RED}X{RESET}"
 caution = "⚠️"
 caution = f"{YELLOW}?{RESET}"
 
-def main():
+def main(argv=None):
+	parser = argparse.ArgumentParser(
+		description="Smoke test writing all question types to all available engines."
+	)
+	parser.add_argument(
+		"--tablefmt",
+		default=tablefmt,
+		help="tabulate table format (default: fancy_outline)",
+	)
+	args = parser.parse_args(argv)
+
+	local_tablefmt = args.tablefmt
+
 	# Create an instance of the QTI packager
 	qti_packer = package_interface.QTIPackageInterface("dummy", verbose=False)
 	# Get available engines
@@ -59,22 +75,27 @@ def main():
 			try:
 				output_file = qti_packer.save_package(engine_name)
 				# Validate file creation and update row results
-				if os.path.exists(output_file):
-					row.append(success)  # Success
-					os.remove(output_file)  # Cleanup
+				if output_file and isinstance(output_file, (str, os.PathLike)):
+					if os.path.exists(output_file):
+						row.append(success)  # Success
+						os.remove(output_file)  # Cleanup
+					else:
+						row.append(caution)  # Unknown issue
 				else:
-					row.append(caution)  # Unknown issue
+					row.append(caution)  # Engine did not return a usable path
 			except NotImplementedError:
 				row.append(fail)  # Not implemented
+			except ImportError:
+				row.append(fail)  # Engine misconfigured
 		# Append completed row to table data
 		table_data.append(row)
 		# Reset the item bank for the next test
 		qti_packer.reset_item_bank()
 	# Print test results with swapped columns and rows
-	qti_packer.show_available_engines(tablefmt)
+	qti_packer.show_available_engines(local_tablefmt)
 	print("\nWrite Test Results:")
 	headers = ["Item Type"] + engine_name_list  # First row: headers
-	print(tabulate.tabulate(table_data, headers=headers, tablefmt=tablefmt))
+	print(tabulate.tabulate(table_data, headers=headers, tablefmt=local_tablefmt))
 
 if __name__ == '__main__':
 	main()

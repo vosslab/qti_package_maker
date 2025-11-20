@@ -182,11 +182,11 @@ The package supports multiple output formats via engines. Each engine correspond
 |-------------|-------------------|-----------------------|-------------------|-----------------|------------------|------------|
 | FIB         | ✅                | ✅                    | ❌                | ❌             | ✅               | ✅         |
 | MA          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
-| MATCH       | ✅                | ❌                    | ✅                | ✅             | ✅               | ❌         |
+| MATCH       | ✅                | ✅                    | ✅                | ✅             | ✅               | ❌         |
 | MC          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
-| MULTI_FIB   | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
-| NUM         | ✅                | ❌                    | ❌                | ❌             | ✅               | ✅         |
-| ORDER       | ✅                | ❌                    | ❌                | ❌             | ✅               | ❌         |
+| MULTI_FIB   | ✅                | ✅                    | ✅                | ✅             | ✅               | ❌         |
+| NUM         | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
+| ORDER       | ✅                | ✅                    | ❌                | ✅             | ✅               | ❌         |
 
 ## Usage
 
@@ -387,5 +387,3 @@ If not, see <http://www.gnu.org/licenses/>.
 - Inspired by the need for cross-platform assessment portability
 - Developed to improve e-learning content interoperability
 - Funding for production from Illinois Library OER grant
-
-
