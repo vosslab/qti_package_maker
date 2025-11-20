@@ -95,19 +95,46 @@ def MATCH(item_cls):
 def NUM(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	raise NotImplementedError
+	assessment_item_etree = lxml.etree.Element("item",
+		ident=f"numeric_{item_cls.item_number:03d}", title=item_cls.item_crc16)
+	# Minimal metadata
+	itemmetadata = item_xml_helpers.create_itemmetadata([], 'numerical_question')
+	presentation_etree = item_xml_helpers.create_numeric_presentation(item_cls.question_text)
+	resprocessing_etree = item_xml_helpers.create_NUM_resprocessing(item_cls.answer_float, item_cls.tolerance_float)
+	assessment_item_etree.append(itemmetadata)
+	assessment_item_etree.append(presentation_etree)
+	assessment_item_etree.append(resprocessing_etree)
+	return assessment_item_etree
 
 #==============================================================
 def FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	raise NotImplementedError
+	assessment_item_etree = lxml.etree.Element("item",
+		ident=f"fib_{item_cls.item_number:03d}", title=item_cls.item_crc16)
+	itemmetadata = item_xml_helpers.create_itemmetadata([], 'short_answer_question')
+	presentation_etree = item_xml_helpers.create_fib_presentation(item_cls.question_text)
+	resprocessing_etree = item_xml_helpers.create_FIB_resprocessing(item_cls.answers_list)
+	assessment_item_etree.append(itemmetadata)
+	assessment_item_etree.append(presentation_etree)
+	assessment_item_etree.append(resprocessing_etree)
+	return assessment_item_etree
 
 #==============================================================
 def MULTI_FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	raise NotImplementedError
+	assessment_item_etree = lxml.etree.Element("item",
+		ident=f"fib_multi_{item_cls.item_number:03d}", title=item_cls.item_crc16)
+	_, label_ids = item_xml_helpers.create_multi_fib_response_lids(item_cls.answer_map)
+	choice_ids_list = label_ids
+	itemmetadata = item_xml_helpers.create_itemmetadata(choice_ids_list, 'fill_in_multiple_blanks_question')
+	presentation_etree = item_xml_helpers.create_multi_fib_presentation(item_cls.question_text, item_cls.answer_map)
+	resprocessing_etree = item_xml_helpers.create_MULTI_FIB_resprocessing(item_cls.answer_map)
+	assessment_item_etree.append(itemmetadata)
+	assessment_item_etree.append(presentation_etree)
+	assessment_item_etree.append(resprocessing_etree)
+	return assessment_item_etree
 
 #==============================================================
 def ORDER(item_cls):

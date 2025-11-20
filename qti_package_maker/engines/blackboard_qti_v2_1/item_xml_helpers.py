@@ -90,6 +90,33 @@ def create_response_declaration_FIB(answers_list: list) -> lxml.etree.Element:
 	return responseDeclaration
 
 #==============
+def create_response_declaration_MATCH(prompts_list: list) -> lxml.etree.Element:
+	"""
+	Create a <responseDeclaration> for matching interactions following the
+	1EdTech QTI 2.1 match example (directed pairs, multiple cardinality, mapped scoring).
+	"""
+	response_declaration = lxml.etree.Element(
+		"responseDeclaration",
+		attrib={
+			"baseType": "directedPair",
+			"cardinality": "multiple",
+			"identifier": "RESPONSE",
+		},
+	)
+
+	correct_response = lxml.etree.SubElement(response_declaration, "correctResponse")
+	mapping = lxml.etree.SubElement(response_declaration, "mapping", defaultValue="0")
+
+	for idx in range(len(prompts_list)):
+		prompt_id = f"prompt_{idx+1:03d}"
+		choice_id = f"choice_{idx+1:03d}"
+		pair_value = f"{prompt_id} {choice_id}"
+		lxml.etree.SubElement(correct_response, "value").text = pair_value
+		lxml.etree.SubElement(mapping, "mapEntry", mapKey=pair_value, mappedValue="1")
+
+	return response_declaration
+
+#==============
 def create_item_body(question_html_text: str, choices_list: list, max_choices: int, shuffle: bool=True):
 	## IMPORTANT !!!
 	"""
@@ -149,6 +176,50 @@ def create_item_body_FIB(question_html_text: str, choices_list: list):
 	lxml.etree.SubElement(text_entry_p, "textEntryInteraction", {
 		"responseIdentifier": "RESPONSE"
 	})
+
+	return item_body
+
+#==============
+def create_item_body_MATCH(question_html_text: str, prompts_list: list, choices_list: list,
+		shuffle: bool=True):
+	"""
+	Create the <itemBody> element for a matching interaction.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	item_body.append(parsed_html)
+
+	match_interaction = lxml.etree.SubElement(item_body, "matchInteraction", {
+		"responseIdentifier": "RESPONSE",
+		"shuffle": str(shuffle).lower(),
+		"maxAssociations": f"{len(prompts_list):d}",
+	})
+	# Optional prompt that mirrors the question stem for compatibility with reference examples
+	lxml.etree.SubElement(match_interaction, "prompt").text = html.unescape(question_html_text)
+
+	prompt_set = lxml.etree.SubElement(match_interaction, "simpleMatchSet")
+	for idx, prompt_text in enumerate(prompts_list, start=1):
+		prompt_choice = lxml.etree.SubElement(prompt_set, "simpleAssociableChoice", {
+			"identifier": f"prompt_{idx:03d}",
+			"fixed": "true",
+			"matchMax": "1",
+			"matchMin": "0",
+		})
+		parsed_prompt = lxml.html.fragment_fromstring(html.unescape(prompt_text), create_parent='p')
+		prompt_choice.append(parsed_prompt)
+
+	choice_set = lxml.etree.SubElement(match_interaction, "simpleMatchSet")
+	for idx, choice_text in enumerate(choices_list, start=1):
+		assoc_choice = lxml.etree.SubElement(choice_set, "simpleAssociableChoice", {
+			"identifier": f"choice_{idx:03d}",
+			"fixed": "true",
+			"matchMax": f"{len(prompts_list):d}",
+			"matchMin": "0",
+		})
+		parsed_choice = lxml.html.fragment_fromstring(html.unescape(choice_text), create_parent='p')
+		assoc_choice.append(parsed_choice)
 
 	return item_body
 
@@ -235,6 +306,193 @@ def create_response_processing() -> lxml.etree.Element:
 	return response_processing
 
 #==============
+def create_response_processing_MATCH() -> lxml.etree.Element:
+	"""
+	Create a <responseProcessing> element using the standard match template.
+	"""
+	return lxml.etree.Element("responseProcessing", {
+		"template": "http://www.imsglobal.org/question/qti_v2p1/rptemplates/map_response"
+	})
+
+#==============
+def create_response_declaration_ORDER(ordered_answers_list: list) -> lxml.etree.Element:
+	"""
+	Create a <responseDeclaration> for ordering interactions.
+	"""
+	response_declaration = lxml.etree.Element(
+		"responseDeclaration",
+		attrib={
+			"baseType": "identifier",
+			"cardinality": "ordered",
+			"identifier": "RESPONSE",
+		},
+	)
+	correct_response = lxml.etree.SubElement(response_declaration, "correctResponse")
+	for idx in range(len(ordered_answers_list)):
+		choice_id = f"choice_{idx+1:03d}"
+		lxml.etree.SubElement(correct_response, "value").text = choice_id
+	return response_declaration
+
+#==============
+def create_item_body_ORDER(question_html_text: str, ordered_answers_list: list, shuffle: bool=True):
+	"""
+	Create the <itemBody> element for an ordering interaction.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	item_body.append(parsed_html)
+
+	order_interaction = lxml.etree.SubElement(item_body, "orderInteraction", {
+		"responseIdentifier": "RESPONSE",
+		"shuffle": str(shuffle).lower(),
+	})
+	prompt = lxml.etree.SubElement(order_interaction, "prompt")
+	prompt.text = html.unescape(question_html_text)
+
+	for idx, choice_text in enumerate(ordered_answers_list, start=1):
+		simple_choice = lxml.etree.SubElement(order_interaction, "simpleChoice", {
+			"identifier": f"choice_{idx:03d}",
+		})
+		parsed_choice = lxml.html.fragment_fromstring(html.unescape(choice_text), create_parent='p')
+		simple_choice.append(parsed_choice)
+
+	return item_body
+
+#==============
+def create_response_processing_ORDER() -> lxml.etree.Element:
+	"""
+	Create a <responseProcessing> element using the standard match_correct template.
+	"""
+	return lxml.etree.Element("responseProcessing", {
+		"template": "http://www.imsglobal.org/question/qti_v2p1/rptemplates/match_correct"
+	})
+
+#==============
+def create_response_declarations_MULTI_FIB(answer_map: dict) -> list:
+	"""
+	Create a list of <responseDeclaration> elements for each blank in MULTI_FIB.
+	"""
+	response_declarations = []
+	for key, answers in answer_map.items():
+		resp_decl = lxml.etree.Element(
+			"responseDeclaration",
+			attrib={
+				"baseType": "string",
+				"cardinality": "single",
+				"identifier": key,
+			},
+		)
+		correct_response = lxml.etree.SubElement(resp_decl, "correctResponse")
+		for val in answers:
+			lxml.etree.SubElement(correct_response, "value").text = val
+		response_declarations.append(resp_decl)
+	return response_declarations
+
+#==============
+def create_item_body_MULTI_FIB(question_html_text: str, answer_map: dict):
+	"""
+	Create <itemBody> for MULTI_FIB, replacing [key] markers with textEntryInteraction.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	for key in sorted(answer_map.keys()):
+		placeholder = f"[{key}]"
+		interaction = f'<textEntryInteraction responseIdentifier="{key}"></textEntryInteraction>'
+		unescaped_text = unescaped_text.replace(placeholder, interaction)
+
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	item_body.append(parsed_html)
+	return item_body
+
+#==============
+def create_response_processing_MULTI_FIB(answer_map: dict) -> lxml.etree.Element:
+	"""
+	Create <responseProcessing> awarding partial credit per correct blank.
+	"""
+	response_processing = lxml.etree.Element("responseProcessing")
+	blanks = list(sorted(answer_map.keys()))
+	base_score = 100 / len(blanks) if blanks else 0
+
+	for key in blanks:
+		resp_condition = lxml.etree.SubElement(response_processing, "respcondition")
+		conditionvar = lxml.etree.SubElement(resp_condition, "conditionvar")
+		match = lxml.etree.SubElement(conditionvar, "match")
+		lxml.etree.SubElement(match, "variable", {"identifier": key})
+		lxml.etree.SubElement(match, "correct", {"identifier": key})
+		setvar = lxml.etree.SubElement(resp_condition, "setvar", varname="SCORE", action="Add")
+		setvar.text = f"{base_score:.2f}"
+
+	return response_processing
+
+#==============
+def create_response_declaration_NUM(answer_float: float) -> lxml.etree.Element:
+	"""
+	Create a <responseDeclaration> for numeric entry.
+	"""
+	response_declaration = lxml.etree.Element(
+		"responseDeclaration",
+		attrib={
+			"baseType": "float",
+			"cardinality": "single",
+			"identifier": "RESPONSE",
+		},
+	)
+	correct_response = lxml.etree.SubElement(response_declaration, "correctResponse")
+	lxml.etree.SubElement(correct_response, "value").text = f"{answer_float}"
+	return response_declaration
+
+#==============
+def create_item_body_NUM(question_html_text: str):
+	"""
+	Create the <itemBody> element for numeric entry using a textEntryInteraction.
+	"""
+	item_body = lxml.etree.Element("itemBody")
+
+	unescaped_text = html.unescape(question_html_text)
+	parsed_html = lxml.html.fragment_fromstring(unescaped_text, create_parent='div')
+	item_body.append(parsed_html)
+
+	text_entry_p = lxml.etree.SubElement(item_body, "p")
+	lxml.etree.SubElement(text_entry_p, "textEntryInteraction", {
+		"responseIdentifier": "RESPONSE"
+	})
+	return item_body
+
+#==============
+def create_response_processing_NUM(answer_float: float, tolerance_float: float,
+		tolerance_mode: str="absolute",
+		include_lower: bool=True, include_upper: bool=True) -> lxml.etree.Element:
+	"""
+	Create <responseProcessing> for numeric entry with tolerance support.
+	"""
+	response_processing = lxml.etree.Element("responseProcessing")
+	resp_condition = lxml.etree.SubElement(response_processing, "responseCondition")
+	resp_if = lxml.etree.SubElement(resp_condition, "responseIf")
+
+	tolerance_str = f"{tolerance_float} {tolerance_float}"
+	equal_attrs = {
+		"toleranceMode": tolerance_mode,
+		"tolerance": tolerance_str,
+		"includeLowerBound": str(include_lower).lower(),
+		"includeUpperBound": str(include_upper).lower(),
+	}
+	equal = lxml.etree.SubElement(resp_if, "equal", equal_attrs)
+	lxml.etree.SubElement(equal, "variable", {"identifier": "RESPONSE"})
+	lxml.etree.SubElement(equal, "correct", {"identifier": "RESPONSE"})
+
+	set_outcome = lxml.etree.SubElement(resp_if, "setOutcomeValue", {"identifier": "SCORE"})
+	lxml.etree.SubElement(set_outcome, "baseValue", {"baseType": "float"}).text = "100"
+
+	resp_else = lxml.etree.SubElement(resp_condition, "responseElse")
+	set_outcome_else = lxml.etree.SubElement(resp_else, "setOutcomeValue", {"identifier": "SCORE"})
+	lxml.etree.SubElement(set_outcome_else, "baseValue", {"baseType": "float"}).text = "0"
+
+	return response_processing
+
+#==============
 def create_response_processing_big() -> lxml.etree.Element:
 	"""
 	Create a <responseProcessing> element with correct feedback and scoring.
@@ -269,4 +527,3 @@ def create_response_processing_big() -> lxml.etree.Element:
 	lxml.etree.SubElement(set_feedback_incorrect, "baseValue", baseType="identifier").text = "incorrect_fb"
 
 	return response_processing
-

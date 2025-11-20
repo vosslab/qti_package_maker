@@ -51,13 +51,39 @@ def MA(item_cls):
 def MATCH(item_cls):
 	#crc16_text: str, question_text: str, answers_list: list, matching_list: list):
 	"""Create a Matching question where users match items from two lists."""
-	raise NotImplementedError
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
+	response_declaration = item_xml_helpers.create_response_declaration_MATCH(item_cls.prompts_list)
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body_MATCH(item_cls.question_text,
+		item_cls.prompts_list, item_cls.choices_list, shuffle=True)
+	response_processing = item_xml_helpers.create_response_processing_MATCH()
+	# Assemble the XML tree
+	assessment_item_etree.append(response_declaration)
+	for outcome in outcome_declarations:
+		assessment_item_etree.append(outcome)
+	assessment_item_etree.append(item_body)
+	assessment_item_etree.append(response_processing)
+	return assessment_item_etree
 
 #==============================================================
 def NUM(item_cls):
 	#crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	raise NotImplementedError
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
+	response_declaration = item_xml_helpers.create_response_declaration_NUM(item_cls.answer_float)
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body_NUM(item_cls.question_text)
+	response_processing = item_xml_helpers.create_response_processing_NUM(
+		item_cls.answer_float, item_cls.tolerance_float,
+		tolerance_mode="absolute",
+		include_lower=True, include_upper=True)
+	# Assemble the XML tree
+	assessment_item_etree.append(response_declaration)
+	for outcome in outcome_declarations:
+		assessment_item_etree.append(outcome)
+	assessment_item_etree.append(item_body)
+	assessment_item_etree.append(response_processing)
+	return assessment_item_etree
 
 #==============================================================
 def FIB(item_cls):
@@ -81,10 +107,31 @@ def FIB(item_cls):
 def MULTI_FIB(item_cls):
 	#crc16_text: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	raise NotImplementedError
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
+	response_declarations = item_xml_helpers.create_response_declarations_MULTI_FIB(item_cls.answer_map)
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body_MULTI_FIB(item_cls.question_text, item_cls.answer_map)
+	response_processing = item_xml_helpers.create_response_processing_MULTI_FIB(item_cls.answer_map)
+	assessment_item_etree.extend(response_declarations)
+	for outcome in outcome_declarations:
+		assessment_item_etree.append(outcome)
+	assessment_item_etree.append(item_body)
+	assessment_item_etree.append(response_processing)
+	return assessment_item_etree
 
 #==============================================================
 def ORDER(item_cls):
 	#crc16_text: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	raise NotImplementedError
+	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
+	response_declaration = item_xml_helpers.create_response_declaration_ORDER(item_cls.ordered_answers_list)
+	outcome_declarations = item_xml_helpers.create_outcome_declarations()
+	item_body = item_xml_helpers.create_item_body_ORDER(item_cls.question_text, item_cls.ordered_answers_list, shuffle=True)
+	response_processing = item_xml_helpers.create_response_processing_ORDER()
+	# Assemble the XML tree
+	assessment_item_etree.append(response_declaration)
+	for outcome in outcome_declarations:
+		assessment_item_etree.append(outcome)
+	assessment_item_etree.append(item_body)
+	assessment_item_etree.append(response_processing)
+	return assessment_item_etree

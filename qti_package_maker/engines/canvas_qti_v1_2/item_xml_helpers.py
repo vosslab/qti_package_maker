@@ -190,6 +190,140 @@ def create_MATCH_resprocessing(prompts_list: list):
 	return resprocessing
 
 #==============================================================
+def create_numeric_presentation(question_text: str):
+	"""
+	Create <presentation> for a numeric response (fill-in) using response_str.
+	"""
+	presentation = lxml.etree.Element("presentation")
+	material_mattext = create_material_mattext(question_text)
+	presentation.append(material_mattext)
+
+	response_str = lxml.etree.SubElement(presentation, "response_str", ident="response1", rcardinality="Single")
+	render_fib = lxml.etree.SubElement(response_str, "render_fib", fibtype="Decimal")
+	lxml.etree.SubElement(render_fib, "response_label", ident="answer1", rshuffle="No")
+	return presentation
+
+#==============================================================
+def create_NUM_resprocessing(answer_float: float, tolerance_float: float):
+	"""
+	Create <resprocessing> for numeric questions with optional tolerance.
+	"""
+	resprocessing = _create_base_outcomes()
+	respcondition = lxml.etree.SubElement(resprocessing, "respcondition", **{"continue": "No"})
+	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
+
+	if tolerance_float is None:
+		varequal = lxml.etree.SubElement(conditionvar, "varequal", respident="response1")
+		varequal.text = f"{answer_float}"
+	else:
+		or_block = lxml.etree.SubElement(conditionvar, "or")
+		exact = lxml.etree.SubElement(or_block, "varequal", respident="response1")
+		exact.text = f"{answer_float}"
+		and_block = lxml.etree.SubElement(or_block, "and")
+		lower = lxml.etree.SubElement(and_block, "vargte", respident="response1")
+		lower.text = f"{answer_float - tolerance_float}"
+		upper = lxml.etree.SubElement(and_block, "varlte", respident="response1")
+		upper.text = f"{answer_float + tolerance_float}"
+
+	lxml.etree.SubElement(respcondition, "setvar", action="Set", varname="SCORE").text = "100"
+	return resprocessing
+
+#==============================================================
+def create_fib_presentation(question_text: str):
+	"""
+	Create <presentation> for a single fill-in-the-blank string response.
+	"""
+	presentation = lxml.etree.Element("presentation")
+	material_mattext = create_material_mattext(question_text)
+	presentation.append(material_mattext)
+
+	response_str = lxml.etree.SubElement(presentation, "response_str", ident="response1", rcardinality="Single")
+	render_fib = lxml.etree.SubElement(response_str, "render_fib", fibtype="String")
+	lxml.etree.SubElement(render_fib, "response_label", ident="answer1", rshuffle="No")
+	return presentation
+
+#==============================================================
+def create_FIB_resprocessing(answers_list: list):
+	"""
+	Create <resprocessing> for fill-in-the-blank with optional multiple acceptable answers.
+	"""
+	resprocessing = _create_base_outcomes()
+	respcondition = lxml.etree.SubElement(resprocessing, "respcondition", **{"continue": "No"})
+	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
+
+	for answer in answers_list:
+		varequal = lxml.etree.SubElement(conditionvar, "varequal", respident="response1")
+		varequal.text = answer
+
+	lxml.etree.SubElement(respcondition, "setvar", action="Set", varname="SCORE").text = "100"
+	return resprocessing
+
+#==============================================================
+def create_multi_fib_presentation(question_text: str, answer_map: dict):
+	"""
+	Create <presentation> for multiple fill-in-the-blank responses using response_lid.
+	"""
+	presentation = lxml.etree.Element("presentation")
+	material_mattext = create_material_mattext(question_text)
+	presentation.append(material_mattext)
+
+	response_lids, _ = create_multi_fib_response_lids(answer_map)
+	for rl in response_lids:
+		presentation.append(rl)
+	return presentation
+
+#==============================================================
+def create_multi_fib_response_lids(answer_map: dict):
+	"""
+	Create response_lid blocks for each blank with choices for acceptable answers.
+	Returns (response_lids, label_ids_list).
+	"""
+	response_lids = []
+	label_ids = []
+	for idx, key in enumerate(sorted(answer_map.keys()), start=1):
+		respident = f"response_{idx}"
+		response_lid = lxml.etree.Element("response_lid", ident=respident)
+
+		material = lxml.etree.SubElement(response_lid, "material")
+		lxml.etree.SubElement(material, "mattext").text = str(key)
+
+		render_choice = lxml.etree.SubElement(response_lid, "render_choice")
+		for choice_idx, answer in enumerate(answer_map[key], start=1):
+			label_id = f"{respident}_choice_{choice_idx:03d}"
+			label_ids.append(label_id)
+			response_label = lxml.etree.SubElement(render_choice, "response_label", ident=label_id)
+			mat = lxml.etree.SubElement(response_label, "material")
+			lxml.etree.SubElement(mat, "mattext", texttype="text/plain").text = answer
+
+		response_lids.append(response_lid)
+	return response_lids, label_ids
+
+#==============================================================
+def create_MULTI_FIB_resprocessing(answer_map: dict):
+	"""
+	Create <resprocessing> for multi-blank FIB with all blanks required.
+	"""
+	resprocessing = _create_base_outcomes()
+	blanks = list(sorted(answer_map.keys()))
+	base_score = round(100 / len(blanks), 2) if blanks else 0
+
+	for idx, key in enumerate(blanks, start=1):
+		respident = f"response_{idx}"
+		answers_list = answer_map[key]
+		respcondition = lxml.etree.SubElement(resprocessing, "respcondition")
+		conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
+		if len(answers_list) == 1:
+			v = lxml.etree.SubElement(conditionvar, "varequal", respident=respident)
+			v.text = answers_list[0]
+		else:
+			or_block = lxml.etree.SubElement(conditionvar, "or")
+			for answer in answers_list:
+				v = lxml.etree.SubElement(or_block, "varequal", respident=respident)
+				v.text = answer
+		lxml.etree.SubElement(respcondition, "setvar", varname="SCORE", action="Add").text = f"{base_score:.2f}"
+	return resprocessing
+
+#==============================================================
 #==============================================================
 def dummy_test_run():
 	"""
