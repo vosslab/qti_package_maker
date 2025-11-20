@@ -1,48 +1,61 @@
-ENGINE_NAME = "template_class"
+ENGINE_NAME = "okla_chrst_bqgen"
 
-#from qti_package_maker.common import string_functions
+from qti_package_maker.common import string_functions
+
+#==============================================================
+def _format_choices(choices_list, correct_set):
+	lines = []
+	for idx, choice in enumerate(choices_list, start=1):
+		prefix = string_functions.number_to_lowercase(idx)  # a, b, c...
+		marker = "*" if choice in correct_set else ""
+		lines.append(f"{marker}{prefix}) {choice}")
+	return "\n".join(lines) + "\n\n"
 
 #==============================================================
 def MC(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
-	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Multiple Choice (single answer)."""
+	header = f"{item_cls.item_number}. {item_cls.question_text}\n"
+	correct_set = {item_cls.answer_text}
+	return header + _format_choices(item_cls.choices_list, correct_set)
 
 #==============================================================
 def MA(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
-	"""Create a Multiple Answer (Checkboxes) question."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Multiple Answer (checkbox style)."""
+	header = f"{item_cls.item_number}. {item_cls.question_text}\n"
+	correct_set = set(item_cls.answers_list)
+	return header + _format_choices(item_cls.choices_list, correct_set)
 
 #==============================================================
 def MATCH(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
-	"""Create a Matching question where users match items from two lists."""
-	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Matching prompt/answer pairs separated by '/'."""
+	header = f"match {item_cls.item_number}. {item_cls.question_text}\n"
+	lines = []
+	for idx, (prompt, choice) in enumerate(zip(item_cls.prompts_list, item_cls.choices_list), start=1):
+		prefix = string_functions.number_to_lowercase(idx)
+		lines.append(f"{prefix}) {prompt}/{choice}")
+	return header + "\n".join(lines) + "\n\n"
 
 #==============================================================
 def NUM(item_cls):
-	#item_number: int, crc16_text: str,
-	#question_text: str, answer_float: float, tolerance_float: float, tolerance_message=True):
-	"""Create a Numerical question with an accepted tolerance range."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Not supported for this engine."""
+	return None
 
 #==============================================================
 def FIB(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, answers_list: list):
-	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Single blank: show acceptable answers."""
+	header = f"blank {item_cls.item_number}. {item_cls.question_text}\n"
+	lines = []
+	for idx, ans in enumerate(item_cls.answers_list, start=1):
+		prefix = string_functions.number_to_lowercase(idx)
+		lines.append(f"*{prefix}. {ans}")
+	return header + "\n".join(lines) + "\n\n"
 
 #==============================================================
-# Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
-	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Not supported for this engine."""
+	return None
 
 #==============================================================
 def ORDER(item_cls):
-	#item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
-	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
+	"""Not supported for this engine."""
+	return None
