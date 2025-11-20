@@ -4,10 +4,10 @@ ENGINE_NAME = "html_selftest"
 from qti_package_maker.engines.html_selftest import add_MC
 from qti_package_maker.engines.html_selftest import add_MA
 from qti_package_maker.engines.html_selftest import add_MATCH
-#from qti_package_maker.engines.html_selftest import add_NUM
-#from qti_package_maker.engines.html_selftest import add_FIB
-#from qti_package_maker.engines.html_selftest import add_MULTI_FIB
-#from qti_package_maker.engines.html_selftest import add_ORDER
+from qti_package_maker.engines.html_selftest import add_NUM
+from qti_package_maker.engines.html_selftest import add_FIB
+from qti_package_maker.engines.html_selftest import add_MULTI_FIB
+from qti_package_maker.engines.html_selftest import add_ORDER
 
 #==============================================================
 def MC(item_cls):
@@ -32,28 +32,23 @@ def NUM(item_cls):
 	#item_number: int, item_crc16: str,
 	#question_text: str, answer_float: float, tolerance_float: float, tolerance_message=True):
 	"""Create a Numerical question with an accepted tolerance range."""
-	#return add_NUM.generate_html(item_number, item_crc16, question_text, answer_float, tolerance_float, tolerance_message)
-	raise NotImplementedError
+	return add_NUM.generate_html(item_cls.item_number, item_cls.item_crc16, item_cls.question_text, item_cls.answer_float, item_cls.tolerance_float, item_cls.tolerance_message)
 
 #==============================================================
 def FIB(item_cls):
 	#item_number: int, item_crc16: str, question_text: str, answers_list: list):
 	"""Create a Fill-in-the-Blank (Single Blank) question."""
-	#return add_FIB.generate_html(item_number, item_crc16, question_text, answers_list)
-	raise NotImplementedError
+	return add_FIB.generate_html(item_cls.item_number, item_cls.item_crc16, item_cls.question_text, item_cls.answers_list)
 
 #==============================================================
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_cls):
 	#item_number: int, item_crc16: str, question_text: str, answer_map: dict) -> str:
 	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
-	#return add_MULTI_FIB.generate_html(item_number, item_crc16, question_text, answer_map)
-	raise NotImplementedError
+	return add_MULTI_FIB.generate_html(item_cls.item_number, item_cls.item_crc16, item_cls.question_text, item_cls.answer_map)
 
 #==============================================================
 def ORDER(item_cls):
 	#item_number: int, item_crc16: str, question_text: str, ordered_answers_list: list):
 	"""Create an Ordered List question where users arrange items in a correct sequence."""
-	#return add_ORDER.generate_html(item_number, item_crc16, question_text, ordered_answers_list)
-	raise NotImplementedError
-
+	return add_ORDER.generate_html(item_cls.item_number, item_cls.item_crc16, item_cls.question_text, item_cls.ordered_answers_list)
