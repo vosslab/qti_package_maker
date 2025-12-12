@@ -14,6 +14,82 @@ import crcmod.predefined #pip
 # none allowed here!!
 
 #==========================
+def _html_table_to_text(table_html: str) -> str:
+	"""
+	Best-effort conversion of an HTML <table> into a plain-text table.
+	Falls back to a placeholder on parse/format failures.
+	"""
+	try:
+		from tabulate import tabulate as _tabulate
+	except ImportError:
+		_tabulate = None
+
+	try:
+		table_el = lxml.html.fromstring(table_html)
+	except Exception:
+		return "[TABLE]"
+
+	trs = table_el.xpath(".//tr")
+	if not trs:
+		return "[TABLE]"
+
+	thead_trs = table_el.xpath(".//thead//tr")
+	header_tr = thead_trs[0] if thead_trs else None
+	if header_tr is None and trs and trs[0].xpath("./th"):
+		header_tr = trs[0]
+
+	def extract_row_cells(tr_el):
+		cells = tr_el.xpath("./th|./td")
+		out = []
+		for cell in cells:
+			text = cell.text_content()
+			text = text.replace("\u00a0", " ")
+			text = re.sub(r"\s+", " ", text).strip()
+			out.append(text)
+		return out
+
+	headers = []
+	data_rows = []
+	for tr in trs:
+		cells = extract_row_cells(tr)
+		if not cells:
+			continue
+		if header_tr is not None and tr is header_tr:
+			headers = cells
+			continue
+		data_rows.append(cells)
+
+	if not data_rows and headers:
+		return "[TABLE]"
+
+	max_cols = 0
+	for row in data_rows:
+		max_cols = max(max_cols, len(row))
+	max_cols = max(max_cols, len(headers))
+	if max_cols == 0:
+		return "[TABLE]"
+
+	if headers and len(headers) < max_cols:
+		headers = headers + [""] * (max_cols - len(headers))
+	for i, row in enumerate(data_rows):
+		if len(row) < max_cols:
+			data_rows[i] = row + [""] * (max_cols - len(row))
+
+	if _tabulate:
+		try:
+			return _tabulate(data_rows, headers=headers if headers else (), tablefmt="github")
+		except Exception:
+			return "[TABLE]"
+
+	lines = []
+	if headers:
+		lines.append(" | ".join(headers))
+		lines.append("-+-".join("-" * len(h) for h in headers))
+	for row in data_rows:
+		lines.append(" | ".join(row))
+	return "\n".join(lines)
+
+#==========================
 def number_to_letter(integer):
 	"""
 	Convert a number to its alphabetical representation.
@@ -215,13 +291,23 @@ def check_ascii(mystr):
 def make_question_pretty(question):
 	pretty_question = copy.copy(question)
 	#print(len(pretty_question))
+	table_map = {}
+	table_count = 0
 	pattern = re.compile(
 		r'<table\b[^>]*>((?:(?!<table).)*?)</table>',
 		flags=re.IGNORECASE | re.DOTALL
 	)
+
+	def repl_table(match):
+		nonlocal table_count
+		token = f"__QTI_TABLE_{table_count}__"
+		table_count += 1
+		table_map[token] = _html_table_to_text(match.group(0))
+		return f"\n{token}\n"
+
 	# Keep replacing innermost tables until no more matches
 	while True:
-		new_pretty = pattern.sub(' [TABLE] ', pretty_question)
+		new_pretty = pattern.sub(repl_table, pretty_question)
 		if new_pretty == pretty_question:
 			break
 		pretty_question = new_pretty
@@ -265,6 +351,8 @@ def make_question_pretty(question):
 	# Define subscript and superscript mappings
 	pretty_question = convert_sub_sup(pretty_question)
 	pretty_question = html.unescape(pretty_question)
+	for token, table_text in table_map.items():
+		pretty_question = pretty_question.replace(token, table_text)
 	#print(len(pretty_question))
 	return pretty_question.strip()
 
