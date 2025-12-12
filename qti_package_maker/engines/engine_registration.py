@@ -3,8 +3,10 @@
 import inspect
 import pathlib
 import pkgutil
-import tabulate
 import importlib
+
+# QTI Package Maker
+from qti_package_maker.common.tabulate_compat import tabulate
 
 # Dictionary to store engine information dynamically
 ENGINE_REGISTRY = {}
@@ -67,7 +69,6 @@ def register_engines():
 	Dynamically scans the 'engines' directory for engine_class.py files
 	and registers available engines by importing their classes.
 	"""
-	global ENGINE_REGISTRY
 	for _, module_name, ispkg in pkgutil.iter_modules([str(ENGINES_DIR)]):
 		if module_name.startswith("template"):
 			continue
@@ -88,11 +89,11 @@ def print_engine_table(tablefmt: str="fancy_outline"):
 			can_read = PLUS if info["can_read"] else CROSS
 			can_write = PLUS if info["can_write"] else CROSS
 			engine_data.append([info["engine_name"], can_read, can_write])
-		print("\nRegistered Engines:")
-		headers = ["Engine Name", "Can Read", "Can Write"]
-		print(tabulate.tabulate(engine_data, headers, tablefmt=tablefmt))
-	else:
-		print("No engines found.")
+			print("\nRegistered Engines:")
+			headers = ["Engine Name", "Can Read", "Can Write"]
+			print(tabulate(engine_data, headers, tablefmt=tablefmt))
+		else:
+			print("No engines found.")
 
 #============================================
 # Run the registration when imported

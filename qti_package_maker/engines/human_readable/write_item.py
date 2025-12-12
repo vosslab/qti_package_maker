@@ -10,9 +10,6 @@ def is_valid_content(content_text):
 	if 'rdkit' in content_text.lower():
 		#print("problem contains rdkit")
 		return False
-	if '<table' in content_text.lower():
-		#print("problem contains a table")
-		return False
 	return True
 
 #====================
