@@ -18,8 +18,8 @@ class EngineClass(base_engine.BaseEngine):
 		self.validate_write_item_module()
 
 	#==============
-	def read_items_from_file(self, infile: str):
-		new_item_bank = read_package.read_items_from_file(infile)
+	def read_items_from_file(self, infile: str, allow_mixed: bool = False):
+		new_item_bank = read_package.read_items_from_file(infile, allow_mixed=allow_mixed)
 		return new_item_bank
 
 	#==============
