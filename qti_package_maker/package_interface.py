@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Standard Library
+import inspect
 import re
 import random
 
@@ -119,7 +120,15 @@ class QTIPackageInterface:
 			raise NotImplementedError(f"Engine {engine_cls.__class__.__name__} does not support reading.")
 
 		# Retrieve the assessment items from the input file
-		new_item_bank = engine_cls.read_items_from_file(input_file)
+		read_items_from_file = getattr(engine_cls, "read_items_from_file", None)
+		if not callable(read_items_from_file):
+			raise NotImplementedError(f"Engine {engine_cls.__class__.__name__} does not support reading.")
+
+		sig = inspect.signature(read_items_from_file)
+		if "allow_mixed" in sig.parameters:
+			new_item_bank = read_items_from_file(input_file, allow_mixed=self.allow_mixed)
+		else:
+			new_item_bank = read_items_from_file(input_file)
 
 		# If no items were read, notify the user and return
 		if not new_item_bank or len(new_item_bank) == 0:
