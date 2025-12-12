@@ -4,9 +4,6 @@ from qti_package_maker.common import string_functions
 #==============================================================
 def MC(item_cls):
 	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
-	question_text = item_cls.question_text
-	choices_list = item_cls.choices_list
-	answer_text = item_cls.answer_text
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
 	for i, choice_text in enumerate(item_cls.choices_list, start=1):
 		prefix = "*" if choice_text == item_cls.answer_text else ""
