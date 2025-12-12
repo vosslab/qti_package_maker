@@ -6,6 +6,7 @@
 # QTI Package Maker
 from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.okla_chrst_bqgen import write_item
+from qti_package_maker.engines.okla_chrst_bqgen import read_package
 
 
 class EngineClass(base_engine.BaseEngine):
@@ -16,7 +17,7 @@ class EngineClass(base_engine.BaseEngine):
 
 	#============================================
 	def read_items_from_file(self, infile: str):
-		raise NotImplementedError
+		return read_package.read_items_from_file(infile)
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):

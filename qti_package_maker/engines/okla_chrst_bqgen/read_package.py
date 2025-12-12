@@ -1,99 +1,109 @@
-
 # Standard Library
-
-# Pip3 Library
+import re
 
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.assessment_items import item_types
 
-#=====================================================
-def read_MC(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	choices_list = input_data
-	answer_text = input_data
-	item_cls = item_types.MC(question_text, choices_list, answer_text)
-	return item_cls
 
-#=====================================================
-def read_MA(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	choices_list = input_data
-	answers_list = input_data
-	item_cls = item_types.MA(question_text, choices_list, answers_list)
-	return item_cls
-
-#=====================================================
-def read_MATCH(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	prompts_list = input_data
-	choices_list = input_data
-	item_cls = item_types.MATCH(question_text, prompts_list, choices_list)
-	return item_cls
-
-#=====================================================
-def read_NUM(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	answer_float = input_data
-	tolerance_float = input_data
-	item_cls = item_types.NUM(question_text, answer_float, tolerance_float)
-	return item_cls
-
-#=====================================================
-def read_FIB(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	answers_list = input_data
-	item_cls = item_types.FIB(question_text, answers_list)
-	return item_cls
-
-#=====================================================
-def read_MULTI_FIB(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	answer_map = input_data
-	item_cls = item_types.MULTI_FIB(question_text, answer_map)
-	return item_cls
-
-#=====================================================
-def read_ORDER(input_data):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	question_text = input_data
-	ordered_answers_list = input_data
-	item_cls = item_types.ORDER(question_text, ordered_answers_list)
-	return item_cls
-
-#=====================================================
-def make_item_cls_from_line(text_line: str):
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	return
-
-#=====================================================
-#=====================================================
-def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
-	"""
-	Read and process Blackboard questions (BBQ) from the input file.
-	"""
-	raise NotImplementedError("this is a template class, each engine must write their own function")
-	new_item_bank = item_bank.ItemBank(allow_mixed)
-	# Step 1: Read and process questions from the input file
-	with open(input_file, 'r') as f:
-		for line in f:
-			item_cls = make_item_cls_from_line(line)
-			if not item_cls:
-				continue
-			new_item_bank.add_item_cls(item_cls)
-	return new_item_bank
-
-#=====================================================
-def main():
-	# put some unit tests here
-	pass
+def _split_blocks(text: str):
+	blocks = []
+	current = []
+	for line in text.splitlines():
+		if line.strip() == "":
+			if current:
+				blocks.append("\n".join(current))
+				current = []
+		else:
+			current.append(line.rstrip())
+	if current:
+		blocks.append("\n".join(current))
+	return blocks
 
 
-if __name__ == "__main__":
-	main()
+def _parse_choice_line(line: str):
+	match = re.match(r"(\*?)([a-zA-Z])[\)\.]?\s*(.+)", line.strip())
+	if not match:
+		return None
+	return bool(match.group(1)), match.group(3).strip()
+
+
+def _read_mc_ma(block: str, item_number: int):
+	lines = block.strip().split("\n")
+	stem = re.sub(r"^\d+\.\s*", "", lines[0]).strip()
+	choices = []
+	correct = []
+	for line in lines[1:]:
+		parsed = _parse_choice_line(line)
+		if not parsed:
+			continue
+		is_correct, text = parsed
+		choices.append(text)
+		if is_correct:
+			correct.append(text)
+	if not choices:
+		return None
+	if len(correct) == 1:
+		item = item_types.MC(stem, choices, correct[0])
+	else:
+		item = item_types.MA(stem, choices, correct)
+	item.item_number = item_number
+	return item
+
+
+def _read_fib(block: str, item_number: int):
+	lines = block.strip().split("\n")
+	stem = re.sub(r"^blank\s*\d*\.\s*", "", lines[0], flags=re.IGNORECASE).strip()
+	answers = []
+	for line in lines[1:]:
+		parsed = _parse_choice_line(line)
+		if parsed:
+			_, text = parsed
+			answers.append(text)
+		elif line.strip():
+			answers.append(line.strip())
+	if not answers:
+		return None
+	item = item_types.FIB(stem, answers)
+	item.item_number = item_number
+	return item
+
+
+def _read_match(block: str, item_number: int):
+	lines = block.strip().split("\n")
+	stem = re.sub(r"^match\s*\d*\.\s*", "", lines[0], flags=re.IGNORECASE).strip()
+	prompts = []
+	choices = []
+	for line in lines[1:]:
+		parsed = _parse_choice_line(line)
+		if not parsed:
+			continue
+		_, text = parsed
+		if "/" in text:
+			prompt, answer = text.split("/", 1)
+			prompts.append(prompt.strip())
+			choices.append(answer.strip())
+	if not prompts or not choices:
+		return None
+	item = item_types.MATCH(stem, prompts, choices)
+	item.item_number = item_number
+	return item
+
+
+def read_items_from_file(infile: str):
+	with open(infile, "r", encoding="utf-8") as f:
+		content = f.read()
+	blocks = _split_blocks(content)
+	bank = item_bank.ItemBank(allow_mixed=True)
+	for idx, block in enumerate(blocks, start=1):
+		header = block.strip().split("\n", 1)[0].lower()
+		item = None
+		if header.startswith("match"):
+			item = _read_match(block, idx)
+		elif header.startswith("blank"):
+			item = _read_fib(block, idx)
+		elif re.match(r"\d+\.", header):
+			item = _read_mc_ma(block, idx)
+		if item:
+			bank.add_item(item.item_type, item.get_tuple())
+	return bank
