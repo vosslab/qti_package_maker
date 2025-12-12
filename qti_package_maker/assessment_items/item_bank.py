@@ -4,7 +4,7 @@
 import re
 import inspect
 from collections import defaultdict
-from tabulate import tabulate
+from qti_package_maker.common.tabulate_compat import tabulate
 
 # Pip3 Library
 
@@ -500,4 +500,3 @@ def main():
 
 if __name__ == "__main__":
 	main()
-
