@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import os
+
 # Now you can import your modules
 from qti_package_maker import package_interface
 

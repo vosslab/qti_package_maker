@@ -6,7 +6,7 @@ import os
 import sys
 
 # Pip3 Library
-import tabulate
+from qti_package_maker.common.tabulate_compat import tabulate
 
 # QTI Package Maker
 # Allow running tests without installing the package
@@ -95,7 +95,7 @@ def main(argv=None):
 	qti_packer.show_available_engines(local_tablefmt)
 	print("\nWrite Test Results:")
 	headers = ["Item Type"] + engine_name_list  # First row: headers
-	print(tabulate.tabulate(table_data, headers=headers, tablefmt=local_tablefmt))
+	print(tabulate(table_data, headers=headers, tablefmt=local_tablefmt))
 
 if __name__ == '__main__':
 	main()
