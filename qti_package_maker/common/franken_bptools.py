@@ -11,7 +11,6 @@ crc16_dict = {}
 
 #====================================================================
 def question_header_classic(question, N, big_question=None, crc16=None):
-	global crc16_dict
 	#global use_nocopy_script
 	if crc16 is None:
 		if big_question is not None:
@@ -22,7 +21,6 @@ def question_header_classic(question, N, big_question=None, crc16=None):
 		print('crc16 first hash collision', crc16)
 		crc16_dict[crc16] += 1
 	elif crc16_dict.get(crc16) == 3:
-		global question_count
 		print('crc16 third hash collision', crc16, 'after question #', question_count)
 		crc16_dict[crc16] += 1
 	else:
@@ -83,7 +81,6 @@ def choice_header(choice_text: str, index: int) -> str:
 
 #====================================================================
 def print_histogram():
-	global question_count
 	sys.stderr.write("=== Answer Choice Histogram ===\n")
 	keys = list(answer_histogram.keys())
 	keys.sort()
