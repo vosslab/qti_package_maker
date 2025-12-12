@@ -5,6 +5,7 @@ __pycache__/
 .DS_Store
 *.html
 *.zip
+pyflakes.txt
 human-*.txt
 bbq-*.txt
 new_bbq-*.txt
