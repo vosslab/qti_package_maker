@@ -11,7 +11,7 @@
 - `tests/`: lightweight smoke tests and engine coverage scripts.
 - `examples/`: small sample QTI ZIPs for manual validation.
 
-For architecture context, see `CODE_DESIGN.md`.
+For architecture context, see `docs/CODE_DESIGN.md`.
 
 ## Build, Test, and Development Commands
 
@@ -30,7 +30,7 @@ Useful repo commands:
 
 ## Coding Style & Naming Conventions
 
-- **Indentation:** use **tabs** (see `PYTHON_STYLE.md`); avoid formatters that convert tabs to spaces.
+- **Indentation:** use **tabs** (see `docs/PYTHON_STYLE.md`); avoid formatters that convert tabs to spaces.
 - Prefer Python 3.9+ compatible code (project metadata), keep lines ~100 chars.
 - Use `#!/usr/bin/env python3` for executable scripts in `tools/` and `tests/`.
 - Keep module/file names lowercase with underscores (e.g., `item_xml_helpers.py`).
@@ -53,3 +53,5 @@ Useful repo commands:
 
 - When adding an engine, follow the existing pattern in `qti_package_maker/engines/<engine_name>/` and register it via the engine registry.
 - Keep changes narrowly scoped; update `README.md` capability tables if engine behavior changes.
+See Markdown style in `docs/MARKDOWN_STYLE.md`.
+When making edits, document them in `docs/CHANGELOG.md`.

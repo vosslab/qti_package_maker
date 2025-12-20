@@ -149,7 +149,7 @@ assert validate_MC("What is 2 + 2?", ["4", "3"], "4") == True
 
 #========================================================
 def validate_MA(question_text: str, choices_list: list, answers_list: list,
-		min_answers_required: int = 2, allow_all_correct: bool = False):
+		min_answers_required: int = 1, allow_all_correct: bool = True):
 	"""
 	Validate a Multiple Answer question.
 
