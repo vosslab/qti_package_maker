@@ -55,3 +55,5 @@ Useful repo commands:
 - Keep changes narrowly scoped; update `README.md` capability tables if engine behavior changes.
 See Markdown style in `docs/MARKDOWN_STYLE.md`.
 When making edits, document them in `docs/CHANGELOG.md`.
+See repo style in docs/REPO_STYLE.md.
+Agents may run programs in the tests folder, including smoke tests and pyflakes/mypy runner scripts.

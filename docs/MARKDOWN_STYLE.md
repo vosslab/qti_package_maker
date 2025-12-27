@@ -2,10 +2,14 @@
 
 Keep documentation concise, scannable, and consistent.
 
+## Content
+- use ASCII and ISO-8859-1 character encoding
+- escape UTF-8 symbols such as &alpha;, &beta;, etc.
+
 ## Headings
 - Use sentence case.
 - Start at `#` for the document title, then `##`, `###` as needed.
-- Keep headings short (3–6 words).
+- Keep headings short (3-6 words).
 
 ## Lists
 - Prefer `-` for bullets.
@@ -21,21 +25,6 @@ Keep documentation concise, scannable, and consistent.
 - Prefer descriptive link text, not raw URLs.
 - When referencing another doc, always link it (avoid bare filenames).
 - Example: [docs/FORMAT.md](docs/FORMAT.md), [docs/CLI.md](docs/CLI.md)
-
-## Common docs
-- `ARCHITECTURE.md`: system overview and major components.
-- `CHANGELOG.md`: user-facing changes by date/version; canonical release notes.
-- `CODE_DESIGN.md`: design principles, core abstractions, and key decisions.
-- `CODE_STRUCTURE.md`: repo layout and where code and assets live.
-- `CONTRIBUTING.md`: how to contribute, dev setup, and workflow.
-- `DEVELOPMENT.md`: dev workflows and local setup.
-- `FAQ.md`: common questions and short answers.
-- `INSTALL.md`: setup steps and prerequisites.
-- `NEWS.md`: curated release highlights and announcements; not a full changelog.
-- `README.md`: project overview, quick start, and links to key docs.
-- `ROADMAP.md`: future plans and non-implemented work.
-- `TROUBLESHOOTING.md`: known issues, fixes, and debugging tips.
-- `USAGE.md`: how to run the tool, examples, and flags.
 
 ## Examples
 - Show a minimal example before a complex one.
