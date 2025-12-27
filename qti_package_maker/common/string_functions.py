@@ -77,7 +77,7 @@ def _html_table_to_text(table_html: str) -> str:
 
 	if _tabulate:
 		try:
-			return _tabulate(data_rows, headers=headers if headers else (), tablefmt="github")
+			return _tabulate(data_rows, headers=headers if headers else (), tablefmt="fancy_outline")
 		except Exception:
 			return "[TABLE]"
 
@@ -287,6 +287,8 @@ def check_ascii(mystr):
 				raise ValueError
 	return True
 
+
+
 #==========================
 def make_question_pretty(question):
 	pretty_question = copy.copy(question)
@@ -298,12 +300,20 @@ def make_question_pretty(question):
 		flags=re.IGNORECASE | re.DOTALL
 	)
 
+	#==========================
 	def repl_table(match):
 		nonlocal table_count
 		token = f"__QTI_TABLE_{table_count}__"
 		table_count += 1
-		table_map[token] = _html_table_to_text(match.group(0))
-		return f"\n{token}\n"
+
+		table_text = _html_table_to_text(match.group(0)).rstrip("\n")
+
+		anchor = "\x00"
+		# Force the table onto its own lines in plain text
+		table_map[token] = anchor + "\n" + table_text + "\n"
+
+		# Also try to create a blank line before the token
+		return f"\n\n{token}\n"
 
 	# Keep replacing innermost tables until no more matches
 	while True:
@@ -345,7 +355,7 @@ def make_question_pretty(question):
 	# Remove any remaining HTML tags
 	pretty_question = re.sub(r'\<\/?[^>]+\>', '', pretty_question)
 	# Collapse double newlines into a single newline
-	pretty_question = re.sub('\n\n', '\n', pretty_question)
+	pretty_question = re.sub(r'\n{3,}', '\n\n', pretty_question)
 	# Collapse multiple spaces into a single space
 	pretty_question = re.sub('  *', ' ', pretty_question)
 	# Define subscript and superscript mappings
