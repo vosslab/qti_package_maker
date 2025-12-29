@@ -19,11 +19,11 @@ class EngineClass(base_engine.BaseEngine):
 		self.validate_write_item_module()
 
 	#============================================
-	def read_items_from_file(self, infile: str):
+	def read_items_from_file(self, infile: str, allow_mixed: bool = False):
 		"""
 		Read okla_chrst_bqgen text files into an ItemBank.
 		"""
-		return read_package.read_items_from_file(infile)
+		return read_package.read_items_from_file(infile, allow_mixed=allow_mixed)
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):

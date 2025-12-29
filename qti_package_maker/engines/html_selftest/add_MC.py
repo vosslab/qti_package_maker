@@ -53,6 +53,8 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 def generate_javascript(crc16_text) -> str:
 	"""
 	Build JavaScript that checks a selected MC answer.
+	The function name is suffixed with the item CRC to avoid collisions when multiple
+	items are embedded on the same page.
 	"""
 	# Begin the JavaScript with a script tag
 	javascript_html = "<script>\n"
@@ -74,16 +76,16 @@ def generate_javascript(crc16_text) -> str:
 	javascript_html += " if (selectedOption) {\n"
 	# If the selected option is correct, display a "CORRECT" message in green
 	javascript_html += "  if (selectedOption === correctOption) {\n"
-	javascript_html += "   resultDiv.style.color = 'green';\n"
+	javascript_html += "   resultDiv.style.color = 'var(--qti-success-fg, #008000)';\n"
 	javascript_html += "   resultDiv.textContent = 'CORRECT';\n"
 	# If the selected option is incorrect, display an "incorrect" message in red
 	javascript_html += "  } else {\n"
-	javascript_html += "   resultDiv.style.color = 'red';\n"
+	javascript_html += "   resultDiv.style.color = 'var(--qti-error-fg, #9b1b1b)';\n"
 	javascript_html += "   resultDiv.textContent = 'incorrect';\n"
 	javascript_html += "  }\n"
 	# If no option was selected, prompt the user to select an answer
 	javascript_html += " } else {\n"
-	javascript_html += "  resultDiv.style.color = 'black';\n"
+	javascript_html += "  resultDiv.style.color = 'inherit';\n"
 	javascript_html += "  resultDiv.textContent = 'Please select an answer.';\n"
 	javascript_html += " }\n"
 	# Close the function definition

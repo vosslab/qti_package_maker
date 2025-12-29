@@ -12,17 +12,19 @@ Content migrated from a legacy TODO list.
 - Add BBQ reads for ORDER, NUM, FIB, and MULTI_FIB.
 - Hints across formats: see [ROADMAP.md](ROADMAP.md).
 - Update README wording where needed.
-- Update `html_selftest` styling to respect light/dark modes in MkDocs Material.
 - Track CRC codes for uniqueness.
 
 ## Done
 - Full write capability for `human_readable`.
 - Full write capability for `bbq_text_upload`.
+- `html_selftest` theming to respect MkDocs Material palettes (default/slate)
+  using tokens like `--md-default-bg-color`, `--md-default-fg-color`,
+  `--md-primary-fg-color`, and `--md-accent-fg-color`, with a
+  `prefers-color-scheme` fallback.
 
 ## Unimplemented item functions
 - `blackboard_qti_v2_1/add_item.py`: `MATCH`, `NUM`, `MULTI_FIB`, `ORDER`.
 - `canvas_qti_v1_2/add_item.py`: `NUM`, `FIB`, `MULTI_FIB`, `ORDER`.
-- `html_selftest/add_item.py`: `NUM`, `FIB`, `MULTI_FIB`, `ORDER`.
 
 ## Question function signatures
 ```python

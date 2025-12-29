@@ -51,7 +51,7 @@ class BaseEngine:
 		raise NotImplementedError("Subclasses must implement save_package().")
 
 	#==============
-	def process_one_item_from_item_bank(self, item_bank):
+	def process_random_item_from_item_bank(self, item_bank):
 		"""
 		Return the first renderable item after randomizing the item order.
 		This is intentionally non-deterministic and should only be used when randomness

@@ -37,7 +37,7 @@ def generate_drag_and_drop_js():
 	js_content += '\t\tzone.addEventListener("drop", function() {\n'
 	js_content += "\t\t\tthis.dataset.originalBgColor = draggedItem.style.backgroundColor;\n"  # Store choice color
 	js_content += "\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n"  # Maintain color
-	js_content += '\t\t\tthis.style.border = "2px solid gray";\n'  # Change border to solid
+	js_content += '\t\t\tthis.style.border = "2px solid var(--qti-dropzone-border-filled, #888888)";\n'  # Change border to solid
 	js_content += "\t\t\tthis.style.color = draggedItem.querySelector(\"span\").style.color;\n"  # Match letter color
 	js_content += '\t\t\tthis.style.fontWeight = "bold";\n\n'
 
@@ -51,16 +51,16 @@ def generate_drag_and_drop_js():
 	#  Restore the stored background color on drag leave
 	js_content += '\t\tzone.addEventListener("dragleave", function() {\n'
 	js_content += '\t\t\tif (!this.dataset.value) {\n'
-	js_content += '\t\t\t\tthis.style.backgroundColor = "#f8f8f8";\n'  # Default if empty
+	js_content += '\t\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)";\n'
 	js_content += '\t\t\t} else {\n'
-	js_content += '\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n'  # Restore previous color
+	js_content += '\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n'
 	js_content += '\t\t\t}\n'
 	js_content += "\t\t});\n\n"
 
 	#  Prevents accidental clearing when dragging over a filled drop zone
 	js_content += '\t\tzone.addEventListener("dragover", function(e) {\n'
-	js_content += "\t\t\te.preventDefault();\n"  # Allow drop action
-	js_content += '\t\t\tthis.style.backgroundColor = "#e6e6e6";\n'  # Temporary highlight
+	js_content += "\t\t\te.preventDefault();\n"
+	js_content += '\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-hover-bg, #e6e6e6)";\n'
 	js_content += "\t\t});\n"
 
 	js_content += "\t});\n"
@@ -71,6 +71,8 @@ def generate_drag_and_drop_js():
 def generate_check_answers_js(crc16_text: str):
 	"""
 	Build JavaScript that scores matching answers and updates feedback.
+	The function name is suffixed with the item CRC to avoid collisions when multiple
+	items are embedded on the same page.
 	"""
 	js_content = ""
 
@@ -96,12 +98,12 @@ def generate_check_answers_js(crc16_text: str):
 	js_content += "\t\t\t\tscore++;\n"
 	js_content += "\t\t\t\tpossible++;\n"
 	js_content += "\t\t\t\tfeedbackCell.innerHTML = \"<strong>"
-	js_content += "<span style='color:#008000; font-size:large;'>&#9989;</span></strong>\";\n"
-	js_content += "\t\t\t\tfeedbackCell.style.backgroundColor = \"#ccffcc\";\n"  # Green background for correct
+	js_content += "<span style='color:var(--qti-success-fg, #008000); font-size:large;'>&#9989;</span></strong>\";\n"
+	js_content += "\t\t\t\tfeedbackCell.style.backgroundColor = \"var(--qti-success-bg, #ccffcc)\";\n"
 	js_content += "\t\t\t} else {\n"
 	js_content += "\t\t\t\tpossible++;\n"
-	js_content += "\t\t\t\tfeedbackCell.innerHTML = \"&#10060;\";\n"  # Red X emoji
-	js_content += "\t\t\t\tfeedbackCell.style.backgroundColor = \"#ffcccc\";\n"  # Red background for incorrect
+	js_content += "\t\t\t\tfeedbackCell.innerHTML = \"&#10060;\";\n"
+	js_content += "\t\t\t\tfeedbackCell.style.backgroundColor = \"var(--qti-error-bg, #ffcccc)\";\n"
 	js_content += "\t\t\t}\n"
 	js_content += "\t\t});\n\n"
 
@@ -111,12 +113,12 @@ def generate_check_answers_js(crc16_text: str):
 
 	# If 100% correct, make feedback green
 	js_content += "\t\tif (score === possible) {\n";
-	js_content += "\t\t\tresultDiv.style.color = 'green';\n";
+	js_content += "\t\t\tresultDiv.style.color = 'var(--qti-success-fg, #008000)';\n";
 	js_content += "\t\t}\n";
 
 	# If score is less than 50%, make feedback red
 	js_content += "\t\telse if (score <= Math.floor(possible / 2)) {\n";
-	js_content += "\t\t\tresultDiv.style.color = 'red';\n";
+	js_content += "\t\t\tresultDiv.style.color = 'var(--qti-error-fg, #9b1b1b)';\n";
 	js_content += "\t\t}\n";
 
 	# Otherwise, use the default text color (inherit from theme)
@@ -143,7 +145,7 @@ def generate_prompts_table(crc16_text: str, prompts_list: list):
 	table_content = ""
 	# Start table
 	table_content += "<!-- Matching Table -->\n"
-	table_content += "<table style=\"border: 1px solid #999; border-collapse: collapse;\">\n"
+	table_content += "<table style=\"border: 1px solid var(--qti-border, #999999); border-collapse: collapse;\">\n"
 	table_content += "\t<thead>\n"
 	table_content += "\t\t<tr>\n"
 	table_content += "\t\t\t<th style=\"width: 20px;\"></th>\n"  # Feedback Column
@@ -157,13 +159,13 @@ def generate_prompts_table(crc16_text: str, prompts_list: list):
 		# Assign code for data-correct
 		choice_data_value =  f"{crc16_text}_{index:03d}"
 		table_content += '\t\t<tr>\n'
-		table_content += "\t\t\t<td class=\"feedback\" style=\"border: 1px solid #999; text-align: center; padding: 3px;\"></td>\n"
-		table_content += f"\t\t\t<td class=\"dropzone\" data-correct=\"{choice_data_value}\" title=\"Drop Your Choice Here\" "
-		table_content += "style=\"border: 2px dashed #bbb; padding: 8px; text-align: center; background-color: #f8f8f8; "
+		table_content += "\t\t\t<td class=\"feedback\" style=\"border: 1px solid var(--qti-border, #999999); text-align: center; padding: 3px;\"></td>\n"
+		table_content += f"\t\t\t<td class=\"dropzone qti-dropzone\" data-correct=\"{choice_data_value}\" title=\"Drop Your Choice Here\" "
+		table_content += "style=\"border: 2px dashed var(--qti-dropzone-border, #bbbbbb); padding: 8px; text-align: center; "
 		table_content += "font-size: 12px; min-width: 120px; max-width: 200px; overflow: hidden; white-space: nowrap; "
 		table_content += "text-overflow: ellipsis;\">"
 		table_content += "<span style=\"font-style: italic;\">Drop Your Choice Here</span></td>\n"
-		table_content += "\t\t\t<td style=\"border: 1px solid #999; padding: 10px;\">"
+		table_content += "\t\t\t<td style=\"border: 1px solid var(--qti-border, #999999); padding: 10px;\">"
 		table_content += f"{index}. {prompt_text}</td>\n"
 		table_content += "\t\t</tr>\n"
 	# Close table
@@ -182,11 +184,11 @@ def generate_choices_list(crc16_text: str, choices_list: list):
 	html_content += '<ul id="choiceList" style="list-style: none; padding: 0;">\n'
 	# Define colors for choices
 	colors = [
-		("#b37100", "#fff9e5"),  # Brown/Light Orange
-		("#004080", "#e6e6ff"),  # Blue/Light Blue
-		("#008066", "#e6fff3"),  # Green/Light Green
-		("#803300", "#f5e6cc"),  # Dark Brown/Beige
-		("#660033", "#ffccff")   # Dark Pink/Light Pink
+		("var(--qti-choice-1-fg)", "var(--qti-choice-1-bg)"),
+		("var(--qti-choice-2-fg)", "var(--qti-choice-2-bg)"),
+		("var(--qti-choice-3-fg)", "var(--qti-choice-3-bg)"),
+		("var(--qti-choice-4-fg)", "var(--qti-choice-4-bg)"),
+		("var(--qti-choice-5-fg)", "var(--qti-choice-5-bg)")
 	]
 	# Zip choices with their original index (1-based)
 	original_choices = [(i, choice) for i, choice in enumerate(choices_list, start=1)]
@@ -197,9 +199,11 @@ def generate_choices_list(crc16_text: str, choices_list: list):
 		clean_title = string_functions.make_question_pretty(choice_text)
 		letter_label = string_functions.number_to_letter(display_index)
 		choice_data_value =  f"{crc16_text}_{original_index:03d}"
-		text_color, bg_color = colors[display_index % len(colors)]  # Cycle through colors
-		html_content += f'\t<li class="draggable" draggable="true" data-value="{choice_data_value}" title="{clean_title}" '
-		html_content += 'style="border: 1px solid #999; padding: 8px; margin: 5px; cursor: grab; '
+		color_index = display_index % len(colors)
+		text_color, bg_color = colors[color_index]  # Cycle through colors
+		palette_index = color_index + 1
+		html_content += f'\t<li class="draggable qti-choice-{palette_index}" draggable="true" data-value="{choice_data_value}" title="{clean_title}" '
+		html_content += 'style="border: 1px solid var(--qti-border, #999999); padding: 8px; margin: 5px; cursor: grab; '
 		html_content += f'background-color: {bg_color}; display: inline-block;">\n'
 		html_content += f'\t\t<span style="color: {text_color};"><strong>{letter_label}.</strong> {choice_text}</span>\n'
 		html_content += '\t</li>\n'

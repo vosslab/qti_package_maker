@@ -41,6 +41,16 @@
 - Clarify recommended pytest targets and what they cover for engine authors.
 - Rewrite engine docstrings for accuracy and consistency across engine modules.
 - Note MkDocs Material light/dark theming for html_selftest in TODO and roadmap.
+- Reference MkDocs Material palette tokens in html_selftest theming docs.
+- Record engine cleanup completion notes for randomness helper and allow_mixed plumbing.
+- Rename random item helper in BaseEngine and update tests.
+- Add scoped html_selftest theme injection and palette-aware colors for matching/ordering.
+- Document CRC-suffixed JavaScript function naming in html_selftest helpers.
+- Use html_selftest theme variables for dropzone borders and reset colors.
+- Mark html_selftest MkDocs palette theming as done in TODO/ROADMAP.
+- Add html_selftest output validation tests for HTML parsing and theme markers.
+- Add html_selftest HTML validator that tolerates JavaScript blocks.
+- Update engine docs for html_selftest FIB support and remove stale TODO entry.
 
 ## 2025-12-20
 

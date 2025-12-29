@@ -10,7 +10,11 @@ def add_mathml_javascript():
 
 #==============
 def add_clear_selection_javascript(crc16_text: str):
-	"""Build JavaScript that clears MA selections and resets the result display."""
+	"""
+	Build JavaScript that clears MA selections and resets the result display.
+	The function name is suffixed with the item CRC to avoid collisions when multiple
+	items are embedded on the same page.
+	"""
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction clearSelection_{crc16_text}() {{\n"
@@ -32,7 +36,11 @@ def add_clear_selection_javascript(crc16_text: str):
 
 #==============
 def add_reset_game_javascript(crc16_text: str):
-	"""Build JavaScript that resets matching dropzones and feedback."""
+	"""
+	Build JavaScript that resets matching dropzones and feedback.
+	The function name is suffixed with the item CRC to avoid collisions when multiple
+	items are embedded on the same page.
+	"""
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction resetGame_{crc16_text}() {{\n"
@@ -41,16 +49,16 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text += '\t\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
 	javascript_text += '\t\t\tzone.textContent = "Drop Your Choice Here";\n'
 	javascript_text += '\t\t\tdelete zone.dataset.value;\n'
-	javascript_text += '\t\t\tzone.style.backgroundColor = "#f8f8f8";\n'
-	javascript_text += '\t\t\tzone.style.border = "2px dashed #bbb";\n'
-	javascript_text += '\t\t\tzone.style.color = "black";\n'
+	javascript_text += '\t\t\tzone.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)";\n'
+	javascript_text += '\t\t\tzone.style.border = "2px dashed var(--qti-dropzone-border, #bbbbbb)";\n'
+	javascript_text += '\t\t\tzone.style.color = "inherit";\n'
 	javascript_text += '\t\t\tzone.style.fontWeight = "normal";\n'
 	javascript_text += "\t\t});\n\n"
 
 	# Clear the feedback column AND reset its color
 	javascript_text += '\t\tdocument.querySelectorAll(".feedback").forEach(cell => {\n'
 	javascript_text += '\t\t\tcell.textContent = "";\n'
-	javascript_text += '\t\t\tcell.style.backgroundColor = "white";\n'
+	javascript_text += '\t\t\tcell.style.backgroundColor = "transparent";\n'
 	javascript_text += "\t\t});\n"
 
 	# Clear score result div

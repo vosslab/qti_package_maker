@@ -53,6 +53,8 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 def generate_javascript(crc16_text) -> str:
 	"""
 	Build JavaScript that checks multiple-answer selections.
+	The function name is suffixed with the item CRC to avoid collisions when multiple
+	items are embedded on the same page.
 	"""
 	# Begin the JavaScript with a script tag
 	javascript_html = "<script>\n"
@@ -80,27 +82,27 @@ def generate_javascript(crc16_text) -> str:
 
 	# Check for a fully correct answer
 	javascript_html += "\tif (numCorrectSelected === totalCorrect && totalSelected === totalCorrect) {\n"
-	javascript_html += "\t\tresultDiv.style.color = 'green';\n"
+	javascript_html += "\t\tresultDiv.style.color = 'var(--qti-success-fg, #008000)';\n"
 	javascript_html += "\t\tresultDiv.textContent = 'CORRECT';\n"
 
 	# Case: Too many choices (some correct, some incorrect)
 	javascript_html += "\t} else if (totalSelected > totalCorrect) {\n"
-	javascript_html += "\t\tresultDiv.style.color = 'red';\n"
+	javascript_html += "\t\tresultDiv.style.color = 'var(--qti-error-fg, #9b1b1b)';\n"
 	javascript_html += "\t\tresultDiv.textContent = `Too many answers selected. You selected ${numCorrectSelected} correct answers, but also included ${numIncorrectSelected} incorrect choices.`;\n"
 
 	# Case: Too few correct answers selected
 	javascript_html += "\t} else if (numCorrectSelected < totalCorrect && totalSelected < totalCorrect) {\n"
-	javascript_html += "\t\tresultDiv.style.color = 'orange';\n"
+	javascript_html += "\t\tresultDiv.style.color = 'var(--qti-warning-fg, #b37100)';\n"
 	javascript_html += "\t\tresultDiv.textContent = `Too few answers selected. You got ${numCorrectSelected} out of ${totalCorrect} correct.`;\n"
 
 	# Case: Correct number of boxes checked, but contains incorrect answers
 	javascript_html += "\t} else if (totalSelected === totalCorrect && numCorrectSelected < totalCorrect) {\n"
-	javascript_html += "\t\tresultDiv.style.color = 'goldenrod';\n"
+	javascript_html += "\t\tresultDiv.style.color = 'var(--qti-warning-fg, #b37100)';\n"
 	javascript_html += "\t\tresultDiv.textContent = `You selected the right number of choices, but only ${numCorrectSelected} out of ${totalCorrect} are correct.`;\n"
 
 	# Case: No selection
 	javascript_html += "\t} else if (totalSelected === 0) {\n"
-	javascript_html += "\t\tresultDiv.style.color = 'black';\n"
+	javascript_html += "\t\tresultDiv.style.color = 'inherit';\n"
 	javascript_html += "\t\tresultDiv.textContent = 'Please select an answer.';\n"
 
 	javascript_html += "\t}\n"  # Close the if statement

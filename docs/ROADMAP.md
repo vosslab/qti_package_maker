@@ -78,9 +78,14 @@ fallbacks when a format cannot represent all feedback types.
 Ensure `html_selftest` output supports light and dark modes when embedded in
 MkDocs Material.
 
+### Status
+Implemented in the html_selftest theme injection (2025-12-29).
+
 ### Plan
 1. Add CSS variables for colors and spacing in the generated HTML.
-2. Map variables to MkDocs Material light/dark tokens when present.
+2. Map variables to MkDocs Material palette tokens (default/slate) such as
+   `--md-default-bg-color`, `--md-default-fg-color`, `--md-primary-fg-color`,
+   and `--md-accent-fg-color`.
 3. Provide a fallback `prefers-color-scheme` theme for standalone use.
 
 ### Risks

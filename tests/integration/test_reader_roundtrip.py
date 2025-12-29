@@ -98,7 +98,7 @@ def test_okla_chrst_bqgen_roundtrip(tmp_cwd):
 	qti_packer.add_item("MATCH", ("Match capitals.", ["France", "USA"], ["Paris", "Washington"]))
 
 	outfile = qti_packer.save_package("okla_chrst_bqgen")
-	bank = okla_read_package.read_items_from_file(outfile)
+	bank = okla_read_package.read_items_from_file(outfile, allow_mixed=True)
 	assert len(bank) == 4
 
 	items = _items_by_type(bank)

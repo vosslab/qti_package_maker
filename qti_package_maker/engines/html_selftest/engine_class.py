@@ -33,7 +33,7 @@ class EngineClass(base_engine.BaseEngine):
 		"""
 		outfile = self.get_outfile_name('selftest', 'html', outfile)
 		# Write assessment items to the file
-		formatted_html_text = self.process_one_item_from_item_bank(item_bank)
+		formatted_html_text = self.process_random_item_from_item_bank(item_bank)
 		with open(outfile, "w") as f:
 			# only one problem per file, only write one
 			f.write(formatted_html_text)

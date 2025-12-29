@@ -90,11 +90,11 @@ def _read_match(block: str, item_number: int):
 	return item
 
 
-def read_items_from_file(infile: str):
+def read_items_from_file(infile: str, allow_mixed: bool = False):
 	with open(infile, "r", encoding="utf-8") as f:
 		content = f.read()
 	blocks = _split_blocks(content)
-	bank = item_bank.ItemBank(allow_mixed=True)
+	bank = item_bank.ItemBank(allow_mixed=allow_mixed)
 	for idx, block in enumerate(blocks, start=1):
 		header = block.strip().split("\n", 1)[0].lower()
 		item = None

@@ -44,4 +44,4 @@ def test_process_item_bank_empty():
 	engine = DummyEngine("sample")
 	empty_bank = ItemBank()
 	assert engine.process_item_bank(empty_bank) == []
-	assert engine.process_one_item_from_item_bank(empty_bank) is None
+	assert engine.process_random_item_from_item_bank(empty_bank) is None

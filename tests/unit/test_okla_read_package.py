@@ -28,7 +28,7 @@ b) USA/Washington
 """
 	infile = tmp_path / "okla-sample.txt"
 	infile.write_text(content, encoding="utf-8")
-	bank = read_package.read_items_from_file(str(infile))
+	bank = read_package.read_items_from_file(str(infile), allow_mixed=True)
 	assert len(bank) == 4
 	item_types = {item.item_type for item in bank.items_dict.values()}
 	assert item_types == {"MC", "MA", "FIB", "MATCH"}
