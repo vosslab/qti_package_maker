@@ -56,3 +56,8 @@ qti_package_maker = ["data/*"]
 Homepage = "https://biologyproblems.org"
 Repository = "https://github.com/vosslab/qti_package_maker"
 PyPI = "https://pypi.org/project/qti-package-maker/"
+
+[tool.pytest.ini_options]
+markers = [
+	"smoke: quick smoke tests",
+]

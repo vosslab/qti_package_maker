@@ -1,5 +1,23 @@
 # Changelog
 
+## 2025-12-29
+
+### Added
+- Add [docs/TEST_PLAN.md](TEST_PLAN.md) with pytest suite ideas before implementation.
+- Add pytest unit and integration coverage for item types, validators, engines, and CLI.
+- Add pytest fixtures in `tests/conftest.py` for shared sample items and temp cwd.
+- Add integration output checks for QTI ZIPs, human readable, BBQ, and HTML outputs.
+- Add unit coverage for engine registry, manifest generation, YAML helpers, and anti-cheat.
+- Add docs consistency check to keep engine names in sync with the registry.
+- Add unit coverage for BaseEngine filename helpers and histogram output.
+- Add CLI error-path coverage for invalid BBQ filenames.
+
+### Changed
+- Convert script-based tests into pytest functions using fixtures and tmp paths.
+- Register pytest `smoke` marker and fix item type test inputs.
+- Add format_html_lxml and anti-cheat edge case tests.
+- Adjust BaseEngine test harness and anti-cheat expectations for current behavior.
+
 ## 2025-12-20
 
 ### Added
