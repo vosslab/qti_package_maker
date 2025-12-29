@@ -105,5 +105,5 @@ def read_items_from_file(infile: str):
 		elif re.match(r"\d+\.", header):
 			item = _read_mc_ma(block, idx)
 		if item:
-			bank.add_item(item.item_type, item.get_tuple())
+			bank.add_item_cls(item)
 	return bank

@@ -157,7 +157,7 @@ def parse_NUM_lines(lines, start_index):
 	answer_line = lines[start_index]
 	# Match exact, tolerance, or range-based format
 	# match_exact e.g., `= 5`
-	match_exact = re.match(r"^=\s*([\d_]+)$", answer_line)
+	match_exact = re.match(r"^=\s*([+-]?[\d_]+(?:\.[\d_]+)?)$", answer_line)
 	# match_tolerance `= 1.4142 +- 0.0001`
 	match_tolerance = re.match(r"^=\s*([\d._]+)\s*\+\-\s*([\d._]+)", answer_line)
 	# match_range `= [1.2598, 1.2600]`
@@ -193,6 +193,8 @@ def read_NUM(question_block: str, item_number: int):
 			answer_start_index = i
 			break
 		question_text_lines.append(line.strip())
+	if answer_start_index is None:
+		raise ValueError("NUM question missing an answer line.")
 	question_text = " ".join(question_text_lines)  # Merge multi-line question text
 	question_text = strip_question_number(question_text)
 	# Process numerical answer using the helper function
@@ -232,6 +234,8 @@ def read_FIB(question_block: str, item_number: int):
 			answer_start_index = i
 			break
 		question_text_lines.append(line.strip())
+	if answer_start_index is None:
+		raise ValueError("FIB question missing answer lines.")
 	question_text = " ".join(question_text_lines)  # Merge multi-line question text
 	question_text = strip_question_number(question_text)
 	# Process answers using the helper function
@@ -267,7 +271,7 @@ def make_item_cls_from_block(question_block: str):
 	item_number = int(match_question.group(1))
 
 	# Check for Multiple-Answers (MA): Requires at least 2 answer choices
-	ma_matches = re.findall(r"^\[\*?\]\s*.+", question_block, re.MULTILINE)
+	ma_matches = re.findall(r"^\[(\*| )\]\s*.+", question_block, re.MULTILINE)
 	if len(ma_matches) >= 3:
 		return read_MA(question_block, item_number)
 
@@ -327,10 +331,16 @@ def process_text_lines(text_lines: str, allow_mixed: bool=False) -> list:
 	question_blocks = split_questions(text_lines)
 	# Convert each question block into an item_cls and add to the item bank
 	new_item_bank = item_bank.ItemBank(allow_mixed)
-	for question_block in question_blocks:
-		item_cls = make_item_cls_from_block(question_block)
+	for block_index, question_block in enumerate(question_blocks, start=1):
+		try:
+			item_cls = make_item_cls_from_block(question_block)
+		except (ValueError, IndexError) as exc:
+			print(f"Warning: skipping question block {block_index}: {exc}")
+			continue
 		if item_cls:
 			new_item_bank.add_item_cls(item_cls)
+		else:
+			print(f"Warning: skipping unrecognized question block {block_index}.")
 	return new_item_bank
 
 #=====================================================

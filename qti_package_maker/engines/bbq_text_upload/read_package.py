@@ -108,11 +108,11 @@ def read_MULTI_FIB(parts):
 def read_NUM(parts):
 	question_text = parts[1].strip()
 	answer_float = float(parts[2].strip())  # Convert answer to float
-	if len(parts) > 3:
-		tolerance_float = float(parts[3].strip())
+	if len(parts) <= 3 or parts[3].strip() == "":
+		print("Warning: NUM question missing tolerance, defaulting to 0.0.")
+		tolerance_float = 0.0
 	else:
-		# Default tolerance = None
-		tolerance_float = None
+		tolerance_float = float(parts[3].strip())
 	item_cls = item_types.NUM(question_text, answer_float, tolerance_float)
 	return item_cls
 
@@ -159,8 +159,12 @@ def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
 	new_item_bank = item_bank.ItemBank(allow_mixed)
 	# Step 1: Read and process questions from the input file
 	with open(input_file, 'r') as f:
-		for line in f:
-			item_cls = make_item_cls_from_line(line)
+		for line_num, line in enumerate(f, start=1):
+			try:
+				item_cls = make_item_cls_from_line(line)
+			except (ValueError, IndexError) as exc:
+				print(f"Warning: skipping line {line_num}: {exc}")
+				continue
 			if not item_cls:
 				continue
 			# Store the processed question type and its associated parts

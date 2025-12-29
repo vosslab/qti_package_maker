@@ -24,10 +24,10 @@ def MA(item_cls):
 def NUM(item_cls):
 	"""Create a Numerical question with an accepted tolerance range."""
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
-	if item_cls.tolerance_float > 0:
-		output.append(f"= {item_cls.answer_float} +- {item_cls.tolerance_float}")
-	else:
+	if item_cls.tolerance_float is None:
 		output.append(f"= {item_cls.answer_float}")
+	else:
+		output.append(f"= {item_cls.answer_float} +- {item_cls.tolerance_float}")
 	return "\n".join(output) + "\n"
 
 #==============================================================
