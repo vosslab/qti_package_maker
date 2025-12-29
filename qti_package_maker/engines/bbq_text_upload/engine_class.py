@@ -9,6 +9,9 @@ from qti_package_maker.engines.bbq_text_upload import write_item
 from qti_package_maker.engines.bbq_text_upload import read_package
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Blackboard BBQ text upload engine with read and write support.
+	"""
 	def __init__(self, package_name: str, verbose: bool=False):
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
@@ -19,11 +22,17 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_items_from_file(self, infile: str, allow_mixed: bool = False):
+		"""
+		Read a BBQ text upload file and return an ItemBank.
+		"""
 		new_item_bank = read_package.read_items_from_file(infile, allow_mixed=allow_mixed)
 		return new_item_bank
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
+		"""
+		Write the item bank to a BBQ text upload file.
+		"""
 		outfile = self.get_outfile_name('bbq', 'txt', outfile)
 		assessment_items_tree = self.process_item_bank(item_bank)
 		# Write assessment items to the file

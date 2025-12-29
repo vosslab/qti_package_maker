@@ -22,7 +22,7 @@ def is_valid_list(list_of_strings):
 #==============================================================
 def MC(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
-	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
+	"""Render an MC item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None
@@ -49,7 +49,7 @@ def MC(item_cls):
 #==============================================================
 def MA(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
-	"""Create a Multiple Answer (Checkboxes) question."""
+	"""Render an MA item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None
@@ -76,7 +76,7 @@ def MA(item_cls):
 #==============================================================
 def MATCH(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
-	"""Create a Matching question where users match items from two lists."""
+	"""Render a MATCH item in the human-readable format."""
 	#MAT TAB question text TAB answer text TAB matching text TAB answer two text TAB matching two text
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
@@ -108,7 +108,7 @@ def MATCH(item_cls):
 def NUM(item_cls):
 	#item_number: int, crc16_text: str,
 	#question_text: str, answer_float: float, tolerance_float: float, tolerance_message=True):
-	"""Create a Numerical question with an accepted tolerance range."""
+	"""Render a NUM item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None
@@ -124,7 +124,7 @@ def NUM(item_cls):
 #==============================================================
 def FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answers_list: list):
-	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	"""Render a FIB item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None
@@ -145,7 +145,7 @@ def FIB(item_cls):
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
-	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	"""Render a MULTI_FIB item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None
@@ -167,7 +167,7 @@ def MULTI_FIB(item_cls):
 #==============================================================
 def ORDER(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
-	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	"""Render an ORDER item in the human-readable format."""
 	local_question_text = string_functions.make_question_pretty(item_cls.question_text)
 	if not is_valid_content(local_question_text):
 		return None

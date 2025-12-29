@@ -18,7 +18,7 @@ def _make_input(blank_name: str, answers: list) -> str:
 #==============
 def _inject_blanks(question_text: str, answer_map: dict) -> str:
 	"""
-	Replace [blank] markers in the stem with input elements.
+	Replace [blank] markers in a MULTI_FIB stem with input elements.
 	"""
 	pattern = re.compile(r"\[([^\]]+)\]")
 	def repl(match):

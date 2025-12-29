@@ -14,6 +14,7 @@
 - Add unit coverage for NUM writers with zero tolerance.
 - Add unit coverage for engine registry, manifest generation, YAML helpers, and anti-cheat.
 - Add [docs/ENGINE_AUTHORING.md](ENGINE_AUTHORING.md) with engine authoring guidance.
+- Add internal engine cleanup notes in `qti_package_maker/engines/ENGINE_CLEANUP.txt`.
 - Add docs consistency check to keep engine names in sync with the registry.
 - Add unit coverage for BaseEngine filename helpers and histogram output.
 - Add CLI error-path coverage for invalid BBQ filenames.
@@ -38,6 +39,8 @@
 - Add engine authoring tables for interfaces, artifacts, tests, and failure modes.
 - Align engine authoring examples with EngineClass patterns and testing guidance.
 - Clarify recommended pytest targets and what they cover for engine authors.
+- Rewrite engine docstrings for accuracy and consistency across engine modules.
+- Note MkDocs Material light/dark theming for html_selftest in TODO and roadmap.
 
 ## 2025-12-20
 

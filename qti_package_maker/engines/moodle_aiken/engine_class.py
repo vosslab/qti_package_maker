@@ -8,6 +8,9 @@ from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.moodle_aiken import write_item
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Moodle Aiken writer for multiple-choice text exports.
+	"""
 	def __init__(self, package_name: str, verbose: bool=False):
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
@@ -18,6 +21,9 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_package(self, infile: str):
+		"""
+		Read is not supported for this engine.
+		"""
 		raise NotImplementedError
 
 	#==============

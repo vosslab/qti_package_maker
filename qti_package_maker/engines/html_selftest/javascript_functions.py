@@ -10,7 +10,7 @@ def add_mathml_javascript():
 
 #==============
 def add_clear_selection_javascript(crc16_text: str):
-	""" 	Generate JavaScript function to clear all checkboxes and reset the result display. """
+	"""Build JavaScript that clears MA selections and resets the result display."""
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction clearSelection_{crc16_text}() {{\n"
@@ -32,7 +32,7 @@ def add_clear_selection_javascript(crc16_text: str):
 
 #==============
 def add_reset_game_javascript(crc16_text: str):
-	""" Generate JavaScript function to reset the game by clearing all dropzones and feedback. """
+	"""Build JavaScript that resets matching dropzones and feedback."""
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction resetGame_{crc16_text}() {{\n"

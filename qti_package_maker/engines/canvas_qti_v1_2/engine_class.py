@@ -18,6 +18,9 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 #==============
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Canvas QTI 1.2 writer that packages items into a ZIP bundle.
+	"""
 	def __init__(self, package_name: str, verbose: bool=False):
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
@@ -30,6 +33,9 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def _setup_directories(self):
+		"""
+		Initialize output paths for the QTI 1.2 bundle.
+		"""
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI12-{self.package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
@@ -44,15 +50,19 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_package(self, infile: str):
+		"""
+		Read is not supported for this engine.
+		"""
 		raise NotImplementedError
 
 	#==============
 	def write_assessment_items(self, item_bank):
+		"""
+		Write all assessment items into a single Canvas QTI 1.2 XML file.
+		"""
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
-
-		""" Write all assessment items into a structured Canvas QTI 1.2 XML file."""
 		# Step 1: Create <section> to hold assessment items
 		section_level_etree = lxml.etree.Element("section", ident="root_section")
 
@@ -108,7 +118,7 @@ class EngineClass(base_engine.BaseEngine):
 	#==============
 	def save_package(self, item_bank, outfile: str=None):
 		"""
-		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
+		Write assessment XML, metadata, and manifest, then bundle the ZIP.
 		"""
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)

@@ -71,3 +71,17 @@ fallbacks when a format cannot represent all feedback types.
 ### Open questions
 - Should feedback keys be stable IDs rather than choice text?
 - Should per-choice feedback apply per selection in MA or as a combined response?
+
+## HTML selftest theming
+
+### Goal
+Ensure `html_selftest` output supports light and dark modes when embedded in
+MkDocs Material.
+
+### Plan
+1. Add CSS variables for colors and spacing in the generated HTML.
+2. Map variables to MkDocs Material light/dark tokens when present.
+3. Provide a fallback `prefers-color-scheme` theme for standalone use.
+
+### Risks
+- Theme token names may change across MkDocs Material versions.

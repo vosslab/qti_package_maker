@@ -18,6 +18,9 @@ from qti_package_maker.engines.blackboard_qti_v2_1 import assessment_meta
 #==============
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Blackboard QTI 2.1 writer that packages items into a ZIP bundle.
+	"""
 	def __init__(self, package_name: str, verbose: bool=False):
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
@@ -30,6 +33,9 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def _setup_directories(self):
+		"""
+		Initialize output paths for the QTI 2.1 bundle.
+		"""
 		current_time = time.strftime("%H%M")
 		self.output_dir = os.path.join(os.getcwd(), f"QTI21-{self.package_name}_package_{current_time}")
 		#print(f"OUTPUT directory: {self.output_dir}")
@@ -41,12 +47,15 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_package(self, infile: str):
+		"""
+		Read is not supported for this engine.
+		"""
 		raise NotImplementedError
 
 	#==============
 	def write_assessment_items(self, item_bank):
 		"""
-		Write all assessment items into structured Blackboard QTI 2.1 XML files.
+		Write each assessment item into its own Blackboard QTI 2.1 XML file.
 
 		QTI 2.1 requires each assessment item to be stored in a separate XML file,
 		unlike QTI 1.2, which allowed multiple items in one file.
@@ -130,7 +139,7 @@ class EngineClass(base_engine.BaseEngine):
 	#==============
 	def save_package(self, item_bank, outfile: str=None):
 		"""
-		Generate the imsmanifest.xml and save the QTI package as a ZIP file.
+		Write assessment XML, metadata, and manifest, then bundle the ZIP.
 		"""
 		# Create necessary directories
 		os.makedirs(self.output_dir, exist_ok=True)

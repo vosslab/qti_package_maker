@@ -10,6 +10,9 @@ from qti_package_maker.engines.okla_chrst_bqgen import read_package
 
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Okla CHRST BQGEN text engine with read and write support.
+	"""
 	def __init__(self, package_name: str, verbose: bool = False):
 		super().__init__(package_name, verbose)
 		self.write_item = write_item
@@ -17,10 +20,16 @@ class EngineClass(base_engine.BaseEngine):
 
 	#============================================
 	def read_items_from_file(self, infile: str):
+		"""
+		Read okla_chrst_bqgen text files into an ItemBank.
+		"""
 		return read_package.read_items_from_file(infile)
 
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
+		"""
+		Write the item bank to an okla_chrst_bqgen formatted text file.
+		"""
 		outfile = self.get_outfile_name('okla', 'txt', outfile)
 		assessment_items_tree = self.process_item_bank(item_bank)
 		if len(assessment_items_tree) == 0:

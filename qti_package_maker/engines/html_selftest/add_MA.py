@@ -8,10 +8,10 @@ from qti_package_maker.engines.html_selftest import html_functions
 from qti_package_maker.engines.html_selftest import javascript_functions
 
 #==============
-# This function generates HTML for a multiple-choice question.
+# This function generates HTML for a multiple-answer question.
 def generate_core_html(crc16_text: str, question_text: str, choices_list: list, answers_list: list):
 	"""
-	Generate the HTML structure for a multiple-choice question.
+	Build the HTML body for an MA item (no script).
 	"""
 	# Start the HTML content with a div containing a unique ID for the question
 	html_content = f"<div id=\"question_html_{crc16_text}\">\n"
@@ -52,13 +52,7 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 
 def generate_javascript(crc16_text) -> str:
 	"""
-	Generate JavaScript code for validating multiple answers in a multiple-answer question.
-
-	Args:
-		crc16_text (str): Unique identifier for the question.
-
-	Returns:
-		str: JavaScript code as a string.
+	Build JavaScript that checks multiple-answer selections.
 	"""
 	# Begin the JavaScript with a script tag
 	javascript_html = "<script>\n"
@@ -123,7 +117,7 @@ def generate_javascript(crc16_text) -> str:
 
 def generate_html(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 	"""
-	Main conversion function to generate HTML and JavaScript
+	Return formatted HTML plus the MA answer-check script.
 	"""
 	# Generate the HTML content for the question
 	raw_html = generate_core_html(crc16_text, question_text, choices_list, answer_text)
@@ -134,4 +128,3 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, choices
 	full_page_html += generate_javascript(crc16_text)
 	full_page_html += javascript_functions.add_clear_selection_javascript(crc16_text)
 	return full_page_html
-

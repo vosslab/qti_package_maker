@@ -11,11 +11,11 @@ from qti_package_maker.engines.template_class import read_package
 class EngineClass(base_engine.BaseEngine):
 	"""
 	Template engine class for developers to use as a reference.
-	This is not an actual engine but provides a structured example.
+	This engine is not registered for real use.
 	"""
 	def __init__(self, package_name: str, verbose: bool = False):
 		"""
-		Initializes the template engine with the package name.
+		Initialize the template engine with the package name.
 		Args:
 			package_name (str): Name of the package being processed.
 			verbose (bool): Whether to print debug information.
@@ -30,8 +30,7 @@ class EngineClass(base_engine.BaseEngine):
 	#============================================
 	def read_items_from_file(self, infile: str):
 		"""
-		Placeholder method for reading a package.
-		Raises NotImplementedError since this is a template.
+		Template placeholder for a reader implementation.
 		"""
 		raise NotImplementedError("read_items_from_file() must be implemented in a real engine class.")
 		new_item_bank = read_package.read_items_from_file(infile)
@@ -40,8 +39,7 @@ class EngineClass(base_engine.BaseEngine):
 	#==============
 	def save_package(self, item_bank, outfile: str = None):
 		"""
-		Placeholder method for reading a package.
-		Raises NotImplementedError since this is a template.
+		Template placeholder for a writer implementation.
 		"""
 		raise NotImplementedError("save_package() must be implemented in a real engine class.")
 		outfile = self.get_outfile_name('human', 'txt', outfile)

@@ -8,6 +8,9 @@ from qti_package_maker.engines import base_engine
 from qti_package_maker.engines.human_readable import write_item
 
 class EngineClass(base_engine.BaseEngine):
+	"""
+	Human-readable HTML writer that renders items into a preformatted page.
+	"""
 	def __init__(self, package_name: str, verbose: bool=False):
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
@@ -18,12 +21,15 @@ class EngineClass(base_engine.BaseEngine):
 
 	#==============
 	def read_package(self, infile: str):
+		"""
+		Read is not supported for this engine.
+		"""
 		raise NotImplementedError
 
 	#============================
 	def write_html_header(self) -> str:
 		"""
-		Returns the HTML header including UTF-8 meta tag and dark-mode support.
+		Return the HTML header for the human-readable output.
 		"""
 		return (
 			'<!DOCTYPE html>\n'
@@ -48,7 +54,7 @@ class EngineClass(base_engine.BaseEngine):
 	#============================
 	def write_html_footer(self) -> str:
 		"""
-		Returns the closing HTML tags.
+		Return the closing HTML tags for the human-readable output.
 		"""
 		return '</pre>\n</body>\n</html>\n'
 

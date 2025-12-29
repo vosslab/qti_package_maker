@@ -12,7 +12,7 @@ from qti_package_maker.engines.canvas_qti_v1_2 import item_xml_helpers
 #==============================================================
 def MC(item_cls):
 	#crc16_text: str, question_text: str, choices_list: list, answer_text: str):
-	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
+	"""Render an MC item as Canvas QTI 1.2 XML."""
 	# Create the root <item> element with a unique identifier and title
 	assessment_item_etree = lxml.etree.Element("item",
 			ident=f"multiple_choice_{item_cls.item_number:03d}", title=item_cls.item_crc16)
@@ -39,7 +39,7 @@ def MC(item_cls):
 #==============================================================
 def MA(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, choices_list: list, answers_list: list):
-	"""Create a Multiple Answer (Checkboxes) question."""
+	"""Render an MA item as Canvas QTI 1.2 XML."""
 	# Create the root <item> element with a unique identifier and title
 	assessment_item_etree = lxml.etree.Element("item",
 		ident=f"multiple_answer_{item_cls.item_number:03d}", title=item_cls.item_crc16)
@@ -66,7 +66,7 @@ def MA(item_cls):
 #==============================================================
 def MATCH(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
-	"""Create a Matching question where users match items from two lists."""
+	"""Render a MATCH item as Canvas QTI 1.2 XML."""
 	# Create the root <item> element with a unique identifier and title
 	assessment_item_etree = lxml.etree.Element("item",
 		ident=f"matching_{item_cls.item_number:03d}", title=item_cls.item_crc16)
@@ -94,7 +94,7 @@ def MATCH(item_cls):
 #==============================================================
 def NUM(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
-	"""Create a Numerical question with an accepted tolerance range."""
+	"""Render a NUM item as Canvas QTI 1.2 XML."""
 	assessment_item_etree = lxml.etree.Element("item",
 		ident=f"numeric_{item_cls.item_number:03d}", title=item_cls.item_crc16)
 	# Minimal metadata
@@ -109,7 +109,7 @@ def NUM(item_cls):
 #==============================================================
 def FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answers_list: list):
-	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	"""Render a FIB item as Canvas QTI 1.2 XML."""
 	assessment_item_etree = lxml.etree.Element("item",
 		ident=f"fib_{item_cls.item_number:03d}", title=item_cls.item_crc16)
 	itemmetadata = item_xml_helpers.create_itemmetadata([], 'short_answer_question')
@@ -123,7 +123,7 @@ def FIB(item_cls):
 #==============================================================
 def MULTI_FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
-	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	"""Render a MULTI_FIB item as Canvas QTI 1.2 XML."""
 	assessment_item_etree = lxml.etree.Element("item",
 		ident=f"fib_multi_{item_cls.item_number:03d}", title=item_cls.item_crc16)
 	_, label_ids = item_xml_helpers.create_multi_fib_response_lids(item_cls.answer_map)
@@ -139,5 +139,5 @@ def MULTI_FIB(item_cls):
 #==============================================================
 def ORDER(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
-	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	"""Canvas QTI 1.2 writer does not implement ORDER items."""
 	raise NotImplementedError

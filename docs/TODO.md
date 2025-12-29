@@ -12,7 +12,7 @@ Content migrated from a legacy TODO list.
 - Add BBQ reads for ORDER, NUM, FIB, and MULTI_FIB.
 - Hints across formats: see [ROADMAP.md](ROADMAP.md).
 - Update README wording where needed.
-- Update `html_selftest` styling to respect dark mode.
+- Update `html_selftest` styling to respect light/dark modes in MkDocs Material.
 - Track CRC codes for uniqueness.
 
 ## Done

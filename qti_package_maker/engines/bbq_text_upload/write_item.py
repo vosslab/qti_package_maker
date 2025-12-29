@@ -14,8 +14,8 @@ shuffle = False
 letters = 'ABCDEFGHJKMNPQRSTUWXYZ'
 
 """
-Follows the upload format documented here:
-https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
+Render assessment items into Blackboard "BBQ" text upload format.
+Refer to the Blackboard upload format documentation for field layout and rules.
 """
 
 #==============================================================
@@ -39,7 +39,7 @@ def clean_text_for_bbq(text):
 # Create a Multiple Choice (Single Answer; Radio Buttons) question.
 def MC(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, item_cls.choices_list: list, answer_text: str) -> str:
-	"""Multiple Choice question."""
+	"""Render an MC item in BBQ text upload format."""
 	# Initialize the question format with MC (Multiple Choice) identifier
 	bb_question = 'MC\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
@@ -64,7 +64,7 @@ def MC(item_cls):
 # Create a Multiple Answer (Checkboxes) question.
 def MA(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, item_cls.choices_list: list, item_cls.answers_list: list) -> str:
-	"""Multiple Answer question."""
+	"""Render an MA item in BBQ text upload format."""
 	# Initialize the question format with MC (Multiple Answer) identifier
 	bb_question = 'MA\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
@@ -88,7 +88,7 @@ def MA(item_cls):
 # Create a Matching question where users match items from two lists.
 def MATCH(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, item_cls.prompts_list: list, item_cls.choices_list: list) -> str:
-	"""Matching question."""
+	"""Render a MATCH item in BBQ text upload format."""
 	# Initialize the question format with MAT (Matching) identifier
 	bb_question = 'MAT\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
@@ -110,7 +110,7 @@ def MATCH(item_cls):
 def NUM(item_cls):
 	#item_number: int, item_cls.item_crc16: str,
 	#item_cls.question_text: str, answer_float: float, tolerance_float: float, tol_message: bool=True) -> str:
-	"""Numerical question."""
+	"""Render a NUM item in BBQ text upload format."""
 	# Initialize the question format with NUM (Numerical) identifier
 	bb_question = 'NUM\t'
 	question_text = clean_text_for_bbq(item_cls.question_text)
@@ -132,7 +132,7 @@ def NUM(item_cls):
 # Create a Fill-in-the-Blank (Single Blank) question.
 def FIB(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, item_cls.answers_list: list) -> str:
-	"""Fill-in-the-Blank question."""
+	"""Render a FIB item in BBQ text upload format."""
 	# Initialize the question format with FIB (Fill in the Blank) identifier
 	bb_question = 'FIB\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
@@ -148,7 +148,7 @@ def FIB(item_cls):
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, answer_map: dict) -> str:
-	"""Multi-Blank Fill-in-the-Blank question."""
+	"""Render a MULTI_FIB item in BBQ text upload format."""
 	# Initialize the question format with FIB_PLUS identifier
 	bb_question = 'FIB_PLUS\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)
@@ -170,7 +170,7 @@ def MULTI_FIB(item_cls):
 # Create an Ordered List question where users arrange items in a correct sequence.
 def ORDER(item_cls):
 	#item_number: int, item_cls.item_crc16: str, item_cls.question_text: str, ordered_answers_list: list) -> str:
-	"""Ordered List question."""
+	"""Render an ORDER item in BBQ text upload format."""
 	# Initialize the question format with ORD (Ordered List) identifier
 	bb_question = 'ORD\t'
 	# Append the question text with a unique identifier (item_cls.item_crc16)

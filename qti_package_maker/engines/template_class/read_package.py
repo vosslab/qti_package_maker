@@ -76,7 +76,7 @@ def make_item_cls_from_line(text_line: str):
 #=====================================================
 def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
 	"""
-	Read and process Blackboard questions (BBQ) from the input file.
+	Template placeholder for read_items_from_file implementations.
 	"""
 	raise NotImplementedError("this is a template class, each engine must write their own function")
 	new_item_bank = item_bank.ItemBank(allow_mixed)

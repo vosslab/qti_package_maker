@@ -3,7 +3,7 @@ from qti_package_maker.common import string_functions
 
 #==============================================================
 def MC(item_cls):
-	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
+	"""Render an MC item in text2qti format."""
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
 	for i, choice_text in enumerate(item_cls.choices_list, start=1):
 		prefix = "*" if choice_text == item_cls.answer_text else ""
@@ -13,7 +13,7 @@ def MC(item_cls):
 
 #==============================================================
 def MA(item_cls):
-	"""Create a Multiple Answer (Checkboxes) question."""
+	"""Render an MA item in text2qti format."""
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
 	for choice_text in item_cls.choices_list:
 		prefix = "[*]" if choice_text in item_cls.answers_list else "[ ]"
@@ -22,7 +22,7 @@ def MA(item_cls):
 
 #==============================================================
 def NUM(item_cls):
-	"""Create a Numerical question with an accepted tolerance range."""
+	"""Render a NUM item in text2qti format."""
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
 	if item_cls.tolerance_float is None:
 		output.append(f"= {item_cls.answer_float}")
@@ -32,7 +32,7 @@ def NUM(item_cls):
 
 #==============================================================
 def FIB(item_cls):
-	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	"""Render a FIB item in text2qti format."""
 	output = [f"{item_cls.item_number}. {item_cls.question_text}"]
 	for answer_text in item_cls.answers_list:
 		output.append(f"* {answer_text}")
@@ -41,18 +41,18 @@ def FIB(item_cls):
 #==============================================================
 def MATCH(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
-	"""Create a Matching question where users match items from two lists."""
+	"""Text2qti does not define MATCH items."""
 	raise NotImplementedError("text2qti does not have documentations on MATCH assessment items")
 
 #==============================================================
 # Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping.
 def MULTI_FIB(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, answer_map: dict) -> str:
-	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	"""Text2qti does not define MULTI_FIB items."""
 	raise NotImplementedError("text2qti does not have documentations on MULTI_FIB assessment items")
 
 #==============================================================
 def ORDER(item_cls):
 	#item_number: int, crc16_text: str, question_text: str, ordered_answers_list: list):
-	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	"""Text2qti does not define ORDER items."""
 	raise NotImplementedError("text2qti does not have documentations on ORDER assessment items")

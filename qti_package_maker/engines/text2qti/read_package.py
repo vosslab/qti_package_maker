@@ -10,12 +10,12 @@ from qti_package_maker.assessment_items import item_types
 
 #=====================================================
 def strip_question_number(question_text: str) -> str:
-	"""Removes the leading number and period from a question text."""
+	"""Strip the leading number and period from a text2qti question stem."""
 	return re.sub(r"^\d+\.\s*", "", question_text).strip()
 
 #=====================================================
 def parse_MC_lines(lines, start_index):
-	"""Parses answer choices and feedback from text2qti format."""
+	"""Parse multiple-choice options and feedback from text2qti lines."""
 	choices_list = []
 	choice_feedback = {}
 	answer_text = None
@@ -56,7 +56,7 @@ def parse_MC_lines(lines, start_index):
 
 #=====================================================
 def read_MC(question_block: str, item_number: int):
-	"""Parses a multiple-choice question from text2qti format, supporting multi-line choices and feedback."""
+	"""Read a text2qti multiple-choice block into an MC item."""
 	lines = [line.rstrip() for line in question_block.strip().split("\n")]
 	question_text_lines = []
 	answer_start_index = None
@@ -81,7 +81,7 @@ def read_MC(question_block: str, item_number: int):
 #=====================================================
 #=====================================================
 def parse_MA_lines(lines, start_index):
-	"""Parses multiple-answer choices and feedback from text2qti format."""
+	"""Parse multiple-answer options and feedback from text2qti lines."""
 	choices_list = []
 	choice_feedback = {}
 	answers_list = []
@@ -122,7 +122,7 @@ def parse_MA_lines(lines, start_index):
 
 #=====================================================
 def read_MA(question_block: str, item_number: int):
-	"""Parses a multiple-answer question from text2qti format, supporting multi-line choices and feedback."""
+	"""Read a text2qti multiple-answer block into an MA item."""
 	lines = [line.rstrip() for line in question_block.strip().split("\n")]
 	question_text_lines = []
 	answer_start_index = None
@@ -149,7 +149,7 @@ def read_MA(question_block: str, item_number: int):
 #=====================================================
 #=====================================================
 def parse_NUM_lines(lines, start_index):
-	"""Parses a numerical answer and feedback from text2qti format."""
+	"""Parse a numerical answer line and feedback from text2qti lines."""
 	answer_float = None
 	tolerance_float = 0
 	answer_feedback = []
@@ -183,7 +183,7 @@ def parse_NUM_lines(lines, start_index):
 
 #=====================================================
 def read_NUM(question_block: str, item_number: int):
-	"""Parses a numerical question from text2qti format, supporting feedback."""
+	"""Read a text2qti numeric block into a NUM item."""
 	lines = [line.rstrip() for line in question_block.strip().split("\n")]
 	question_text_lines = []
 	answer_start_index = None
@@ -208,7 +208,7 @@ def read_NUM(question_block: str, item_number: int):
 #=====================================================
 #=====================================================
 def parse_FIB_lines(lines, start_index):
-	"""Parses fill-in-the-blank answers and feedback from text2qti format."""
+	"""Parse fill-in-the-blank answers and feedback from text2qti lines."""
 	answers_list = []
 	answer_feedback = []
 	for i in range(start_index, len(lines)):
@@ -224,7 +224,7 @@ def parse_FIB_lines(lines, start_index):
 
 #=====================================================
 def read_FIB(question_block: str, item_number: int):
-	"""Parses a fill-in-the-blank question from text2qti format, supporting multiple answers and feedback."""
+	"""Read a text2qti fill-in-the-blank block into a FIB item."""
 	lines = [line.rstrip() for line in question_block.strip().split("\n")]
 	question_text_lines = []
 	answer_start_index = None
@@ -248,19 +248,19 @@ def read_FIB(question_block: str, item_number: int):
 
 #=====================================================
 def read_MATCH(input_data):
-	raise NotImplementedError("text2qti does not have documentations on MULTI_FIB assessment items")
+	raise NotImplementedError("text2qti does not define MATCH assessment items")
 
 #=====================================================
 def read_MULTI_FIB(input_data):
-	raise NotImplementedError("text2qti does not have documentations on MULTI_FIB assessment items")
+	raise NotImplementedError("text2qti does not define MULTI_FIB assessment items")
 
 #=====================================================
 def read_ORDER(input_data):
-	raise NotImplementedError("text2qti does not have documentations on ORDER assessment items")
+	raise NotImplementedError("text2qti does not define ORDER assessment items")
 
 #=====================================================
 def make_item_cls_from_block(question_block: str):
-	"""Determines the question type and parses the text accordingly."""
+	"""Infer item type from a text2qti block and parse it."""
 	question_block = question_block.strip()
 
 	# Extract the question number
@@ -295,7 +295,7 @@ def make_item_cls_from_block(question_block: str):
 
 #=====================================================
 def split_questions(text: str) -> list[str]:
-	"""Splits text2qti input into individual question blocks."""
+	"""Split text2qti input into individual question blocks."""
 	lines = text.strip().split("\n")
 	question_blocks = []
 	current_question = []
@@ -318,7 +318,7 @@ def split_questions(text: str) -> list[str]:
 #=====================================================
 #=====================================================
 def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
-	"""Reads and processes text2qti questions from the input file."""
+	"""Read a text2qti file and return an ItemBank."""
 	# Read entire file content as a single string
 	with open(input_file, 'r') as f:
 		text_lines = f.read()
@@ -345,7 +345,7 @@ def process_text_lines(text_lines: str, allow_mixed: bool=False) -> list:
 
 #=====================================================
 def main():
-	"""Runs unit tests for text2qti parsing functions."""
+	"""Run local parser sanity checks for text2qti."""
 	print("\n===== Running Unit Tests =====")
 	all_text = []
 

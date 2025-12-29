@@ -10,10 +10,7 @@ from qti_package_maker.engines.html_selftest import javascript_functions
 #============================================
 def generate_drag_and_drop_js():
 	"""
-	Generate JavaScript for drag-and-drop functionality in matching questions.
-
-	Returns:
-		str: JavaScript content as a string.
+	Build drag-and-drop JavaScript for MATCH items.
 	"""
 	js_content = ""
 	# Open script tag
@@ -73,7 +70,7 @@ def generate_drag_and_drop_js():
 
 def generate_check_answers_js(crc16_text: str):
 	"""
-	Generate JavaScript function for checking answers and updating feedback.
+	Build JavaScript that scores matching answers and updates feedback.
 	"""
 	js_content = ""
 
@@ -141,7 +138,7 @@ def generate_check_answers_js(crc16_text: str):
 #============================================
 def generate_prompts_table(crc16_text: str, prompts_list: list):
 	"""
-	Generate an HTML prompts table for a given list of prompts.
+	Build the prompts table for a matching item.
 	"""
 	table_content = ""
 	# Start table
@@ -177,7 +174,7 @@ def generate_prompts_table(crc16_text: str, prompts_list: list):
 #============================================
 def generate_choices_list(crc16_text: str, choices_list: list):
 	"""
-	Generate an HTML choices list for draggable matching questions.
+	Build the draggable choices list for a matching item.
 	"""
 	html_content = ""
 	# Add instructions
@@ -211,10 +208,10 @@ def generate_choices_list(crc16_text: str, choices_list: list):
 	return html_content
 
 #============================================
-# This function generates HTML for a multiple-choice question.
+# This function generates HTML for a matching question.
 def generate_core_html(crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
 	"""
-	Generate the HTML structure for a multiple-choice question.
+	Build the HTML body for a MATCH item (no script).
 	"""
 	# Start the HTML content with a div containing a unique ID for the question
 	html_content = f"<div id=\"question_html_{crc16_text}\">\n"
@@ -233,7 +230,7 @@ def generate_core_html(crc16_text: str, question_text: str, prompts_list: list, 
 #============================================
 def generate_html(item_number: int, crc16_text: str, question_text: str, prompts_list: list, choices_list: list):
 	"""
-	Main conversion function to generate HTML and JavaScript
+	Return formatted HTML plus matching scripts.
 	"""
 	# Generate the HTML content for the question
 	raw_html = generate_core_html(crc16_text, question_text, prompts_list, choices_list)

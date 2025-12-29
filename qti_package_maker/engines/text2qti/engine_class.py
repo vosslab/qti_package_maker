@@ -10,12 +10,12 @@ from qti_package_maker.engines.text2qti import read_package
 
 class EngineClass(base_engine.BaseEngine):
 	"""
-	Template engine class for developers to use as a reference.
-	This is not an actual engine but provides a structured example.
+	Text2qti engine for the plain-text format used by the text2qti reader and writer.
+	Supports reading and writing text2qti files.
 	"""
 	def __init__(self, package_name: str, verbose: bool = False):
 		"""
-		Initializes the template engine with the package name.
+		Initializes the text2qti engine with the package name.
 		Args:
 			package_name (str): Name of the package being processed.
 			verbose (bool): Whether to print debug information.
@@ -30,8 +30,7 @@ class EngineClass(base_engine.BaseEngine):
 	#============================================
 	def read_items_from_file(self, infile: str, allow_mixed: bool = False):
 		"""
-		Placeholder method for reading a package.
-		Raises NotImplementedError since this is a template.
+		Read text2qti questions from a text file and return an ItemBank.
 		"""
 		new_item_bank = read_package.read_items_from_file(infile, allow_mixed=allow_mixed)
 		return new_item_bank
@@ -39,8 +38,7 @@ class EngineClass(base_engine.BaseEngine):
 	#============================================
 	def save_package(self, item_bank, outfile: str = None):
 		"""
-		Placeholder method for reading a package.
-		Raises NotImplementedError since this is a template.
+		Write the item bank to a text2qti-formatted text file.
 		"""
 		outfile = self.get_outfile_name('text2qti', 'txt', outfile)
 		assessment_items_tree = self.process_item_bank(item_bank)

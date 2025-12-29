@@ -8,12 +8,8 @@ from qti_package_maker.assessment_items import item_bank
 from qti_package_maker.assessment_items import item_types
 
 """
-I think the process will be that this module is passed a file
-and returns an new item bank from the input.
-
-for QTI the input is a zip file,
-but for BBQ text upload the format is a text file
-https://help.blackboard.com/Learn/Instructor/Original/Tests_Pools_Surveys/Orig_Reuse_Questions/Upload_Questions
+Read Blackboard "BBQ" text upload files into ItemBank items.
+See the Blackboard upload format documentation for field layout and question types.
 """
 
 #=====================================================
@@ -154,7 +150,7 @@ def make_item_cls_from_line(text_line: str):
 #=====================================================
 def read_items_from_file(input_file: str, allow_mixed: bool=False) -> list:
 	"""
-	Read and process Blackboard questions (BBQ) from the input file.
+	Read a BBQ text upload file and return an ItemBank.
 	"""
 	new_item_bank = item_bank.ItemBank(allow_mixed)
 	# Step 1: Read and process questions from the input file

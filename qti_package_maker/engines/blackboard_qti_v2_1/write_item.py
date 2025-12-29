@@ -9,7 +9,7 @@ from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
 #==============================================================
 def MC(item_cls):
-	"""Create a Multiple Choice (Single Answer; Radio Buttons) question."""
+	"""Render an MC item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	answer_id = f"answer_{item_cls.answer_index+1:03d}"
 	# takes a list as input
@@ -27,7 +27,7 @@ def MC(item_cls):
 
 #==============================================================
 def MA(item_cls):
-	"""Create a Multiple Answer (Checkboxes) question."""
+	"""Render an MA item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	answer_id_list = []
 	for answer_index in item_cls.answer_index_list:
@@ -50,7 +50,7 @@ def MA(item_cls):
 #==============================================================
 def MATCH(item_cls):
 	#crc16_text: str, question_text: str, answers_list: list, matching_list: list):
-	"""Create a Matching question where users match items from two lists."""
+	"""Render a MATCH item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	response_declaration = item_xml_helpers.create_response_declaration_MATCH(item_cls.prompts_list)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
@@ -68,7 +68,7 @@ def MATCH(item_cls):
 #==============================================================
 def NUM(item_cls):
 	#crc16_text: str, question_text: str, answer: float, tolerance: float, tol_message=True):
-	"""Create a Numerical question with an accepted tolerance range."""
+	"""Render a NUM item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	response_declaration = item_xml_helpers.create_response_declaration_NUM(item_cls.answer_float)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
@@ -88,7 +88,7 @@ def NUM(item_cls):
 #==============================================================
 def FIB(item_cls):
 	#crc16_text: str, question_text: str, answers_list: list):
-	"""Create a Fill-in-the-Blank (Single Blank) question."""
+	"""Render a FIB item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	# takes a list as input
 	response_declaration = item_xml_helpers.create_response_declaration_FIB(item_cls.answers_list)
@@ -106,7 +106,7 @@ def FIB(item_cls):
 #==============================================================
 def MULTI_FIB(item_cls):
 	#crc16_text: str, question_text: str, answer_map: dict) -> str:
-	"""Create a Fill-in-the-Blank (Multiple Blanks) question using answer mapping."""
+	"""Render a MULTI_FIB item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	response_declarations = item_xml_helpers.create_response_declarations_MULTI_FIB(item_cls.answer_map)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()
@@ -122,7 +122,7 @@ def MULTI_FIB(item_cls):
 #==============================================================
 def ORDER(item_cls):
 	#crc16_text: str, question_text: str, ordered_answers_list: list):
-	"""Create an Ordered List question where users arrange items in a correct sequence."""
+	"""Render an ORDER item as Blackboard QTI 2.1 XML."""
 	assessment_item_etree = item_xml_helpers.create_assessment_item_header(item_cls.item_crc16)
 	response_declaration = item_xml_helpers.create_response_declaration_ORDER(item_cls.ordered_answers_list)
 	outcome_declarations = item_xml_helpers.create_outcome_declarations()

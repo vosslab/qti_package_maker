@@ -10,7 +10,7 @@ from qti_package_maker.engines.html_selftest import html_functions
 # This function generates HTML for a multiple-choice question.
 def generate_core_html(crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 	"""
-	Generate the HTML structure for a multiple-choice question.
+	Build the HTML body for an MC item (no script).
 	"""
 	# Start the HTML content with a div containing a unique ID for the question
 	html_content = f"<div id=\"question_html_{crc16_text}\">\n"
@@ -52,13 +52,7 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 # This function generates JavaScript to check the answer for a multiple-choice question.
 def generate_javascript(crc16_text) -> str:
 	"""
-	Generate JavaScript code for validating the answer to a multiple-choice question.
-
-	Args:
-		crc16_text (str): Unique identifier for the question.
-
-	Returns:
-		str: JavaScript code as a string.
+	Build JavaScript that checks a selected MC answer.
 	"""
 	# Begin the JavaScript with a script tag
 	javascript_html = "<script>\n"
@@ -103,7 +97,7 @@ def generate_javascript(crc16_text) -> str:
 
 def generate_html(item_number: int, crc16_text: str, question_text: str, choices_list: list, answer_text: str):
 	"""
-	Main conversion function to generate HTML and JavaScript
+	Return formatted HTML plus the MC answer-check script.
 	"""
 	# Generate the HTML content for the question
 	raw_html = generate_core_html(crc16_text, question_text, choices_list, answer_text)

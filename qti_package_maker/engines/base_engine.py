@@ -21,8 +21,8 @@ class BaseEngine:
 	#==============
 	def _get_name(self) -> str:
 		"""
-		Returns the engine's directory name, assuming the engine class is inside:
-		qti_package_maker/engines/<engine_name>/engine_class.py
+		Return the engine's directory name from the module path.
+		Assumes the engine class lives under qti_package_maker/engines/<engine_name>/.
 		"""
 		# Extract module path as a string
 		module_string = self.__class__.__module__
@@ -32,8 +32,8 @@ class BaseEngine:
 	#==============
 	def validate_write_item_module(self):
 		"""
-		Validates that the correct write_item and read_package modules are imported.
-		This should be called in subclasses after setting self.write_item and self.read_package.
+		Validate that the engine is wired to the correct write_item module.
+		Call this after assigning self.write_item in the engine subclass.
 		"""
 		if not self.write_item:
 			raise ImportError(f"No write_item module assigned for {self.name} engine.")
@@ -53,7 +53,9 @@ class BaseEngine:
 	#==============
 	def process_one_item_from_item_bank(self, item_bank):
 		"""
-		Processes the given ItemBank and converts assessment items into the required format.
+		Return the first renderable item after randomizing the item order.
+		This is intentionally non-deterministic and should only be used when randomness
+		is desired (for example the html_selftest engine).
 		"""
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
@@ -72,7 +74,7 @@ class BaseEngine:
 	#=============
 	def process_item_bank(self, item_bank):
 		"""
-		Processes the given ItemBank and converts assessment items into the required format.
+		Render each item in the ItemBank using the engine's write_item functions.
 		"""
 		if len(item_bank) == 0:
 			print("No items to write, skipping processing.")
@@ -90,7 +92,7 @@ class BaseEngine:
 
 	#==============
 	def get_available_question_types(self) -> list:
-		""" Returns a list of available question types based on callable methods in `write_item`. """
+		"""Return a list of available question types based on write_item callables."""
 		if not self.write_item:
 			print(f"No write_item module assigned for engine {self.name}.")
 			return []
@@ -103,7 +105,7 @@ class BaseEngine:
 
 	#==============
 	def show_available_question_types(self):
-		""" Displays the available question types. """
+		"""Print the available question types for this engine."""
 		available_types = self.get_available_question_types()
 		if available_types:
 			print(f"Available question types: {', '.join(available_types)}")
@@ -112,7 +114,7 @@ class BaseEngine:
 
 	#==============
 	def get_outfile_name(self, prefix: str, extension: str, outfile: str = None) -> str:
-		"""Generate an output filename based on prefix and extension unless the user specifies one."""
+		"""Generate an output filename from prefix/extension unless the user provides one."""
 		# If the user provides an outfile, return it unchanged
 		if outfile:
 			return outfile
