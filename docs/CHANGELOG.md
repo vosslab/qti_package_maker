@@ -33,6 +33,11 @@
 - Fix text2qti MA detection for `[ ]` choices and raise clearer errors for missing NUM/FIB answers.
 - Emit explicit tolerance in text2qti NUM writer output (including 0.0).
 - Limit BBQ and text2qti read skipping to parse-time ValueError/IndexError.
+- Refine engine authoring guidance with overview, discovery command, and ZIP tip.
+- Expand engine authoring guidance with examples, mapping table, and troubleshooting.
+- Add engine authoring tables for interfaces, artifacts, tests, and failure modes.
+- Align engine authoring examples with EngineClass patterns and testing guidance.
+- Clarify recommended pytest targets and what they cover for engine authors.
 
 ## 2025-12-20
 
