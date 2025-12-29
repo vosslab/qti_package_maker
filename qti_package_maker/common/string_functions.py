@@ -187,22 +187,60 @@ assert strip_crc_prefix("b5b6 banana") == "banana"
 assert strip_crc_prefix("b5b6_6902 banana") == "banana"
 
 #==============================================================
-# Check if choices in choices_list start with a prefix pattern.
-def has_prefix(choices_list: list) -> bool:
+# Prefix: letter + (. : )) OR digit + (: )) OR digit + dot not followed by digit
+PREFIX_RE = re.compile(r'^([A-Za-z][\.\:\)]|[0-9](?:[\:\)]|\.(?!\d)))\s*')
+OUTER_TAG_RE = re.compile(r'^<(?P<tag>\w+)([^>]*)>(?P<inner>.*)</\1>$', re.IGNORECASE)
+HTML_TAG_RE = re.compile(r'<[^>]+>')
+
+#==============================================================
+def has_prefix(choices_list: list[str]) -> bool:
 	"""Determine if items in choices_list start with a common prefix using regex."""
-	# Define regex pattern to match common prefixes such as letters, numbers, and symbols.
-	prefix_pattern = re.compile(r'^[A-Za-z0-9][\.\:\)]\s*')
-	# Define regex pattern to properly remove HTML tags
-	html_tag_pattern = re.compile(r'<[^>]+>')
-	# Iterate through choices to check for the presence of prefixes
 	for choice in choices_list:
-		# Remove proper HTML tags before checking for prefix
-		cleaned_choice = re.sub(html_tag_pattern, '', choice)
-		if not prefix_pattern.match(cleaned_choice):
-			# If any choice does not match, return False
+		cleaned_choice = re.sub(HTML_TAG_RE, '', choice)
+		if not PREFIX_RE.match(cleaned_choice):
 			return False
-	# If all choices have a recognized prefix, return True
 	return True
+
+#==============================================================
+def strip_prefix_from_string(choice: str) -> str:
+	"""
+	Removes a prefix like 'A. ', '1)', etc. from a string,
+	while preserving surrounding HTML if present.
+	"""
+	match = OUTER_TAG_RE.match(choice)
+	if match:
+		tag = match.group('tag')
+		attrs = match.group(2)
+		inner = match.group('inner')
+		inner_clean = re.sub(PREFIX_RE, '', inner, count=1)
+		return f'<{tag}{attrs}>{inner_clean}</{tag}>'
+
+	return re.sub(PREFIX_RE, '', choice, count=1)
+
+#============================
+# Simple text prefixes
+assert strip_prefix_from_string('A. Glucose') == 'Glucose'
+assert strip_prefix_from_string('B. Fructose') == 'Fructose'
+assert strip_prefix_from_string('2) Fructose') == 'Fructose'
+assert strip_prefix_from_string('b: Option B') == 'Option B'
+assert strip_prefix_from_string('1. Option 1') == 'Option 1'
+
+#============================
+# Decimals must be no-ops
+assert strip_prefix_from_string('7.5 mL stock solution') == '7.5 mL stock solution'
+assert strip_prefix_from_string('3.14') == '3.14'
+assert strip_prefix_from_string('1.2 mM glucose') == '1.2 mM glucose'
+
+#============================
+# HTML-wrapped prefixes
+assert strip_prefix_from_string('<p>A. Glucose</p>') == '<p>Glucose</p>'
+assert strip_prefix_from_string('<span style="color:red">A. Glucose</span>') == '<span style="color:red">Glucose</span>'
+
+#============================
+# No prefix should be a no-op
+assert strip_prefix_from_string('Glucose') == 'Glucose'
+assert strip_prefix_from_string('<span>Glucose</span>') == '<span>Glucose</span>'
+
 
 #==============================================================
 def remove_prefix_from_list(choices_list: list) -> list:
@@ -217,40 +255,6 @@ def remove_prefix_from_list(choices_list: list) -> list:
 			cleaned_choice_text = strip_prefix_from_string(choice_text)
 			cleaned_choice_list.append(cleaned_choice_text)
 	return cleaned_choice_list
-
-#==============================================================
-def strip_prefix_from_string(choice: str) -> str:
-	"""
-	Removes a prefix like 'A. ', '1)', etc. from a string,
-	while preserving surrounding HTML if present.
-	"""
-	prefix_pattern = re.compile(r'^([A-Za-z0-9][\.\:\)])\s*')
-	outer_tag_pattern = re.compile(r'^<(?P<tag>\w+)([^>]*)>(?P<inner>.*)</\1>$', re.IGNORECASE)
-
-	match = outer_tag_pattern.match(choice)
-	if match:
-		tag = match.group('tag')
-		attrs = match.group(2)
-		inner = match.group('inner')
-		inner_clean = re.sub(prefix_pattern, '', inner, count=1)
-		return f'<{tag}{attrs}>{inner_clean}</{tag}>'
-	else:
-		return re.sub(prefix_pattern, '', choice, count=1)
-
-#============================
-# Simple text prefixes
-assert strip_prefix_from_string('A. Glucose') == 'Glucose'
-assert strip_prefix_from_string('B. Fructose') == 'Fructose'
-assert strip_prefix_from_string('2) Fructose') == 'Fructose'
-assert strip_prefix_from_string('b: Option B') == 'Option B'
-#============================
-# HTML-wrapped prefixes
-assert strip_prefix_from_string('<p>A. Glucose</p>') == '<p>Glucose</p>'
-assert strip_prefix_from_string('<span style="color:red">A. Glucose</span>') == '<span style="color:red">Glucose</span>'
-#============================
-# No prefix should be a no-op
-assert strip_prefix_from_string('Glucose') == 'Glucose'
-assert strip_prefix_from_string('<span>Glucose</span>') == '<span>Glucose</span>'
 
 #==========================
 def get_crc16_from_string(mystr):
