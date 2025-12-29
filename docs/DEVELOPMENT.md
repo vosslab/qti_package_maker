@@ -38,6 +38,8 @@ python3 tests/test_human_readable_tables.py
 4. Add or update smoke tests in `tests/` and document changes in
    [CHANGELOG.md](CHANGELOG.md).
 
+For a full checklist, see [ENGINE_AUTHORING.md](ENGINE_AUTHORING.md).
+
 ## References
 - [CODE_DESIGN.md](CODE_DESIGN.md)
 - [PYTHON_STYLE.md](PYTHON_STYLE.md)

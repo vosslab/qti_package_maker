@@ -7,16 +7,32 @@
 - Add pytest unit and integration coverage for item types, validators, engines, and CLI.
 - Add pytest fixtures in `tests/conftest.py` for shared sample items and temp cwd.
 - Add integration output checks for QTI ZIPs, human readable, BBQ, and HTML outputs.
+- Add pytest unit coverage for text2qti and okla_chrst_bqgen reader parsing.
+- Add reader/writer roundtrip smoke tests for BBQ, text2qti, and okla_chrst_bqgen engines.
+- Add edge-case tests for text2qti and BBQ reader error paths plus okla unknown-block handling.
+- Add unit coverage for missing NUM tolerances in BBQ/text2qti readers.
+- Add unit coverage for NUM writers with zero tolerance.
 - Add unit coverage for engine registry, manifest generation, YAML helpers, and anti-cheat.
+- Add [docs/ENGINE_AUTHORING.md](ENGINE_AUTHORING.md) with engine authoring guidance.
 - Add docs consistency check to keep engine names in sync with the registry.
 - Add unit coverage for BaseEngine filename helpers and histogram output.
 - Add CLI error-path coverage for invalid BBQ filenames.
+- Add manifest schema metadata checks for QTI v1.2 and v2.1 outputs.
+- Add engine class contract smoke tests (imports and write_item wiring).
+- Add ZIP safety checks to prevent absolute or parent directory paths.
+- Add BBQ parsing error-path coverage for missing correct flags.
+- Add BaseItem repr smoke test.
 
 ### Changed
 - Convert script-based tests into pytest functions using fixtures and tmp paths.
 - Register pytest `smoke` marker and fix item type test inputs.
 - Add format_html_lxml and anti-cheat edge case tests.
 - Adjust BaseEngine test harness and anti-cheat expectations for current behavior.
+- Use ItemBank.add_item_cls for okla_chrst_bqgen reader to preserve question text.
+- Default BBQ NUM tolerance to 0.0 with a warning when the field is missing.
+- Fix text2qti MA detection for `[ ]` choices and raise clearer errors for missing NUM/FIB answers.
+- Emit explicit tolerance in text2qti NUM writer output (including 0.0).
+- Limit BBQ and text2qti read skipping to parse-time ValueError/IndexError.
 
 ## 2025-12-20
 
