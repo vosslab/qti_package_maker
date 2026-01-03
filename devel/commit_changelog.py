@@ -8,8 +8,12 @@ import subprocess
 import sys
 import tempfile
 
+# PIP3 modules
+import rich.console
+
 CHANGELOG_PATH = "docs/CHANGELOG.md"
 VERSION_RE = re.compile(r"^##\s*\[?([^\]\s]+)[^\]]*\]?")
+console = rich.console.Console()
 
 #============================================
 
@@ -22,6 +26,98 @@ def run_git(args: list[str]) -> subprocess.CompletedProcess:
 		text=True,
 	)
 	return result
+
+#============================================
+
+def get_git_status_lines() -> list[str]:
+	"""Return git status porcelain output lines.
+
+	Returns:
+		List of status lines.
+	"""
+	result = run_git(["status", "--porcelain=1"])
+	if result.returncode != 0:
+		return []
+	lines = [line for line in result.stdout.splitlines() if line.strip()]
+	return lines
+
+#============================================
+
+def format_status_entry(status_code: str, path: str) -> str:
+	"""Format a git status entry.
+
+	Args:
+		status_code: Single-letter status code.
+		path: File path portion.
+
+	Returns:
+		Formatted status entry.
+	"""
+	status_map = {
+		"A": "new file",
+		"M": "modified",
+		"D": "deleted",
+		"R": "renamed",
+		"C": "copied",
+		"U": "unmerged",
+	}
+	label = status_map.get(status_code, "modified")
+	entry = f"{label}: {path}"
+	return entry
+
+#============================================
+
+def build_git_status_block() -> str:
+	"""Build a git status comment block for the commit message.
+
+	Returns:
+		Git status block as a string (may be empty).
+	"""
+	status_lines = get_git_status_lines()
+	if not status_lines:
+		return ""
+
+	tracked: list[str] = []
+	tracked_seen: set[str] = set()
+	untracked: list[str] = []
+
+	for line in status_lines:
+		if line.startswith("?? "):
+			untracked.append(line[3:])
+			continue
+
+		if len(line) < 3:
+			continue
+
+		index_status = line[0]
+		worktree_status = line[1]
+		path = line[3:]
+
+		status_code = worktree_status
+		if status_code in (" ", "?"):
+			status_code = index_status
+		if status_code in (" ", "?"):
+			continue
+		if path in tracked_seen:
+			continue
+		tracked_seen.add(path)
+		tracked.append(format_status_entry(status_code, path))
+
+	block_lines: list[str] = []
+	block_lines.append("#")
+	if tracked:
+		block_lines.append("# Changes to be committed:")
+		for entry in tracked:
+			block_lines.append(f"#\t{entry}")
+
+	if untracked:
+		block_lines.append("#")
+		block_lines.append("# Untracked files:")
+		for entry in untracked:
+			block_lines.append(f"#\t{entry}")
+
+	block = "\n".join(block_lines).rstrip() + "\n"
+	return block
 
 #============================================
 
@@ -50,9 +146,53 @@ def edit_file_in_editor(path: str) -> int:
 
 #============================================
 
+def build_choice_prompt(prompt: str) -> str:
+	"""Build a colored prompt string with y/N choices.
+
+	Args:
+		prompt: Base prompt text.
+
+	Returns:
+		The prompt with colored y/N choices appended.
+	"""
+	yes_text = "[bold green]y[/bold green]"
+	no_text = "[bold red]N[/bold red]"
+	choice_prompt = f"{prompt} [{yes_text}/{no_text}] "
+	return choice_prompt
+
+#============================================
+
+def print_error(message: str) -> None:
+	"""Print an error message in red to stderr.
+
+	Args:
+		message: The error message to print.
+	"""
+	console.print(message, style="bold red", file=sys.stderr)
+
+#============================================
+
+def print_warning(message: str) -> None:
+	"""Print a warning message in yellow.
+
+	Args:
+		message: The warning message to print.
+	"""
+	console.print(message, style="yellow")
+
+#============================================
+
 def confirm(prompt: str) -> bool:
-	"""Ask the user to confirm."""
-	ans = input(prompt).strip().lower()
+	"""Ask the user to confirm.
+
+	Args:
+		prompt: The prompt to show before the choices.
+
+	Returns:
+		True if the user confirms.
+	"""
+	choice_prompt = build_choice_prompt(prompt)
+	ans = console.input(choice_prompt).strip().lower()
 	return ans in ("y", "yes")
 
 #============================================
@@ -126,11 +266,11 @@ def build_message(added_lines: list[str], max_body_lines: int) -> str:
 
 #============================================
 
-def make_seed_message() -> str:
+def make_seed_message() -> str | None:
 	"""Create the initial commit message from the changelog diff."""
 	diff_text = get_diff(CHANGELOG_PATH)
 	if not diff_text:
-		raise RuntimeError(f"No diff for {CHANGELOG_PATH}.")
+		return None
 
 	added_lines = extract_added_lines(diff_text)
 	if not added_lines:
@@ -148,6 +288,9 @@ def commit_with_editor_gate(seed_message: str) -> int:
 		tf.write("\n")
 		tf.write("# Save and exit to use this message.\n")
 		tf.write("# Exiting without changes will abort by default.\n")
+		status_block = build_git_status_block()
+		if status_block:
+			tf.write(status_block)
 		msg_path = tf.name
 
 	original = strip_git_style_comments(seed_message)
@@ -155,7 +298,7 @@ def commit_with_editor_gate(seed_message: str) -> int:
 	try:
 		rc = edit_file_in_editor(msg_path)
 		if rc != 0:
-			print("Editor exited non-zero. Aborting.", file=sys.stderr)
+			print_error("Editor exited non-zero. Aborting.")
 			return rc
 
 		with open(msg_path, "r", encoding="utf-8") as f:
@@ -163,17 +306,17 @@ def commit_with_editor_gate(seed_message: str) -> int:
 
 		edited = strip_git_style_comments(edited_raw)
 		if not edited:
-			print("Empty commit message. Aborting.", file=sys.stderr)
+			print_error("Empty commit message. Aborting.")
 			return 2
 
 		if edited == original:
-			if not confirm("Message unchanged. Commit anyway? [y/N] "):
-				print("Aborted.", file=sys.stderr)
+			if not confirm("Message unchanged. Commit anyway?"):
+				print_warning("Aborted.")
 				return 3
 
 		cmd_str = "git commit -a -F " + shlex.quote(msg_path)
-		if not confirm(f"Proceed with: {cmd_str} ? [y/N] "):
-			print("Aborted.", file=sys.stderr)
+		if not confirm(f"Proceed with: {cmd_str} ?"):
+			print_warning("Aborted.")
 			return 4
 
 		return subprocess.run(["git", "commit", "-a", "-F", msg_path]).returncode
@@ -186,6 +329,9 @@ def main() -> None:
 	ensure_in_git_repo()
 
 	seed_message = make_seed_message()
+	if seed_message is None:
+		console.print(f"No changes in {CHANGELOG_PATH}. Nothing to commit.", style="yellow")
+		return
 	rc = commit_with_editor_gate(seed_message)
 	if rc != 0:
 		raise SystemExit(rc)

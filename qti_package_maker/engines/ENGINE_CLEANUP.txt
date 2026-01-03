@@ -1,0 +1,5 @@
+Engine cleanup notes
+
+Completed
+- Renamed the random helper in base_engine.py and updated the html_selftest call site.
+- Plumbed allow_mixed in okla_chrst_bqgen reader (signature + ItemBank).
