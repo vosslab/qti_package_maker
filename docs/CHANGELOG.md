@@ -28,6 +28,14 @@
 - Add CAM16 dependency choice notes and caching detail to `COLOR_WHEEL_REFACTOR_PLAN.md`.
 - Move color wheel modules into `qti_package_maker/common/color_wheel/` and add shims for compatibility.
 - Expand `color_wheel_next_gen` shim exports to include internal helpers used by tests.
+- Remove OKLCH next-gen module and tests; keep legacy wheel in `color_wheel/legacy_color_wheel.py`.
+- Add deprecation warning on `qti_package_maker.common.color_wheel` package import.
+- Update color wheel tests to import legacy module directly, avoiding deprecation warnings.
+- Select `colour-science` as the CAM16 dependency and add it to `pip_requirements.txt`.
+- Move color wheel implementations to `qti_package_maker/common/color_theory/` with a legacy facade in `qti_package_maker/common/color_wheel.py`.
+- Replace OKLCH next_gen code with CAM16 scaffolding in `qti_package_maker/common/color_theory/next_gen.py`.
+- Add `generate_color_wheel` facade with backend selection to `qti_package_maker/common/color_wheel.py`.
+- Add facade regression test for legacy backend parity.
 - Update TODO to reflect completed BBQ reads and current unimplemented engine items.
 - Mark Canvas QTI 1.2 ORDER as won't implement.
 - Move module-level asserts into pytest unit coverage.

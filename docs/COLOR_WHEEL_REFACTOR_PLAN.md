@@ -61,11 +61,10 @@ Use fixed CAM16 viewing conditions.
 - White point: D65
 - Adapting luminance: fixed constant (documented value)
 
-## Dependencies (choose one)
-- `colour-science` (broad CAM16 support, larger API surface).
-- `coloria` (smaller, focused CAM16/CAM16-UCS API).
+## Dependencies (chosen)
+- `colour-science` (CAM16 support; long-term maintenance and broad usage).
 
-Decide on one dependency before implementation; keep the API surface minimal and stable.
+Keep the adapter thin so we can swap later if needed.
 
 ## Core Algorithm
 1) Fix CAM16 viewing conditions once.
