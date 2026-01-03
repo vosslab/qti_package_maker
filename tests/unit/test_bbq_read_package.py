@@ -10,6 +10,11 @@ from qti_package_maker.assessment_items import item_types
 from qti_package_maker.engines.bbq_text_upload import read_package
 
 
+def test_indices_helper():
+	assert read_package.indices([0, 0, 1, 0, 0], 1) == [2]
+	assert read_package.indices([0, 1, 0, 1, 0, 1], 1) == [1, 3, 5]
+
+
 def test_make_item_cls_from_line_mc():
 	line = "MC\t2+2?\t3\tincorrect\t4\tcorrect"
 	item = read_package.make_item_cls_from_line(line)

@@ -1,5 +1,49 @@
 # Roadmap
 
+Priorities organized by time horizon. Dates are directional, not commitments.
+
+## Near term (0-3 months)
+- Engine selection fix: exact match, unique prefix, else error listing candidates.
+- Auto-detect reader selection in QTIPackageInterface (zip/xml/txt heuristics).
+- Quiet mode that suppresses warnings and progress output.
+- Deterministic shuffle option (seeded) for BBQ and HTML selftest writers.
+- CRC collision tracking and warning report with item details.
+- Expand unit tests for readers and writers (BBQ, text2qti, QTI manifest).
+- Normalize text cleanup in one helper (strip &nbsp;, collapse whitespace, CRC prefix trim).
+- Reader validation: required field counts with line numbers in errors.
+- Centralized warnings helper with consistent formatting and test coverage.
+- Ensure HTML validation fails clearly when lxml is missing.
+- Keep engine capability tables in sync with the registry.
+
+## Mid term (3-9 months)
+- Hints and feedback data model: hints list, correct/incorrect feedback, choice feedback.
+- Text format syntax for hints/feedback (BBQ and text2qti) plus round-trip tests.
+- QTI 1.2 and 2.1 feedback mapping with predictable fallbacks.
+- HTML selftest hint toggle and feedback blocks in UI.
+- Documentation refresh of formats and engine capability tables.
+- Stable choice identifiers for per-choice feedback across formats.
+- Optional item metadata (points, tags, learning objectives, difficulty).
+- Reader support for QTI 1.2 and 2.1 packages where feasible.
+- Compatibility checks before writes to surface unsupported item types early.
+
+## Longer term (9-18 months)
+- New import formats (JSON/YAML) with schema and validation.
+- Stable choice IDs in the item model to support per-choice feedback safely.
+- Cross-engine compatibility checks to preflight unsupported item types.
+- Performance pass for large banks (streamed reads, memory limits, profiling).
+- Schema validation for generated QTI XML using xmlschema.
+- Plugin style engine discovery with explicit versioning and capability metadata.
+- Bulk conversion CLI for batch inputs with summary reports.
+
+## Out of scope
+- Canvas QTI 1.2 ORDER items (Canvas does not support them).
+- LMS-specific UI features beyond standard QTI outputs.
+- Online validation services or network-dependent conversions.
+- Native LMS API integrations (gradebook sync, user provisioning).
+- Hosted web UI or SaaS service for conversions.
+
+## Legacy detail (retained)
+
 ## Hints across formats
 
 ### Goal
@@ -9,7 +53,7 @@ fallbacks when a format has limited hint support.
 ### Behavior notes
 - QTI 2.1 hints cannot be hidden; they are always available to the learner and
   are commonly rendered as a hint button in LMS interfaces.
-- The common request to “ask for a hint instead of submitting an answer” can be
+- The common request to "ask for a hint instead of submitting an answer" can be
   modeled in QTI 2.1 using the `endAttemptInteraction` path.
 - Non-QTI formats should surface hints consistently (for example, a toggle or
   a hint block), even if the underlying format has no formal hint element.
@@ -39,7 +83,7 @@ fallbacks when a format has limited hint support.
 
 ### Open questions
 - Should hints affect CRC / uniqueness of items?
-- Should hints include optional “cost” or scoring metadata?
+- Should hints include optional "cost" or scoring metadata?
 - Preferred hint syntax for BBQ and text2qti inputs?
 
 ## Feedback across formats

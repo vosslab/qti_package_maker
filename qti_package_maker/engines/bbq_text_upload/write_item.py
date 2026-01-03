@@ -117,7 +117,11 @@ def NUM(item_cls):
 	# Append optional tolerance message to question text
 	if item_cls.tolerance_float is not None and item_cls.tolerance_message:
 		question_text += '<p><i>Note: answers need to be within '
-		question_text += f'{math.ceil(item_cls.tolerance_float/item_cls.answer_float*100):d}&percnt; '
+		if item_cls.answer_float == 0:
+			question_text += f'{item_cls.tolerance_float:.8f} '
+		else:
+			percent = math.ceil(item_cls.tolerance_float/item_cls.answer_float*100)
+			question_text += f'{percent:d}&percnt; '
 		question_text += 'of the correct number to be correct.</i></p> '
 	# Append question text with unique identifier (item_cls.item_crc16)
 	bb_question += f'<p>{item_cls.item_crc16}</p> {question_text}'

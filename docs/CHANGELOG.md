@@ -1,5 +1,23 @@
 # Changelog
 
+## 2026-01-03
+
+### Changed
+- Update TODO to reflect completed BBQ reads and current unimplemented engine items.
+- Mark Canvas QTI 1.2 ORDER as won't implement.
+- Move module-level asserts into pytest unit coverage.
+- Clarify engine prefix selection fix recommendation in modularity report.
+- Expand pytest coverage for writers, manifest helpers, base engine helpers, and package interface.
+- Expand TODO with actionable fixups, extraction checks, reliability tasks, tests, and docs follow-ups.
+- Expand ROADMAP with near-, mid-, long-term priorities and out-of-scope items.
+- Add round-trip pytest coverage for BBQ, text2qti, and okla_chrst_bqgen.
+- Restore legacy TODO and ROADMAP content to preserve prior planning details.
+- Add multi-engine round-trip pytest coverage across BBQ, text2qti, and okla_chrst_bqgen.
+- Fix engine selection ambiguity, item bank merge type tracking, and BBQ NUM zero-division handling with tests.
+- Expand ROADMAP priorities with additional near-, mid-, and long-term items and out-of-scope notes.
+- Add pytest coverage for QTI writer ZIP layout and manifest references.
+- Add reader error-path tests and strengthen QTI writer XML assertions.
+
 ## 2025-12-29
 
 ### Added

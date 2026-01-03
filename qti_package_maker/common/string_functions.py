@@ -100,7 +100,6 @@ def number_to_letter(integer):
 	if not (1 <= integer <= len(letters)):
 		raise ValueError(f"Invalid input: {integer}. Must be between 1 and {len(letters)}.")
 	return letters[integer-1]
-assert number_to_letter(3) == 'C'
 
 #==========================
 def number_to_lowercase(integer):
@@ -112,7 +111,6 @@ def number_to_lowercase(integer):
 	if not (1 <= integer <= len(lowercase_letters)):
 		raise ValueError(f"Invalid input: {integer}. Must be between 1 and {len(lowercase_letters)}.")
 	return lowercase_letters[integer-1]
-assert number_to_lowercase(3) == 'c'
 
 #==========================
 def number_to_ordinal(integer):
@@ -124,7 +122,6 @@ def number_to_ordinal(integer):
 		str: The ordinal representation of the number in English.
 	"""
 	return num2words.num2words(integer, to='ordinal', lang='en_US')
-assert number_to_ordinal(3) == 'third'
 
 #==========================
 def number_to_cardinal(integer):
@@ -136,7 +133,6 @@ def number_to_cardinal(integer):
 		str: The cardinal representation of the number in English.
 	"""
 	return num2words.num2words(integer, to='cardinal', lang='en_US')
-assert number_to_cardinal(3) == 'three'
 
 #==============================================================
 # Convert a number to its Roman numeral representation.
@@ -153,10 +149,6 @@ def number_to_roman(integer: int) -> str:
 			roman_numeral += numeral
 			integer -= value
 	return roman_numeral
-assert number_to_roman(3) == 'III'
-assert number_to_roman(9) == 'IX'
-assert number_to_roman(44) == 'XLIV'
-assert number_to_roman(1999) == 'MCMXCIX'
 
 #============================
 def strip_crc_prefix(question_text: str) -> str:
@@ -179,12 +171,6 @@ def strip_crc_prefix(question_text: str) -> str:
 		r'\s*',                # trailing whitespace
 	)
 	return re.sub(crc_pattern, '', question_text, count=1)
-assert strip_crc_prefix("34. b5b6 banana") == "banana"
-assert strip_crc_prefix("11. <p>b5b6</p> banana") == "banana"
-assert strip_crc_prefix("<p>b5b6</p> banana") == "banana"
-assert strip_crc_prefix("<p>6902_b5b6</p> <p><strong>banana</strong></p>") == "<p><strong>banana</strong></p>"
-assert strip_crc_prefix("b5b6 banana") == "banana"
-assert strip_crc_prefix("b5b6_6902 banana") == "banana"
 
 #==============================================================
 # Prefix: letter + (. : )) OR digit + (: )) OR digit + dot not followed by digit
@@ -219,27 +205,15 @@ def strip_prefix_from_string(choice: str) -> str:
 
 #============================
 # Simple text prefixes
-assert strip_prefix_from_string('A. Glucose') == 'Glucose'
-assert strip_prefix_from_string('B. Fructose') == 'Fructose'
-assert strip_prefix_from_string('2) Fructose') == 'Fructose'
-assert strip_prefix_from_string('b: Option B') == 'Option B'
-assert strip_prefix_from_string('1. Option 1') == 'Option 1'
 
 #============================
 # Decimals must be no-ops
-assert strip_prefix_from_string('7.5 mL stock solution') == '7.5 mL stock solution'
-assert strip_prefix_from_string('3.14') == '3.14'
-assert strip_prefix_from_string('1.2 mM glucose') == '1.2 mM glucose'
 
 #============================
 # HTML-wrapped prefixes
-assert strip_prefix_from_string('<p>A. Glucose</p>') == '<p>Glucose</p>'
-assert strip_prefix_from_string('<span style="color:red">A. Glucose</span>') == '<span style="color:red">Glucose</span>'
 
 #============================
 # No prefix should be a no-op
-assert strip_prefix_from_string('Glucose') == 'Glucose'
-assert strip_prefix_from_string('<span>Glucose</span>') == '<span>Glucose</span>'
 
 
 #==============================================================
@@ -455,6 +429,3 @@ def generate_gene_letters(num_genes: int, shift: int=-1, clear: bool=False) -> s
 	else:
 		# Generate random unique letters
 		return ''.join(sorted(random.sample(alphabet, num_genes)))
-assert generate_gene_letters(5, 3) == "defgh"  # Deterministic with full alphabet
-assert generate_gene_letters(5, 3, clear=True) == "defhj"  # Deterministic with clear alphabet
-assert len(generate_gene_letters(5)) == 5  # Random with full alphabet

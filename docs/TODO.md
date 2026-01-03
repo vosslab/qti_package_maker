@@ -1,6 +1,47 @@
 # TODO
 
-Content migrated from a legacy TODO list.
+Backlog items with concrete, actionable next steps. Grouped by topic.
+
+## Fixups
+- Engine selection: exact match first, then unique prefix, else error listing candidates.
+- ItemBank.merge: preserve first_item_type when allow_mixed is False.
+- Detect CRC collisions that overwrite items and warn with item details.
+- BBQ NUM writer: avoid divide-by-zero when answer_float == 0.
+- Avoid mutating ItemBank order in BaseEngine.process_random_item_from_item_bank.
+- Avoid mutating choices_list in BBQ writer when shuffle is enabled.
+- Normalize text cleanup (strip &nbsp;, collapse whitespace, remove extra CRC prefixes) in one helper.
+
+## Extraction checks
+- BBQ reader: validate required field counts per type and include line numbers in errors.
+- text2qti reader: stricter block detection and clearer error messages for missing answers.
+- Enforce placeholder presence for MULTI_FIB in all readers.
+- Validate that MATCH prompts <= choices for readers that accept both lists.
+
+## Reliability tasks
+- Add a quiet flag that suppresses prints across interface and engines.
+- Add optional deterministic shuffle (seed) for writers that shuffle.
+- Centralize warnings to a helper for consistent formatting and testability.
+- Ensure HTML validation does not crash on missing lxml; fail with a clear message.
+
+## Tests
+- Engine selection: exact match, unique prefix, and ambiguous prefix error case.
+- ItemBank.merge: first_item_type preserved and mixed-type rejection enforced.
+- BBQ NUM: answer_float == 0 tolerance message does not raise.
+- BaseEngine random processing does not reorder the original ItemBank.
+- CRC collision warning: verify collisions are reported with details.
+- Reader validation coverage for each format (BBQ and text2qti).
+
+## Docs follow-ups
+- Update [docs/CODE_DESIGN.md](CODE_DESIGN.md) with engine registry and CRC semantics.
+- Document text2qti feedback syntax and planned hint syntax in [docs/FORMATS.md](FORMATS.md).
+- Update [docs/ENGINES.md](ENGINES.md) capability tables for readers/writers.
+- Add a short note on output determinism to [docs/DEVELOPMENT.md](DEVELOPMENT.md).
+
+## Won't implement
+- `canvas_qti_v1_2/write_item.py`: `ORDER` (Canvas does not support it).
+
+## Legacy backlog (retained)
+Content migrated from a legacy TODO list. Keep for historical context and to avoid losing items.
 
 ## Planned
 - Track a histogram of answer choices.
@@ -9,7 +50,6 @@ Content migrated from a legacy TODO list.
 - Add a quiet mode (less verbose output).
 - Add a shuffle mechanism.
 - Add general read engine capabilities.
-- Add BBQ reads for ORDER, NUM, FIB, and MULTI_FIB.
 - Hints across formats: see [ROADMAP.md](ROADMAP.md).
 - Update README wording where needed.
 - Track CRC codes for uniqueness.
@@ -17,14 +57,13 @@ Content migrated from a legacy TODO list.
 ## Done
 - Full write capability for `human_readable`.
 - Full write capability for `bbq_text_upload`.
+- BBQ reader supports ORDER, NUM, FIB, and MULTI_FIB.
 - `html_selftest` theming to respect MkDocs Material palettes (default/slate)
   using tokens like `--md-default-bg-color`, `--md-default-fg-color`,
   `--md-primary-fg-color`, and `--md-accent-fg-color`, with a
   `prefers-color-scheme` fallback.
 
 ## Unimplemented item functions
-- `blackboard_qti_v2_1/add_item.py`: `MATCH`, `NUM`, `MULTI_FIB`, `ORDER`.
-- `canvas_qti_v1_2/add_item.py`: `NUM`, `FIB`, `MULTI_FIB`, `ORDER`.
 
 ## Question function signatures
 ```python

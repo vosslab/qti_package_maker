@@ -324,10 +324,6 @@ def min_difference(numbers: list) -> int:
 	differences = [numbers[i+1] - numbers[i] for i in range(len(numbers) - 1)]
 	# Return the smallest difference
 	return min(differences)
-assert min_difference([40, 41]) == 1
-assert min_difference([30, 15, 36]) == 6
-assert min_difference([84, 25, 24, 37]) == 1
-assert min_difference([84, 30, 30, 42, 56, 72]) == 0
 
 #====================================================================
 def main():

@@ -47,21 +47,6 @@ def clean_html_for_xml(html_str: str) -> str:
 
 	clean_html = html_str.strip()
 	return clean_html
-"""
-assert clean_html_for_xml('simple&copy;') == 'simple'
-assert clean_html_for_xml('&amp;&gt;&lt;') == ''
-assert clean_html_for_xml('<p></p>') == '<p>\n</p>'
-assert clean_html_for_xml('<p>Valid content</p>') == '<p>Valid content\n</p>'
-assert clean_html_for_xml('<script></script>') == '<script>\n</script>'
-assert clean_html_for_xml('<script>let i=0;</script>') == '<script>\n</script>'
-assert clean_html_for_xml('<script>let i=0;</script>html content<script>let i=0;</script>') == '<script>\n</script>html content\n<script>\n</script>'
-assert clean_html_for_xml('<th colspan=2>Header</th>') == '<th colspan="2">Header\n</th>'
-assert clean_html_for_xml('<td rowspan=3>Data</td>') == '<td rowspan="3">Data\n</td>'
-assert clean_html_for_xml('<a href="https://x.com/page?q=123">Link</a>') == '<a href="https://x.com/page">Link\n</a>'
-assert clean_html_for_xml('smiles="C[C@H](N)C(=O)O"') == 'smiles=""'
-assert clean_html_for_xml('<div style="width=100">Content</div>') == '<div style="width=100">Content\n</div>'
-assert clean_html_for_xml('<div style="width: 100px; height: 10px;">Content</div>') == '<div style="width: 100px; height: 10px;">Content\n</div>'
-"""
 
 #========================================================
 def validate_html(html_str: str) -> bool:
@@ -83,10 +68,6 @@ def validate_html(html_str: str) -> bool:
 		print("\n=================================\n")
 		raise  # Re-raises the error so it doesn't silently fail
 	return True
-# Assertions to test the function
-assert validate_html('simple string') == True
-assert validate_html('<p>simple html paragraph</p>') == True
-assert validate_html('<p>&copy; simple html paragraph &amp; escaped characters</p>') == True
 
 #========================================================
 def validate_string_text(string_text: str, name: str, min_length: int = 3):
@@ -101,8 +82,6 @@ def validate_string_text(string_text: str, name: str, min_length: int = 3):
 		raise ValueError(f"'{name}' must have at least {min_length} length (found {len(string_text.strip())}).")
 	validate_html(string_text)
 	return True
-assert validate_string_text("What is 2 + 2?", 'assert_question') == True
-assert validate_string_text("2", 'assert_choice', 1) == True
 
 #========================================================
 def validate_list_of_strings(list_of_strings: list, name: str, min_length: int = 2) -> bool:
@@ -124,7 +103,6 @@ def validate_list_of_strings(list_of_strings: list, name: str, min_length: int =
 	if len(list_of_strings) > len(set(list_of_strings)):
 		raise ValueError(f"'{name}' cannot contain duplicate items:\n{list_of_strings}\n")
 	return True
-assert validate_list_of_strings(["4", "3"], 'assert') == True
 
 #========================================================
 def validate_MC(question_text: str, choices_list: list, answer_text: str):
@@ -145,7 +123,6 @@ def validate_MC(question_text: str, choices_list: list, answer_text: str):
 	if choices_list.count(answer_text) > 1:
 		raise ValueError("Error: The correct answer appears more than once in list of choices.")
 	return True
-assert validate_MC("What is 2 + 2?", ["4", "3"], "4") == True
 
 #========================================================
 def validate_MA(question_text: str, choices_list: list, answers_list: list,
@@ -170,7 +147,6 @@ def validate_MA(question_text: str, choices_list: list, answers_list: list,
 	if not answers_set.issubset(choices_set):
 		raise ValueError("One or more correct answers are not in the list of choices.")
 	return True
-assert validate_MA("Select all fruits", ["apple", "banana", "carrot"], ["apple", "banana"]) == True
 
 #========================================================
 def validate_FIB(question_text: str,  answers_list: list):
@@ -180,7 +156,6 @@ def validate_FIB(question_text: str,  answers_list: list):
 	validate_string_text(question_text, 'question_text')
 	validate_list_of_strings(answers_list, 'answers_list', 1)
 	return True
-assert validate_FIB("What color are bananas at the store?", ["green", "yellow"]) == True
 
 #========================================================
 def validate_MULTI_FIB(question_text: str, answer_map: dict) -> str:
@@ -203,7 +178,6 @@ def validate_MULTI_FIB(question_text: str, answer_map: dict) -> str:
 				raise ValueError(f"All values for key '{key_text}' must be non-empty strings.")
 	return True
 test_answer_map = {'colors': ['red', 'blue'], 'cities': ['Chicago', 'New York']}
-assert validate_MULTI_FIB("What [colors] is which [cities]?", test_answer_map) == True
 
 #========================================================
 def validate_NUM(question_text: str, answer_float: float, tolerance_float: float, tol_message: bool=True):
@@ -216,7 +190,6 @@ def validate_NUM(question_text: str, answer_float: float, tolerance_float: float
 	if not isinstance(tolerance_float, (int, float)) or tolerance_float < 0:
 		raise ValueError("Tolerance must be a non-negative number.")
 	return True
-assert validate_NUM("What year was this written?", 2025, 0.5) == True
 
 #========================================================
 def validate_MATCH(question_text: str, prompts_list: list, choices_list: list):
@@ -233,7 +206,6 @@ def validate_MATCH(question_text: str, prompts_list: list, choices_list: list):
 			print(f"c{i+1}: {c[:30]}")
 		raise ValueError(f"choices_list {len(choices_list)} must be greater or equal to the prompts_list {len(prompts_list)}.")
 	return True
-assert validate_MATCH("Match the fruit to their color?", ["orange", "strawberry"], ["orange", "red"]) == True
 
 #========================================================
 def validate_ORDER(question_text: str,  ordered_answers_list: list):
@@ -243,4 +215,3 @@ def validate_ORDER(question_text: str,  ordered_answers_list: list):
 	validate_string_text(question_text, 'question_text')
 	validate_list_of_strings(ordered_answers_list, 'ordered_answers_list', 3)
 	return True
-assert validate_ORDER("In what order do the numbers go?", ["1", "2", "3"]) == True

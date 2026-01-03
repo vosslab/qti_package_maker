@@ -236,9 +236,10 @@ class ItemBank:
 		merged_allow_mixed = self.allow_mixed or other.allow_mixed
 		# Ensure mixed types are not allowed if allow_mixed is False
 		if not merged_allow_mixed:
-			if self.first_item_type is not None and self.first_item_type != other.first_item_type:
-				raise ValueError("Error: Mixing item types is not allowed. "
-					+ f"allowed type is '{self.first_item_type}', attempted to add '{other.first_item_type}'")
+			if self.first_item_type is not None and other.first_item_type is not None:
+				if self.first_item_type != other.first_item_type:
+					raise ValueError("Error: Mixing item types is not allowed. "
+						+ f"allowed type is '{self.first_item_type}', attempted to add '{other.first_item_type}'")
 		# Create a new merged ItemBank with the determined allow_mixed setting
 		merged_bank = ItemBank(allow_mixed=merged_allow_mixed)
 		# Merge dictionaries, ensuring no duplicate items
@@ -257,6 +258,9 @@ class ItemBank:
 			raise ValueError("Mismatch between items_dict and items_dict_key_list after merge.")
 		# Merge sets to track all used item types from both banks
 		merged_bank.used_item_types_set = self.used_item_types_set | other.used_item_types_set
+		# Preserve first item type when mixed types are not allowed
+		if not merged_allow_mixed:
+			merged_bank.first_item_type = self.first_item_type or other.first_item_type
 
 		return merged_bank
 

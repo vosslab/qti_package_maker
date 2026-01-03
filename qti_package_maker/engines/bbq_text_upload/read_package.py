@@ -29,10 +29,6 @@ def indices(lst, element):
 		if x == element:
 			result.append(i)
 	return result
-# Test case: Single occurrence of "correct" (1)
-assert indices([0, 0, 1, 0, 0], 1) == [2]
-# Test case: Multiple occurrences of "correct" (1)
-assert indices([0, 1, 0, 1, 0, 1], 1) == [1, 3, 5]
 
 #=====================================================
 def read_MA(parts):

@@ -40,16 +40,34 @@ class QTIPackageInterface:
 	def init_engine(self, input_engine_name: str):
 		"""Retrieve the engine class based on the given engine name."""
 		input_engine_name_low = re.sub(r"[^a-z0-9]", "", input_engine_name.lower())
+		if not input_engine_name_low:
+			raise ValueError("Unknown engine: empty input")
 		# Use preloaded engine data
+		matches = []
+		exact_matches = []
 		for engine_info in self.engine_data.values():
 			engine_name = re.sub(r"[^a-z0-9]", "", engine_info["name"].lower())
+			if engine_name == input_engine_name_low:
+				exact_matches.append(engine_info)
 			if engine_name.startswith(input_engine_name_low):
-				engine_cls = engine_info["class"](self.package_name, self.verbose)
-				if self.verbose:
-					print(f"Initialized Engine: {engine_cls.name} ({engine_info['name']})")
-				return engine_cls
-		self.show_available_engines()
-		raise ValueError(f"Unknown engine: {input_engine_name}")
+				matches.append(engine_info)
+		if len(exact_matches) == 1:
+			engine_info = exact_matches[0]
+		elif len(exact_matches) > 1:
+			candidates = ", ".join(sorted([info["name"] for info in exact_matches]))
+			raise ValueError(f"Ambiguous engine name '{input_engine_name}'. Candidates: {candidates}")
+		elif len(matches) == 1:
+			engine_info = matches[0]
+		elif len(matches) > 1:
+			candidates = ", ".join(sorted([info["name"] for info in matches]))
+			raise ValueError(f"Ambiguous engine prefix '{input_engine_name}'. Candidates: {candidates}")
+		else:
+			self.show_available_engines()
+			raise ValueError(f"Unknown engine: {input_engine_name}")
+		engine_cls = engine_info["class"](self.package_name, self.verbose)
+		if self.verbose:
+			print(f"Initialized Engine: {engine_cls.name} ({engine_info['name']})")
+		return engine_cls
 
 	#=====================================================================
 	def show_available_engines(self, tablefmt: str="fancy_outline"):

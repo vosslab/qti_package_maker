@@ -34,3 +34,23 @@ def test_engine_read_write_flags():
 	assert blackboard["can_write"] is True
 	assert bbq["can_read"] is True
 	assert bbq["can_write"] is True
+
+
+def test_engine_registry_names_match_keys():
+	engine_registration.register_engines()
+	for key, info in engine_registration.ENGINE_REGISTRY.items():
+		assert info["engine_name"] == key
+
+
+def test_is_method_implemented_detects_stub():
+	class DummyImplemented:
+		def do_work(self):
+			return "ok"
+
+	class DummyNotImplemented:
+		def do_work(self):
+			raise NotImplementedError
+
+	assert engine_registration.is_method_implemented(DummyImplemented, "do_work") is True
+	assert engine_registration.is_method_implemented(DummyNotImplemented, "do_work") is False
+	assert engine_registration.is_method_implemented(DummyImplemented, "missing") is False

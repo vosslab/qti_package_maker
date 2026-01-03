@@ -45,6 +45,25 @@ def test_item_bank_merge_and_operators():
 	assert bank2.merge(bank1) == merged
 
 
+def test_item_bank_merge_preserves_first_item_type():
+	bank1 = ItemBank()
+	bank1.add_item("MC", ("Q1?", ["A", "B"], "A"))
+	empty = ItemBank()
+	merged = bank1.merge(empty)
+	assert merged.first_item_type == "MC"
+	with pytest.raises(ValueError):
+		merged.add_item("MA", ("Q2?", ["A", "B", "C"], ["A"]))
+
+
+def test_item_bank_merge_same_type_sets_first_item_type():
+	bank1 = ItemBank()
+	bank1.add_item("MC", ("Q1?", ["A", "B"], "A"))
+	bank2 = ItemBank()
+	bank2.add_item("MC", ("Q2?", ["A", "B"], "B"))
+	merged = bank1.merge(bank2)
+	assert merged.first_item_type == "MC"
+
+
 def test_item_bank_getitem_slice_and_index():
 	bank = ItemBank()
 	bank.add_item("MC", ("Q1?", ["A", "B"], "A"))
@@ -84,3 +103,15 @@ def test_item_bank_histogram_mc_output(capsys):
 	bank.print_histogram()
 	out = capsys.readouterr().out
 	assert "Histogram" in out
+
+
+def test_item_bank_renumber_items():
+	bank = ItemBank()
+	bank.add_item("MC", ("Q1?", ["A", "B"], "A"))
+	bank.add_item("MC", ("Q2?", ["A", "B"], "B"))
+	for idx, item in enumerate(bank, start=1):
+		assert item.item_number == idx
+	bank.items_dict_key_list = list(reversed(bank.items_dict_key_list))
+	bank.renumber_items()
+	item_numbers = [item.item_number for item in bank]
+	assert sorted(item_numbers) == [1, 2]

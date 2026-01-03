@@ -60,8 +60,9 @@ class BaseEngine:
 		if len(item_bank) == 0:
 			print("No items to write out skipping")
 			return
-		random.shuffle(item_bank)
-		for item_cls in item_bank:
+		items = list(item_bank)
+		random.shuffle(items)
+		for item_cls in items:
 			write_item_function = getattr(self.write_item, item_cls.item_type, None)
 			if not write_item_function:
 				print(f"Warning: No write function found for item type '{item_cls.item_type}'.")
