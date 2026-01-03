@@ -4,6 +4,7 @@
 
 # Pip3 Library
 import pytest
+import re
 
 # QTI Package Maker
 from qti_package_maker.common import string_functions
@@ -62,6 +63,31 @@ def test_generate_gene_letters():
 	random_letters = string_functions.generate_gene_letters(5)
 	assert len(random_letters) == 5
 	assert len(set(random_letters)) == 5
+
+
+def test_crc16_helpers():
+	code = string_functions.get_crc16_from_string("hello")
+	assert re.fullmatch(r"[0-9a-f]{4}", code)
+	rand_code = string_functions.get_random_crc16()
+	assert re.fullmatch(r"[0-9a-f]{4}", rand_code)
+
+
+def test_check_ascii_accepts_ascii():
+	assert string_functions.check_ascii("abc 123") is True
+
+
+def test_check_ascii_rejects_unicode():
+	with pytest.raises(ValueError):
+		string_functions.check_ascii("caf\u00e9")
+
+
+def test_make_question_pretty_strips_html():
+	assert string_functions.make_question_pretty("<p>Test</p>") == "Test"
+
+
+def test_html_helpers():
+	assert "monospace" in string_functions.html_monospace("A B", use_nbsp=False)
+	assert "color" in string_functions.html_color_text("Hi", "ff0000")
 
 
 def test_html_table_to_text():

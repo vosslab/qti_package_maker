@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+# Standard Library
+import random
+
+# Pip3 Library
+
+# QTI Package Maker
+from qti_package_maker.common import color_wheel
+
+
+def test_get_indices_wraps_when_too_many():
+	indices = color_wheel.get_indices_for_color_wheel(10, 4)
+	assert len(indices) == 10
+	assert set(indices) == {0, 1, 2, 3}
+
+
+def test_get_indices_deterministic_with_seed():
+	random.seed(0)
+	indices = color_wheel.get_indices_for_color_wheel(3, 10)
+	assert len(indices) == 3
+	assert all(0 <= idx < 10 for idx in indices)

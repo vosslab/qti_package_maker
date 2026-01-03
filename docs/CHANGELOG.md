@@ -2,7 +2,32 @@
 
 ## 2026-01-03
 
+### Added
+- Add `COLOR_WHEEL_REFACTOR_PLAN.md` with a perceptual color sampling plan and visual test notes.
+- Add `qti_package_maker/common/color_wheel_next_gen.py` for OKLCH-based color wheel experiments.
+- Add pytest coverage for next-gen color wheel utilities.
+
 ### Changed
+- Refine `COLOR_WHEEL_REFACTOR_PLAN.md` with perceptual hue spacing and fixed lightness bands.
+- Fix `COLOR_WHEEL_REFACTOR_PLAN.md` to use fixed lightness per category instead of random ranges.
+- Update `color_wheel_next_gen.py` to support uniform-chroma mode for even hue consistency.
+- Adjust `COLOR_WHEEL_REFACTOR_PLAN.md` to define even chroma via shared minimum max chroma.
+- Adjust next-gen lightness targets: add `very_dark`, lighten `dark` and `light`, keep `extra_light` stable.
+- Optimize next-gen hue offset selection to maximize shared chroma for dark/light categories.
+- Anchor next-gen hue 1 at true red via a configurable `anchor_hue`.
+- Increase next-gen saturation by blending uniform and per-hue max chroma.
+- Compute true-red anchor from sRGB and use a gamma-blended chroma boost to raise saturation.
+- Add working history section to `COLOR_WHEEL_REFACTOR_PLAN.md` covering challenges and attempts.
+- Add yellow hue balancing to boost dark yellows and reduce light-yellow dominance.
+- Document current next-gen tuning values in `COLOR_WHEEL_REFACTOR_PLAN.md`.
+- Update `COLOR_WHEEL_REFACTOR_PLAN.md` with design corrections and per-wheel policy guidance.
+- Add xdark/normal modes and WheelSpec policy draft to `COLOR_WHEEL_REFACTOR_PLAN.md`.
+- Remove xdark/normal from the current WheelSpec draft per updated scope.
+- Replace `COLOR_WHEEL_REFACTOR_PLAN.md` with CAM16-based plan and updated rollout steps.
+- Update `COLOR_WHEEL_REFACTOR_PLAN.md` to make CAM16 the default (no flags).
+- Add CAM16 dependency choice notes and caching detail to `COLOR_WHEEL_REFACTOR_PLAN.md`.
+- Move color wheel modules into `qti_package_maker/common/color_wheel/` and add shims for compatibility.
+- Expand `color_wheel_next_gen` shim exports to include internal helpers used by tests.
 - Update TODO to reflect completed BBQ reads and current unimplemented engine items.
 - Mark Canvas QTI 1.2 ORDER as won't implement.
 - Move module-level asserts into pytest unit coverage.
@@ -17,6 +42,8 @@
 - Expand ROADMAP priorities with additional near-, mid-, and long-term items and out-of-scope notes.
 - Add pytest coverage for QTI writer ZIP layout and manifest references.
 - Add reader error-path tests and strengthen QTI writer XML assertions.
+- Add pytest coverage for xml formatter utilities.
+- Expand pytest coverage for validator CRC checks, yaml tools, tabulate compat, string helpers, and color wheel.
 
 ## 2025-12-29
 
