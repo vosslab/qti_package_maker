@@ -11,6 +11,8 @@ import argparse
 import tempfile
 import subprocess
 import datetime
+import urllib.error
+import urllib.request
 
 # PIP3 modules
 import rich.console
@@ -409,6 +411,17 @@ def require_twine_available(python_exe: str, project_dir: str) -> None:
 	result = run_command_allow_fail([python_exe, "-m", "twine", "--version"], project_dir, True)
 	if result.returncode != 0:
 		fail("twine is not available. Install it with: python -m pip install twine")
+
+
+def require_index_reachable(index_url: str) -> None:
+	"""Ensure the package index URL is reachable."""
+	request = urllib.request.Request(index_url, method="GET")
+	try:
+		with urllib.request.urlopen(request, timeout=5) as response:
+			if response.status >= 400:
+				fail(f"Index URL returned HTTP {response.status}: {index_url}")
+	except urllib.error.URLError as exc:
+		fail(f"Index URL not reachable: {index_url} ({exc})")
 
 
 def require_dist_empty(project_dir: str) -> None:
@@ -864,6 +877,7 @@ def main() -> None:
 	require_up_to_date_with_origin_main(project_dir)
 	require_version_tag(project_dir, version)
 	require_twine_available(sys.executable, project_dir)
+	require_index_reachable(index_url)
 	require_pytest_passes_if_available(sys.executable, project_dir)
 
 	check_version_exists(sys.executable, project_dir, package_name, version, index_url)
