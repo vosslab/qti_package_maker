@@ -10,6 +10,7 @@ import tomllib
 import argparse
 import tempfile
 import subprocess
+import datetime
 
 # PIP3 modules
 import rich.console
@@ -21,6 +22,7 @@ DEFAULT_TESTPYPI_INDEX = "https://test.pypi.org/simple/"
 DEFAULT_PYPI_INDEX = "https://pypi.org/simple/"
 TESTPYPI_PROJECT_BASE = "https://test.pypi.org/project/"
 PYPI_PROJECT_BASE = "https://pypi.org/project/"
+BUILD_LOG_NAME = "build_output.log"
 
 console = rich.console.Console()
 error_console = rich.console.Console(stderr=True)
@@ -123,6 +125,29 @@ def run_command_allow_fail(args: list[str], cwd: str, capture: bool) -> subproce
 
 #============================================
 
+def run_command_to_log(
+	args: list[str],
+	cwd: str,
+	log_path: str,
+) -> subprocess.CompletedProcess:
+	"""Run a command and write stdout/stderr to a log file."""
+	with open(log_path, "a") as handle:
+		handle.write(f"$ {' '.join(args)}\n")
+		handle.flush()
+		result = subprocess.run(
+			args,
+			cwd=cwd,
+			text=True,
+			stdout=handle,
+			stderr=handle,
+		)
+	if result.returncode != 0:
+		command_text = " ".join(args)
+		fail(f"Command failed (see {log_path}): {command_text}")
+	return result
+
+#============================================
+
 def parse_args() -> argparse.Namespace:
 	"""Parse command line arguments.
 
@@ -148,6 +173,13 @@ def parse_args() -> argparse.Namespace:
 		"--version-check",
 		dest="check_only",
 		help="Check if the version exists on the index and exit.",
+		action="store_true",
+	)
+
+	behavior_group.add_argument(
+		"--build-only",
+		dest="build_only",
+		help="Run all build steps but skip upload and test install.",
 		action="store_true",
 	)
 
@@ -657,7 +689,13 @@ def build_package(python_exe: str, project_dir: str) -> None:
 		project_dir: Project directory.
 	"""
 	print_step("Building the package...")
-	run_command([python_exe, "-m", "build"], project_dir, False)
+	log_path = os.path.join(project_dir, BUILD_LOG_NAME)
+	with open(log_path, "w") as handle:
+		handle.write(
+			f"Build log ({datetime.datetime.now().isoformat()})\n"
+		)
+	print_info(f"Build output: {log_path}")
+	run_command_to_log([python_exe, "-m", "build"], project_dir, log_path)
 
 #============================================
 
@@ -834,7 +872,15 @@ def main() -> None:
 		return
 
 	print_step("Upgrading build tools...")
-	upgrade_build_tools(sys.executable, project_dir)
+	log_path = os.path.join(project_dir, BUILD_LOG_NAME)
+	with open(log_path, "a") as handle:
+		handle.write("\nUpgrade tools output\n")
+	print_info(f"Build output: {log_path}")
+	run_command_to_log(
+		[sys.executable, "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel", "build", "twine"],
+		project_dir,
+		log_path,
+	)
 
 	print_step("Cleaning build artifacts...")
 	clean_build_artifacts(project_dir)
@@ -847,6 +893,10 @@ def main() -> None:
 	show_dist_files(os.path.join(project_dir, "dist"))
 
 	check_metadata(sys.executable, project_dir)
+	if args.build_only:
+		print_step("Build-only mode: skipping upload and test install.")
+		return
+
 	upload_package(sys.executable, project_dir, args.repo)
 
 	test_install(sys.executable, project_dir, package_name, import_name, index_url, version)
