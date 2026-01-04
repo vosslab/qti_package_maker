@@ -11,6 +11,7 @@ import argparse
 import tempfile
 import subprocess
 import datetime
+import time
 import urllib.error
 import urllib.request
 
@@ -25,6 +26,8 @@ DEFAULT_PYPI_INDEX = "https://pypi.org/simple/"
 TESTPYPI_PROJECT_BASE = "https://test.pypi.org/project/"
 PYPI_PROJECT_BASE = "https://pypi.org/project/"
 BUILD_LOG_NAME = "build_output.log"
+TEST_INSTALL_RETRIES = 6
+TEST_INSTALL_RETRY_DELAY = 10
 
 console = rich.console.Console()
 error_console = rich.console.Console(stderr=True)
@@ -887,7 +890,21 @@ def test_install(
 		]
 		if Version(version).is_prerelease:
 			install_command.insert(4, "--pre")
-		run_command(install_command, project_dir, False)
+		time.sleep(2)
+		for attempt in range(1, TEST_INSTALL_RETRIES + 1):
+			result = run_command_allow_fail(install_command, project_dir, True)
+			if result.returncode == 0:
+				break
+			output = "\n".join([result.stdout, result.stderr])
+			if "No matching distribution found" not in output:
+				fail(f"Test install failed. Output:\n{output}")
+			if attempt >= TEST_INSTALL_RETRIES:
+				fail("Test install failed after retries. Package may not be indexed yet.")
+			print_warning(
+				"Test install did not find the new version yet. "
+				f"Retrying in {TEST_INSTALL_RETRY_DELAY}s..."
+			)
+			time.sleep(TEST_INSTALL_RETRY_DELAY)
 
 		import_command = f"import {import_name}; print('{import_name} successfully installed')"
 		run_command([venv_python, "-c", import_command], project_dir, False)

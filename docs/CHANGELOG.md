@@ -24,6 +24,7 @@
 - **Release tooling**: add index reachability check before version lookup.
 - **Release tooling**: include prereleases when checking index versions.
 - **Release tooling**: normalize version strings for index checks and test installs (e.g., 26.01rc2 -> 26.1rc2).
+- **Release tooling**: retry test install when the new version is not indexed yet.
 - **Release tooling**: add `--set-version` to bump VERSION/pyproject, commit, tag, and push.
 - **Versioning**: bump VERSION/pyproject to 26.01rc2.
 - **Red anchor & scan tooling**: optimize hue offsets and anchor selection; scan all offsets and choose reddest at max chroma; adjust red scoring (|G-B|/(G+B) + (G+B)/(2R)); add multi-stage best-red search, cache seeding/updates; add --best-red + red-scan HTML (coarse/fine/micro), bundle all modes, 0.2 micro step; switch CLI to argparse/named args and remove --scan-mode; treat red offsets as global per mode.
