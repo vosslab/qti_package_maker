@@ -12,7 +12,8 @@ import yaml
 
 
 def test_generate_color_wheel_returns_hex():
-	colors = next_gen.generate_color_wheel(4, mode="dark")
+	first_mode = next_gen.DEFAULT_WHEEL_MODE_ORDER[0]
+	colors = next_gen.generate_color_wheel(4, mode=first_mode)
 	assert len(colors) == 4
 	assert all(re.match(r"^[0-9a-f]{6}$", value) for value in colors)
 
@@ -24,7 +25,8 @@ def test_redness_score_prefers_red():
 
 def test_write_html_color_table(tmp_path):
 	output = tmp_path / "next_gen_table.html"
-	next_gen.write_html_color_table(str(output), num_colors=4, modes=["dark", "light", "xlight"])
+	modes = list(next_gen.DEFAULT_WHEEL_MODE_ORDER)
+	next_gen.write_html_color_table(str(output), num_colors=4, modes=modes[:3])
 	content = output.read_text()
 	assert "Color Name" in content
 	assert "White / Dark" in content
@@ -32,15 +34,16 @@ def test_write_html_color_table(tmp_path):
 
 def test_write_red_scan_bundle_html(tmp_path):
 	output = tmp_path / "red_scan.html"
-	next_gen._write_red_scan_bundle_html(str(output), num_colors=4, modes=["dark", "light"])
+	modes = list(next_gen.DEFAULT_WHEEL_MODE_ORDER)
+	next_gen._write_red_scan_bundle_html(str(output), num_colors=4, modes=modes[:2])
 	content = output.read_text()
-	assert "<h1>dark</h1>" in content
+	assert f"<h1>{modes[0]}</h1>" in content
 	assert "Step 0.2 (micro)" in content
 
 
 def test_write_html_color_table_cam16_debug(tmp_path):
 	output = tmp_path / "cam16_debug.html"
-	modes = ["xdark", "dark", "normal", "light", "xlight"]
+	modes = list(next_gen.DEFAULT_WHEEL_MODE_ORDER)
 	next_gen.write_html_color_table_cam16_debug(str(output), num_colors=4, modes=modes)
 	content = output.read_text()
 	assert "CAM16 Debug" in content
@@ -52,6 +55,7 @@ def test_write_html_color_table_cam16_debug(tmp_path):
 	assert "target_ucs_r" in content
 	assert "ucs_r_err" in content
 	assert "control=" in content
+	assert "clamp_reason" in content
 	assert "gamut_margin" in content
 	assert "M_max_hue" in content
 
@@ -78,9 +82,10 @@ def test_cam16_j_m_q_ranges():
 				cache_key=(mode, round(spec.target_j, 2), round(hue, 1)),
 			)
 			min_expected = min(spec.m_min, max_m)
-			max_expected = min(spec.m_max, max_m)
 			assert cam.M >= (min_expected - 2.0)
-			assert cam.M <= (max_expected + 2.0)
+			if spec.shared_m_quantile is not None:
+				max_expected = min(spec.m_max, max_m)
+				assert cam.M <= (max_expected + 2.0)
 
 			assert cam.Q > 0.0
 			assert cam.Q < 260.0

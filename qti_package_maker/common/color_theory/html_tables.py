@@ -19,11 +19,13 @@ def _generate_table_td(bg_hex_color, text_hex_color, text="this is a test"):
 
 def write_html_color_table(filename, num_colors=16, modes=None):
 	if modes is None:
-		modes = ["dark", "light", "xlight"]
+		modes = list(DEFAULT_WHEEL_MODE_ORDER)
 
-	dark_mode = modes[0] if len(modes) > 0 else "dark"
-	light_mode = modes[1] if len(modes) > 1 else "light"
-	extra_light_mode = modes[2] if len(modes) > 2 else "xlight"
+	if not modes:
+		raise ValueError("No modes available for HTML color table")
+	dark_mode = modes[0]
+	light_mode = modes[1] if len(modes) > 1 else modes[0]
+	extra_light_mode = modes[2] if len(modes) > 2 else modes[0]
 
 	anchor_hex = "ff0000"
 	hues = _select_hues_for_anchor(num_colors, dark_mode, anchor_hex, samples=48)
@@ -34,11 +36,11 @@ def write_html_color_table(filename, num_colors=16, modes=None):
 	dark_spec = DEFAULT_WHEEL_SPECS.get(dark_mode)
 	light_spec = DEFAULT_WHEEL_SPECS.get(light_mode)
 	extra_light_spec = DEFAULT_WHEEL_SPECS.get(extra_light_mode)
-	if dark_spec is not None and dark_wheel:
+	if dark_spec is not None and dark_wheel and dark_spec.target_ucs_r is None:
 		dark_wheel[0] = _color_for_hue(hues[0], dark_spec, dark_mode, m_override=dark_spec.m_max)
-	if light_spec is not None and light_wheel:
+	if light_spec is not None and light_wheel and light_spec.target_ucs_r is None:
 		light_wheel[0] = _color_for_hue(hues[0], light_spec, light_mode, m_override=light_spec.m_max)
-	if extra_light_spec is not None and extra_light_wheel:
+	if extra_light_spec is not None and extra_light_wheel and extra_light_spec.target_ucs_r is None:
 		extra_light_wheel[0] = _color_for_hue(hues[0], extra_light_spec, extra_light_mode, m_override=extra_light_spec.m_max)
 
 	with open(filename, 'w') as f:
@@ -108,11 +110,11 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 					f.write(f"<p>control=shared_m_quantile q={spec.shared_m_quantile:.2f}</p>")
 			for repeat in range(repeats):
 				f.write(f"<h2>run {repeat + 1}</h2>")
-				f.write("<table><tr><th>Hue</th><th>Swatch</th><th>Hex</th><th>XKCD Name</th><th>J</th><th>Q</th><th>UCS_r</th><th>target_ucs_r</th><th>ucs_r_err</th><th>m_target</th><th>m_final</th><th>m_clamped</th><th>M_max_hue</th><th>M_util</th><th>gamut_margin</th></tr>\n")
+				f.write("<table><tr><th>Hue</th><th>Swatch</th><th>Hex</th><th>XKCD Name</th><th>J</th><th>Q</th><th>UCS_r</th><th>target_ucs_r</th><th>ucs_r_err</th><th>m_target</th><th>m_final</th><th>clamp_reason</th><th>M_max_hue</th><th>M_util</th><th>gamut_margin</th></tr>\n")
 				hues = _select_hues_for_anchor(num_colors, mode, anchor_hex, samples=48)
 				_shared_m, max_ms = _shared_m_and_max_ms(hues, spec, mode)
 				colors = _colors_for_hues(hues, spec, mode, apply_variation=False)
-				if spec is not None and colors:
+				if spec is not None and colors and spec.target_ucs_r is None:
 					colors[0] = _color_for_hue(hues[0], spec, mode, m_override=spec.m_max)
 				for i, (hex_value, max_m) in enumerate(zip(colors, max_ms)):
 					cam = _srgb_hex_to_cam16_spec(hex_value)
@@ -122,14 +124,14 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 					gamut_margin = _gamut_margin(rgb_linear)
 					m_util = cam.M / max_m if max_m > 0 else 0.0
 					target_ucs_r = spec.target_ucs_r if spec is not None else None
-					m_cap = min(max_m, spec.m_max) if spec is not None else max_m
+					m_cap = max_m
 					m_target = None
-					m_clamped = ""
+					clamp_reason = ""
 					ucs_r_err = ""
 					if target_ucs_r is not None:
 						m_target = _m_for_target_ucs_r(spec.target_j, hues[i], target_ucs_r, m_cap)
 						ucs_r_err = f"{ucs_r - target_ucs_r:.2f}"
-						m_clamped = "yes" if m_target >= (m_cap - 1e-6) else "no"
+						clamp_reason = "gamut_limit" if m_target >= (m_cap - 1e-6) else "none"
 					matched_name = rgb_color_name_match.hex_to_best_xkcd_name(hex_value)
 					f.write("<tr>")
 					f.write(f"<td>{i + 1}</td>")
@@ -143,7 +145,7 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 					f.write(f"<td>{ucs_r_err}</td>")
 					f.write(f"<td>{'' if m_target is None else f'{m_target:.2f}'}</td>")
 					f.write(f"<td>{cam.M:.2f}</td>")
-					f.write(f"<td>{m_clamped}</td>")
+					f.write(f"<td>{clamp_reason}</td>")
 					f.write(f"<td>{max_m:.2f}</td>")
 					f.write(f"<td>{m_util:.3f}</td>")
 					f.write(f"<td>{gamut_margin:.4f}</td>")

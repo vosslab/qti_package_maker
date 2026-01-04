@@ -9,6 +9,7 @@ import pytest
 
 # QTI Package Maker
 from qti_package_maker.common import color_wheel
+from qti_package_maker.common.color_theory import next_gen
 
 
 def test_min_difference_cases():
@@ -28,7 +29,8 @@ def test_facade_legacy_backend_matches_legacy():
 
 def test_cam16_backend_returns_hex():
 	random.seed(0)
-	colors = color_wheel.generate_color_wheel(3, backend="cam16", mode="dark")
+	first_mode = next_gen.DEFAULT_WHEEL_MODE_ORDER[0]
+	colors = color_wheel.generate_color_wheel(3, backend="cam16", mode=first_mode)
 	assert len(colors) == 3
 	assert all(re.match(r"^[0-9a-f]{6}$", value) for value in colors)
 

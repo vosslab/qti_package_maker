@@ -168,7 +168,7 @@ def _color_for_hue(hue, spec, mode, m_override=None):
 
 def generate_color_wheel(
 	num_colors,
-	mode="dark",
+	mode=None,
 	hue_layout="offset",
 	anchor_hue=0.0,
 	samples=24,
@@ -182,6 +182,8 @@ def generate_color_wheel(
 		raise ValueError("num_colors must be positive")
 
 	specs = wheel_specs or DEFAULT_WHEEL_SPECS
+	if mode is None:
+		mode = list(specs.keys())[0]
 	spec = specs.get(mode)
 	if spec is None:
 		raise ValueError(f"Unknown mode: {mode}")

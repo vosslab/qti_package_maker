@@ -12,7 +12,9 @@ for mode, value in (DEFAULT_RED_OFFSETS or {}).items():
 	_BEST_RED_OFFSETS[(mode, None, "ff0000")] = value
 
 
-def _render_red_scan_tables(num_colors=16, mode="dark"):
+def _render_red_scan_tables(num_colors=16, mode=None):
+	if mode is None:
+		mode = list(DEFAULT_WHEEL_MODE_ORDER)[0]
 	spec = DEFAULT_WHEEL_SPECS.get(mode)
 	if spec is None:
 		raise ValueError(f"Unknown mode: {mode}")
@@ -98,7 +100,9 @@ def _render_red_scan_tables(num_colors=16, mode="dark"):
 	return "".join(parts)
 
 
-def _write_red_scan_html(filename, num_colors=16, mode="dark"):
+def _write_red_scan_html(filename, num_colors=16, mode=None):
+	if mode is None:
+		mode = list(DEFAULT_WHEEL_MODE_ORDER)[0]
 	with open(filename, "w") as f:
 		f.write("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>Red Scan</title>"
 				"<style>table {width: 100%; border-collapse: collapse; text-align: center;} "
