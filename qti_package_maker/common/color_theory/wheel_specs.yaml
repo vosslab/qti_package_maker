@@ -3,55 +3,19 @@ viewing:
   white_point: D65
   adapting_luminance: 64.0
   background_luminance: 20.0
-wheel_specs:
-  very_dark:
-    target_j: 25.0
-    m_min: 20.0
-    m_max: 90.0
-    shared_m_quantile: 0.45
-    allow_m_variation: 0.18
-    max_m_blend: 0.45
+modes:
   xdark:
     target_j: 25.0
-    m_min: 22.0
-    m_max: 95.0
-    shared_m_quantile: 0.50
-    allow_m_variation: 0.18
-    max_m_blend: 0.50
+    red_offset: 27.2
   dark:
     target_j: 40.0
-    m_min: 18.0
-    m_max: 85.0
-    shared_m_quantile: 0.40
-    allow_m_variation: 0.15
-    max_m_blend: 0.40
+    red_offset: 25.0
   normal:
     target_j: 55.0
-    m_min: 8.0
-    m_max: 45.0
-    shared_m_quantile: 0.25
-    allow_m_variation: 0.08
-    max_m_blend: 0.25
+    red_offset: 19.2
   light:
     target_j: 75.0
-    m_min: 1.5
-    m_max: 10.0
-    shared_m_quantile: 0.12
-    allow_m_variation: 0.03
-    max_m_blend: 0.15
-    target_ucs_r: 14.0
+    red_offset: 20.6
   xlight:
     target_j: 90.0
-    m_min: 1.0
-    m_max: 8.0
-    shared_m_quantile: 0.08
-    allow_m_variation: 0.02
-    max_m_blend: 0.10
-    target_ucs_r: 12.0
-best_red_offsets:
-  16:
-    xdark: 27.2
-    dark: 25.0
-    normal: 19.2
-    light: 20.6
-    xlight: 17.0
+    red_offset: 17.0

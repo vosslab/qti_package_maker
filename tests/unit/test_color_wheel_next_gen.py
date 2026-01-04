@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 
 # Standard Library
+from pathlib import Path
 import re
 
 # QTI Package Maker
 from qti_package_maker.common.color_theory import next_gen
+
+# Third Party
+import yaml
 
 
 def test_generate_color_wheel_returns_hex():
@@ -86,3 +90,22 @@ def test_target_ucs_r_increases_m():
 	low = next_gen._m_for_target_ucs_r(j, h, 6.0, max_m=max_m, steps=8)
 	high = next_gen._m_for_target_ucs_r(j, h, 12.0, max_m=max_m, steps=8)
 	assert high >= low
+
+
+def test_yaml_mode_order_matches_default():
+	yaml_path = Path(next_gen.__file__).with_name("wheel_specs.yaml")
+	data = yaml.safe_load(yaml_path.read_text()) or {}
+	mode_order = list((data.get("modes") or {}).keys())
+	assert mode_order == list(next_gen.DEFAULT_WHEEL_MODE_ORDER)
+
+
+def test_yaml_offsets_used_for_anchor():
+	yaml_path = Path(next_gen.__file__).with_name("wheel_specs.yaml")
+	data = yaml.safe_load(yaml_path.read_text()) or {}
+	modes = data.get("modes") or {}
+	for mode, values in modes.items():
+		offset = (values or {}).get("red_offset")
+		if offset is None:
+			continue
+		hues = next_gen._select_hues_for_anchor(16, mode, None)
+		assert abs(hues[0] - float(offset)) < 1e-6

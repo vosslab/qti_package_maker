@@ -39,14 +39,12 @@ _DEFAULT_VIEWING = {
 	"background_luminance": 20.0,
 }
 
-_DEFAULT_BEST_RED_OFFSETS = {
-	16: {
-		"xdark": 27.2,
-		"dark": 25.0,
-		"normal": 19.2,
-		"light": 20.6,
-		"xlight": 17.0,
-	},
+_DEFAULT_RED_OFFSETS_16 = {
+	"xdark": 27.2,
+	"dark": 25.0,
+	"normal": 19.2,
+	"light": 20.6,
+	"xlight": 17.0,
 }
 
 
@@ -78,21 +76,28 @@ def _load_wheel_specs_from_yaml():
 	viewing.update(data.get("viewing", {}) or {})
 
 	specs = {}
-	raw_specs = data.get("wheel_specs", {}) or {}
-	if not raw_specs:
+	raw_modes = data.get("modes", {}) or data.get("wheel_specs", {}) or {}
+	if not raw_modes:
 		specs = dict(_DEFAULT_WHEEL_SPECS)
+		mode_order = list(_DEFAULT_WHEEL_SPECS.keys())
 	else:
-		for mode, see in raw_specs.items():
-			defaults = _DEFAULT_WHEEL_SPECS.get(mode)
+		mode_order = list(raw_modes.keys())
+		for mode, see in raw_modes.items():
+			defaults = _DEFAULT_WHEEL_SPECS.get(mode) or _DEFAULT_WHEEL_SPECS.get("normal")
 			specs[mode] = _build_wheel_spec(see, defaults=defaults)
 
-	red_offsets = dict(_DEFAULT_BEST_RED_OFFSETS)
-	raw_offsets = data.get("best_red_offsets", {}) or {}
-	if raw_offsets:
-		red_offsets = raw_offsets
+	red_offsets = dict(_DEFAULT_RED_OFFSETS_16)
+	if raw_modes:
+		red_offsets = {}
+		for mode, see in raw_modes.items():
+			if see is None:
+				continue
+			value = see.get("red_offset")
+			if value is None:
+				continue
+			red_offsets[mode] = float(value)
 
-	return specs, viewing, red_offsets
+	return specs, viewing, {16: red_offsets}, mode_order
 
 
-DEFAULT_WHEEL_SPECS, DEFAULT_VIEWING, DEFAULT_BEST_RED_OFFSETS = _load_wheel_specs_from_yaml()
-DEFAULT_WHEEL_MODE_ORDER = list(DEFAULT_WHEEL_SPECS.keys())
+DEFAULT_WHEEL_SPECS, DEFAULT_VIEWING, DEFAULT_BEST_RED_OFFSETS, DEFAULT_WHEEL_MODE_ORDER = _load_wheel_specs_from_yaml()

@@ -47,7 +47,7 @@ from qti_package_maker.common.color_theory.red_scan import (
 	_write_red_scan_bundle_html,
 	_write_red_scan_html,
 )
-from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_VIEWING, DEFAULT_WHEEL_SPECS, WheelSpec
+from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_VIEWING, DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS, WheelSpec
 
 
 def main():
@@ -64,7 +64,7 @@ def main():
 	if args.best_red:
 		target_modes = args.modes
 		if not target_modes or "all" in target_modes:
-			target_modes = ["xdark", "dark", "normal", "light", "xlight"]
+			target_modes = list(DEFAULT_WHEEL_MODE_ORDER)
 		for mode in target_modes:
 			offset = _best_red_offset(args.num_colors, mode, None)
 			print(f"best red offset for {mode} ({args.num_colors}): {offset:.1f}")

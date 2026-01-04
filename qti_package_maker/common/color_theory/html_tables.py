@@ -7,7 +7,7 @@ from qti_package_maker.common.color_theory import rgb_color_name_match
 from qti_package_maker.common.color_theory.cam16_utils import _cam16_ucs_radius, _gamut_margin, _srgb_hex_to_cam16_spec, _xyz_to_srgb, cam16_jmh_to_xyz
 from qti_package_maker.common.color_theory.generator import _color_for_hue, _colors_for_hues, _print_legacy_red_comparison, _shared_m_and_max_ms
 from qti_package_maker.common.color_theory.red_scan import _select_hues_for_anchor
-from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_WHEEL_SPECS
+from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS
 
 
 def _generate_table_td(bg_hex_color, text_hex_color, text="this is a test"):
@@ -85,7 +85,7 @@ def write_html_color_table(filename, num_colors=16, modes=None):
 
 def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repeats=1):
 	if modes is None:
-		modes = ["xdark", "dark", "normal", "light", "xlight"]
+		modes = list(DEFAULT_WHEEL_MODE_ORDER)
 
 	with open(filename, "w") as f:
 		f.write("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>CAM16 Debug</title>"
