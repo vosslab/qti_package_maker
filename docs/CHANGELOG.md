@@ -22,6 +22,9 @@
 - **Release tooling**: require `main` to be fully synced with `origin/main` (fetch + ahead/behind check).
 - **Release tooling**: add `--build-only` mode and log build output to `build_output.log`.
 - **Release tooling**: add index reachability check before version lookup.
+- **Release tooling**: include prereleases when checking index versions.
+- **Release tooling**: add `--set-version` to bump VERSION/pyproject, commit, tag, and push.
+- **Versioning**: bump VERSION/pyproject to 26.01rc2.
 - **Red anchor & scan tooling**: optimize hue offsets and anchor selection; scan all offsets and choose reddest at max chroma; adjust red scoring (|G-B|/(G+B) + (G+B)/(2R)); add multi-stage best-red search, cache seeding/updates; add --best-red + red-scan HTML (coarse/fine/micro), bundle all modes, 0.2 micro step; switch CLI to argparse/named args and remove --scan-mode; treat red offsets as global per mode.
 - **YAML-driven config**: add `wheel_specs.yaml` and load defaults in `wheel_specs.py`; load modes/offsets from YAML across tools; simplify YAML to per-mode `target_j`/`red_offset`; add pytest coverage for YAML mode order and offsets; enforce XOR between `shared_m_quantile` and `target_ucs_r`.
 - **YAML-driven config**: remove hardcoded mode names from tests and HTML defaults; use YAML mode order everywhere.

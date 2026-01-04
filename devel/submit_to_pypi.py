@@ -185,6 +185,13 @@ def parse_args() -> argparse.Namespace:
 		action="store_true",
 	)
 
+	behavior_group.add_argument(
+		"--set-version",
+		dest="set_version",
+		help="Update VERSION and pyproject.toml, then tag and push.",
+		default="",
+	)
+
 	args = parser.parse_args()
 	return args
 
@@ -483,6 +490,45 @@ def require_up_to_date_with_origin_main(project_dir: str) -> None:
 		"Run: git pull --rebase origin main"
 	)
 
+
+def update_version_files(project_dir: str, version: str) -> None:
+	"""Update VERSION and pyproject.toml with the new version."""
+	version_path = os.path.join(project_dir, "VERSION")
+	with open(version_path, "w") as handle:
+		handle.write(f"{version}\n")
+
+	pyproject_path = resolve_pyproject_path(project_dir)
+	with open(pyproject_path, "r") as handle:
+		contents = handle.read()
+	updated, count = re.subn(
+		r'(?m)^version\s*=\s*"[^"]+"',
+		f'version = "{version}"',
+		contents,
+		count=1,
+	)
+	if count == 0:
+		fail("Unable to update version in pyproject.toml.")
+	with open(pyproject_path, "w") as handle:
+		handle.write(updated)
+
+
+def commit_version_bump(project_dir: str, version: str) -> None:
+	"""Commit the version bump."""
+	run_command(["git", "add", "VERSION", "pyproject.toml"], project_dir, False)
+	run_command(
+		["git", "commit", "-m", f"Bump version to {version}"],
+		project_dir,
+		False,
+	)
+
+
+def tag_and_push_version(project_dir: str, version: str) -> None:
+	"""Tag and push the version."""
+	tag_name = f"v{version}"
+	run_command(["git", "tag", "-a", tag_name, "-m", f"Release {tag_name}"], project_dir, False)
+	run_command(["git", "push", "origin", "main"], project_dir, False)
+	run_command(["git", "push", "origin", tag_name], project_dir, False)
+
 #============================================
 
 def format_bytes(size_bytes: int) -> str:
@@ -647,6 +693,8 @@ def check_version_exists(
 		"--index-url",
 		index_url,
 	]
+	if Version(version).is_prerelease:
+		cmd.append("--pre")
 	result = run_command_allow_fail(cmd, project_dir, True)
 	output = "\n".join([result.stdout, result.stderr])
 	if result.returncode != 0:
@@ -869,6 +917,21 @@ def main() -> None:
 	print_info(f"Import name: {import_name}")
 	print_info(f"Repository: {args.repo}")
 	print_info(f"Index URL: {index_url}")
+
+	if args.set_version:
+		new_version = args.set_version.strip()
+		if not new_version:
+			fail("Set-version value cannot be empty.")
+		validate_version_string(new_version)
+		print_step("Setting version")
+		require_git_clean(project_dir)
+		require_main_branch(project_dir)
+		require_up_to_date_with_origin_main(project_dir)
+		update_version_files(project_dir, new_version)
+		commit_version_bump(project_dir, new_version)
+		tag_and_push_version(project_dir, new_version)
+		print_info(f"Version updated and pushed: {new_version}")
+		return
 
 	print_step("Pre-checks")
 	require_python_version(requires_python)
