@@ -36,6 +36,45 @@
 - Replace OKLCH next_gen code with CAM16 scaffolding in `qti_package_maker/common/color_theory/next_gen.py`.
 - Add `generate_color_wheel` facade with backend selection to `qti_package_maker/common/color_wheel.py`.
 - Add facade regression test for legacy backend parity.
+- Add CAM16 backend smoke test (requires colour-science).
+- Boost CAM16 dark mode saturation and soften light modes for pastel output.
+- Rotate CAM16 wheels so hue 1 starts at the true red anchor.
+- Emit legacy red RGB distance summary in CAM16 HTML output.
+- Wire CAM16 adapter and wheel generation skeleton in `qti_package_maker/common/color_theory/next_gen.py`.
+- Adjust CAM16 plan to keep CAM16 opt-in until the default is intentionally flipped.
+- Use American spelling everywhere except for the `colour-science` package name.
+- Add `rgb_color_name_match` helpers for closest xkcd color name matching via seaborn.
+- Add `seaborn` to `pip_requirements.txt` for xkcd color lookups.
+- Remove `webcolors` dependency now that xkcd names are used.
+- Remove `rcp-color-utils.py` scratch module from `qti_package_maker/common/color_theory/`.
+- Add pytest coverage for `rgb_color_name_match`.
+- Refine CAM16 anchor selection to scan offsets and pick the closest RGB match to the anchor.
+- Adjust CAM16 anchor selection to prefer lower green/blue for hue 1 (truer red).
+- Anchor selection now evaluates the reddest achievable hue at max chroma for the mode.
+- Anchor selection now scans all 360 hue offsets to find the minimal green/blue red.
+- Add multi-stage best-red offset search and cache for hue 1 anchoring.
+- Seed best-red cache with dark/16 offset 29.9 for the true red anchor.
+- Seed best-red cache with updated xdark/dark/normal/light/xlight offsets for 16 colors.
+- Add xdark/normal specs for best-red calculations without changing default table modes.
+- Expand --best-red to report xdark/dark/normal/light/xlight (or "all").
+- Add --red-scan HTML output for 5-degree and 1-degree red offset inspection.
+- Refine red_scan.html to show coarse/fine/micro narrowing for true red selection.
+- Update red scoring to use G/B balance and R/(G+B) ratio.
+- Rotate CAM16 wheels by redness score when anchoring to true red.
+- Adjust micro-step size for red scan to 0.2 degrees.
+- Switch red scoring to minimize (G+B)/R and |G-B|/(G+B).
+- Switch red scoring to minimize |G-B|/(G+B) and (G+B)/(2R).
+- Use summed red score (|G-B|/(G+B) + (G+B)/(2R)) for ranking.
+- Deduplicate micro-step offsets in red scan output.
+- Quantize micro-step offsets to the 0.2 grid for red scan output.
+- Generate micro offsets using (base + i * micro_step) % 360.
+- Bundle red scan output for all modes into a single HTML file when using --best-red.
+- Render red scan bundles in-memory without per-mode temp files.
+- Switch next-gen CLI to named args (no positional args).
+- Remove --scan-mode now that red scan bundles all modes by default.
+- Add pytest coverage for CAM16 next-gen helpers and red scan HTML.
+- Force hue 1 for all modes to use max chroma in the HTML table to match the chosen offset.
+- Switch next-gen CLI to argparse and make --best-red also write red_scan.html.
 - Update TODO to reflect completed BBQ reads and current unimplemented engine items.
 - Mark Canvas QTI 1.2 ORDER as won't implement.
 - Move module-level asserts into pytest unit coverage.

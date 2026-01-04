@@ -3,5 +3,6 @@ crcmod
 num2words
 pyyaml
 tabulate
+seaborn
 #BeautifulSoup4
 colour-science

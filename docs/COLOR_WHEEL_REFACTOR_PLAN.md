@@ -5,7 +5,7 @@
 - Produce visually balanced color sets across multiple lightness categories.
 - Eliminate perpetual hue specific tweaks and ad hoc corrections.
 - Preserve randomness and current performance characteristics.
-- Keep API shape stable, with CAM16 as the default generator.
+- Keep API shape stable, with CAM16 opt-in until the default is intentionally flipped.
 
 ## Constraints
 - No deterministic seeding for regular use.
@@ -110,9 +110,9 @@ All mechanics are shared.
 1) Choose CAM16 dependency and define viewing conditions.
 2) Implement CAM16 conversion and inverse path.
 3) Implement per hue max M search with caching.
-4) Make CAM16 the default wheel generator; keep legacy wheels available explicitly.
+4) Keep CAM16 opt-in behind an explicit backend switch.
 5) Tune J and M ranges by eye.
-6) Deprecate OKLCH specific heuristics once stable.
+6) Flip CAM16 to default when stable; keep legacy explicitly available.
 
 ## Working History (Challenges + Attempts)
 - Initial OKLCH sampling with per-hue max chroma looked inconsistent; some hues were far more vivid
