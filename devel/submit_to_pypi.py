@@ -494,8 +494,13 @@ def require_up_to_date_with_origin_main(project_dir: str) -> None:
 def update_version_files(project_dir: str, version: str) -> None:
 	"""Update VERSION and pyproject.toml with the new version."""
 	version_path = os.path.join(project_dir, "VERSION")
-	with open(version_path, "w") as handle:
-		handle.write(f"{version}\n")
+	current_version = ""
+	if os.path.isfile(version_path):
+		with open(version_path, "r") as handle:
+			current_version = handle.read().strip()
+	if current_version != version:
+		with open(version_path, "w") as handle:
+			handle.write(f"{version}\n")
 
 	pyproject_path = resolve_pyproject_path(project_dir)
 	with open(pyproject_path, "r") as handle:
@@ -508,25 +513,47 @@ def update_version_files(project_dir: str, version: str) -> None:
 	)
 	if count == 0:
 		fail("Unable to update version in pyproject.toml.")
-	with open(pyproject_path, "w") as handle:
-		handle.write(updated)
+	if updated != contents:
+		with open(pyproject_path, "w") as handle:
+			handle.write(updated)
 
 
-def commit_version_bump(project_dir: str, version: str) -> None:
-	"""Commit the version bump."""
-	run_command(["git", "add", "VERSION", "pyproject.toml"], project_dir, False)
-	run_command(
-		["git", "commit", "-m", f"Bump version to {version}"],
+def has_tracked_changes(project_dir: str) -> bool:
+	"""Return True if git has tracked changes."""
+	result = run_command_allow_fail(
+		["git", "status", "--porcelain", "--untracked-files=no"],
 		project_dir,
-		False,
+		True,
 	)
+	if result.returncode != 0:
+		fail("Unable to check git status.")
+	return bool(result.stdout.strip())
 
 
-def tag_and_push_version(project_dir: str, version: str) -> None:
+def commit_version_bump(project_dir: str, version: str) -> bool:
+	"""Commit the version bump if there are tracked changes."""
+	run_command(["git", "add", "VERSION", "pyproject.toml"], project_dir, False)
+	if not has_tracked_changes(project_dir):
+		print_warning("Version files already match; skipping commit.")
+		return False
+	run_command(["git", "commit", "-m", f"Bump version to {version}"], project_dir, False)
+	return True
+
+
+def tag_and_push_version(project_dir: str, version: str, push_main: bool) -> None:
 	"""Tag and push the version."""
 	tag_name = f"v{version}"
-	run_command(["git", "tag", "-a", tag_name, "-m", f"Release {tag_name}"], project_dir, False)
-	run_command(["git", "push", "origin", "main"], project_dir, False)
+	tag_result = run_command_allow_fail(
+		["git", "tag", "--list", tag_name],
+		project_dir,
+		True,
+	)
+	if tag_result.returncode != 0:
+		fail("Unable to check git tags.")
+	if not tag_result.stdout.strip():
+		run_command(["git", "tag", "-a", tag_name, "-m", f"Release {tag_name}"], project_dir, False)
+	if push_main:
+		run_command(["git", "push", "origin", "main"], project_dir, False)
 	run_command(["git", "push", "origin", tag_name], project_dir, False)
 
 #============================================
@@ -928,8 +955,8 @@ def main() -> None:
 		require_main_branch(project_dir)
 		require_up_to_date_with_origin_main(project_dir)
 		update_version_files(project_dir, new_version)
-		commit_version_bump(project_dir, new_version)
-		tag_and_push_version(project_dir, new_version)
+		did_commit = commit_version_bump(project_dir, new_version)
+		tag_and_push_version(project_dir, new_version, did_commit)
 		print_info(f"Version updated and pushed: {new_version}")
 		return
 
