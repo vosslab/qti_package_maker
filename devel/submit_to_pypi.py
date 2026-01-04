@@ -397,7 +397,46 @@ def require_pytest_passes_if_available(python_exe: str, project_dir: str) -> Non
 		print_warning("pytest not installed; skipping tests.")
 		return
 	print_step("Running pytest...")
-	run_command([python_exe, "-m", "pytest"], project_dir, False)
+	run_command([python_exe, "-m", "pytest", "-q"], project_dir, False)
+
+
+def require_up_to_date_with_origin_main(project_dir: str) -> None:
+	"""Ensure local main is synced with origin/main."""
+	fetch_result = run_command_allow_fail(
+		["git", "fetch", "origin", "main"],
+		project_dir,
+		True,
+	)
+	if fetch_result.returncode != 0:
+		fail("Unable to fetch origin/main for sync check.")
+	result = run_command_allow_fail(
+		["git", "rev-list", "--left-right", "--count", "HEAD...origin/main"],
+		project_dir,
+		True,
+	)
+	if result.returncode != 0:
+		fail("Unable to compare HEAD with origin/main.")
+	parts = result.stdout.strip().split()
+	if len(parts) != 2:
+		fail("Unexpected rev-list output when comparing to origin/main.")
+	ahead = int(parts[0])
+	behind = int(parts[1])
+	if ahead == 0 and behind == 0:
+		return
+	if ahead > 0 and behind == 0:
+		fail(
+			"Local main has commits not pushed to origin/main. "
+			"Run: git push origin main"
+		)
+	if behind > 0 and ahead == 0:
+		fail(
+			"Local main is behind origin/main. "
+			"Run: git pull --ff-only origin main"
+		)
+	fail(
+		"Local main has diverged from origin/main. "
+		"Run: git pull --rebase origin main"
+	)
 
 #============================================
 
@@ -784,6 +823,7 @@ def main() -> None:
 	require_python_version(requires_python)
 	require_git_clean(project_dir)
 	require_main_branch(project_dir)
+	require_up_to_date_with_origin_main(project_dir)
 	require_version_tag(project_dir, version)
 	require_twine_available(sys.executable, project_dir)
 	require_pytest_passes_if_available(sys.executable, project_dir)
