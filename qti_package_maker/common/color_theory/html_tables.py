@@ -5,7 +5,7 @@
 # QTI Package Maker
 from qti_package_maker.common.color_theory import rgb_color_name_match
 from qti_package_maker.common.color_theory.cam16_utils import _cam16_ucs_radius, _gamut_margin, _srgb_hex_to_cam16_spec, _xyz_to_srgb, cam16_jmh_to_xyz
-from qti_package_maker.common.color_theory.generator import _color_for_hue, _colors_for_hues, _print_legacy_red_comparison, _shared_m_and_max_ms
+from qti_package_maker.common.color_theory.generator import _color_for_hue, _colors_for_hues, _m_for_target_ucs_r, _print_legacy_red_comparison, _shared_m_and_max_ms
 from qti_package_maker.common.color_theory.red_scan import _select_hues_for_anchor
 from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS
 
@@ -101,9 +101,14 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 			spec = DEFAULT_WHEEL_SPECS.get(mode)
 			target_j = spec.target_j if spec else 0.0
 			f.write(f"<h1>{mode} (target J {target_j:.1f})</h1>")
+			if spec is not None:
+				if spec.target_ucs_r is not None:
+					f.write(f"<p>control=target_ucs_r r={spec.target_ucs_r:.2f}</p>")
+				else:
+					f.write(f"<p>control=shared_m_quantile q={spec.shared_m_quantile:.2f}</p>")
 			for repeat in range(repeats):
 				f.write(f"<h2>run {repeat + 1}</h2>")
-				f.write("<table><tr><th>Hue</th><th>Swatch</th><th>Hex</th><th>XKCD Name</th><th>J</th><th>Q</th><th>UCS_r</th><th>M_max_hue</th><th>M_util</th><th>gamut_margin</th></tr>\n")
+				f.write("<table><tr><th>Hue</th><th>Swatch</th><th>Hex</th><th>XKCD Name</th><th>J</th><th>Q</th><th>UCS_r</th><th>target_ucs_r</th><th>ucs_r_err</th><th>m_target</th><th>m_final</th><th>m_clamped</th><th>M_max_hue</th><th>M_util</th><th>gamut_margin</th></tr>\n")
 				hues = _select_hues_for_anchor(num_colors, mode, anchor_hex, samples=48)
 				_shared_m, max_ms = _shared_m_and_max_ms(hues, spec, mode)
 				colors = _colors_for_hues(hues, spec, mode, apply_variation=False)
@@ -116,6 +121,15 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 					rgb_linear = _xyz_to_srgb(XYZ, apply_encoding=False)
 					gamut_margin = _gamut_margin(rgb_linear)
 					m_util = cam.M / max_m if max_m > 0 else 0.0
+					target_ucs_r = spec.target_ucs_r if spec is not None else None
+					m_cap = min(max_m, spec.m_max) if spec is not None else max_m
+					m_target = None
+					m_clamped = ""
+					ucs_r_err = ""
+					if target_ucs_r is not None:
+						m_target = _m_for_target_ucs_r(spec.target_j, hues[i], target_ucs_r, m_cap)
+						ucs_r_err = f"{ucs_r - target_ucs_r:.2f}"
+						m_clamped = "yes" if m_target >= (m_cap - 1e-6) else "no"
 					matched_name = rgb_color_name_match.hex_to_best_xkcd_name(hex_value)
 					f.write("<tr>")
 					f.write(f"<td>{i + 1}</td>")
@@ -125,6 +139,11 @@ def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repe
 					f.write(f"<td>{cam.J:.2f}</td>")
 					f.write(f"<td>{cam.Q:.2f}</td>")
 					f.write(f"<td>{ucs_r:.2f}</td>")
+					f.write(f"<td>{'' if target_ucs_r is None else f'{target_ucs_r:.2f}'}</td>")
+					f.write(f"<td>{ucs_r_err}</td>")
+					f.write(f"<td>{'' if m_target is None else f'{m_target:.2f}'}</td>")
+					f.write(f"<td>{cam.M:.2f}</td>")
+					f.write(f"<td>{m_clamped}</td>")
 					f.write(f"<td>{max_m:.2f}</td>")
 					f.write(f"<td>{m_util:.3f}</td>")
 					f.write(f"<td>{gamut_margin:.4f}</td>")

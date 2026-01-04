@@ -7,15 +7,25 @@ modes:
   xdark:
     target_j: 25.0
     red_offset: 27.2
+    shared_m_quantile: 0.50
+    target_ucs_r: null
   dark:
     target_j: 40.0
     red_offset: 25.0
+    shared_m_quantile: 0.40
+    target_ucs_r: null
   normal:
-    target_j: 55.0
+    target_j: 50.0
     red_offset: 19.2
+    shared_m_quantile: 0.25
+    target_ucs_r: null
   light:
-    target_j: 75.0
+    target_j: 70.0
     red_offset: 20.6
+    shared_m_quantile: null
+    target_ucs_r: 14.0
   xlight:
-    target_j: 90.0
+    target_j: 85.0
     red_offset: 17.0
+    shared_m_quantile: null
+    target_ucs_r: 12.0

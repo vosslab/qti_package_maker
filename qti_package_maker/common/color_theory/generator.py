@@ -111,8 +111,11 @@ def _shared_m_and_max_ms(hues, spec, mode):
 		cache_key = (mode, round(spec.target_j, 2), round(hue, 1))
 		max_ms.append(_max_m_for_hue(spec.target_j, hue, cache_key=cache_key))
 
-	shared_m = _quantile(max_ms, spec.shared_m_quantile)
-	shared_m = max(spec.m_min, min(spec.m_max, shared_m))
+	if spec.shared_m_quantile is None:
+		shared_m = None
+	else:
+		shared_m = _quantile(max_ms, spec.shared_m_quantile)
+		shared_m = max(spec.m_min, min(spec.m_max, shared_m))
 	return shared_m, max_ms
 
 
@@ -121,19 +124,25 @@ def _colors_for_hues(hues, spec, mode, apply_variation=True):
 
 	colors = []
 	for hue, max_m in zip(hues, max_ms):
-		m = shared_m
-		if spec.max_m_blend > 0:
-			m = shared_m + (max_m - shared_m) * spec.max_m_blend
-		if apply_variation and spec.allow_m_variation > 0:
-			variation = (random.random() * 2.0 - 1.0) * spec.allow_m_variation * shared_m
-			m = m + variation
-
-		m = max(spec.m_min, min(spec.m_max, m))
 		m_cap = min(max_m, spec.m_max)
-		m = min(m, m_cap)
-		if spec.target_ucs_r is not None:
-			target_m = _m_for_target_ucs_r(spec.target_j, hue, spec.target_ucs_r, m_cap)
-			m = max(m, target_m)
+		if spec.target_ucs_r is None:
+			if shared_m is None:
+				raise ValueError(f"Mode '{mode}' must define shared_m_quantile or target_ucs_r")
+			m = shared_m
+			if spec.max_m_blend > 0:
+				m = shared_m + (max_m - shared_m) * spec.max_m_blend
+			if apply_variation and spec.allow_m_variation > 0:
+				variation = (random.random() * 2.0 - 1.0) * spec.allow_m_variation * shared_m
+				m = m + variation
+
+			m = max(spec.m_min, min(spec.m_max, m))
+			m = min(m, m_cap)
+		else:
+			m = _m_for_target_ucs_r(spec.target_j, hue, spec.target_ucs_r, m_cap)
+			if apply_variation and spec.allow_m_variation > 0:
+				variation = (random.random() * 2.0 - 1.0) * spec.allow_m_variation * m
+				m = m + variation
+			m = max(spec.m_min, min(m_cap, m))
 
 		XYZ = cam16_jmh_to_xyz(spec.target_j, m, hue)
 		rgb = _xyz_to_srgb(XYZ, apply_encoding=True)

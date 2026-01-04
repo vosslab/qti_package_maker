@@ -54,6 +54,9 @@
 - Load wheel modes and best-red offsets from `wheel_specs.yaml` for all color wheel tools.
 - Add pytest coverage to verify YAML-defined mode order and best-red offsets.
 - Simplify `wheel_specs.yaml` to only include per-mode `target_j` and `red_offset`.
+- Treat target UCS radius as primary in light modes and surface UCS target diagnostics in CAM16 debug output.
+- Enforce XOR between shared_m_quantile and target_ucs_r; expose control selection in debug output.
+- Treat red offsets as global per mode (not tied to number of hues).
 - Adjust CAM16 target J values for xdark, normal, and light; remove M and gamut_limit from debug table.
 - Rotate CAM16 wheels so hue 1 starts at the true red anchor.
 - Emit legacy red RGB distance summary in CAM16 HTML output.

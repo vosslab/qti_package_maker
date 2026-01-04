@@ -49,6 +49,9 @@ def test_write_html_color_table_cam16_debug(tmp_path):
 	assert "target J" in content
 	assert "XKCD Name" in content
 	assert "UCS_r" in content
+	assert "target_ucs_r" in content
+	assert "ucs_r_err" in content
+	assert "control=" in content
 	assert "gamut_margin" in content
 	assert "M_max_hue" in content
 
@@ -90,6 +93,13 @@ def test_target_ucs_r_increases_m():
 	low = next_gen._m_for_target_ucs_r(j, h, 6.0, max_m=max_m, steps=8)
 	high = next_gen._m_for_target_ucs_r(j, h, 12.0, max_m=max_m, steps=8)
 	assert high >= low
+
+
+def test_colorfulness_control_xor():
+	for mode, spec in next_gen.DEFAULT_WHEEL_SPECS.items():
+		has_shared = spec.shared_m_quantile is not None
+		has_ucs = spec.target_ucs_r is not None
+		assert has_shared != has_ucs, mode
 
 
 def test_yaml_mode_order_matches_default():

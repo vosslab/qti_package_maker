@@ -5,12 +5,11 @@
 # QTI Package Maker
 from qti_package_maker.common.color_theory.generator import _color_for_hue, _redness_score
 from qti_package_maker.common.color_theory.hue_layout import _generate_hues_equal
-from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_BEST_RED_OFFSETS, DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS
+from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_RED_OFFSETS, DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS
 
 _BEST_RED_OFFSETS = {}
-for num_colors, offsets in DEFAULT_BEST_RED_OFFSETS.items():
-	for mode, value in (offsets or {}).items():
-		_BEST_RED_OFFSETS[(mode, int(num_colors), "ff0000")] = value
+for mode, value in (DEFAULT_RED_OFFSETS or {}).items():
+	_BEST_RED_OFFSETS[(mode, None, "ff0000")] = value
 
 
 def _render_red_scan_tables(num_colors=16, mode="dark"):
@@ -174,9 +173,14 @@ def _select_hues_for_anchor(num_colors, mode, anchor_hex, samples=48, wheel_spec
 	if spec is None:
 		raise ValueError(f"Unknown mode: {mode}")
 
-	cache_key = (mode, num_colors, anchor_hex or "ff0000")
+	anchor_key = anchor_hex or "ff0000"
+	cache_key = (mode, num_colors, anchor_key)
+	global_key = (mode, None, anchor_key)
 	if cache_key not in _BEST_RED_OFFSETS:
-		_BEST_RED_OFFSETS[cache_key] = _best_red_offset(num_colors, mode, anchor_hex, wheel_specs=specs)
+		if anchor_key == "ff0000" and global_key in _BEST_RED_OFFSETS:
+			_BEST_RED_OFFSETS[cache_key] = _BEST_RED_OFFSETS[global_key]
+		else:
+			_BEST_RED_OFFSETS[cache_key] = _best_red_offset(num_colors, mode, anchor_hex, wheel_specs=specs)
 
 	best_offset = _BEST_RED_OFFSETS[cache_key]
 	return _generate_hues_equal(num_colors, offset=best_offset)
