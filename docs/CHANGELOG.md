@@ -3,114 +3,19 @@
 ## 2026-01-03
 
 ### Added
-- Add `COLOR_WHEEL_REFACTOR_PLAN.md` with a perceptual color sampling plan and visual test notes.
-- Add `qti_package_maker/common/color_wheel_next_gen.py` for OKLCH-based color wheel experiments.
-- Add pytest coverage for next-gen color wheel utilities.
+- **Planning**: Add `COLOR_WHEEL_REFACTOR_PLAN.md` with a perceptual color sampling plan and visual test notes.
+- **Next-gen experiments**: Add `qti_package_maker/common/color_wheel_next_gen.py` for OKLCH-based color wheel experiments.
+- **Tests**: Add pytest coverage for next-gen color wheel utilities.
 
 ### Changed
-- Refine `COLOR_WHEEL_REFACTOR_PLAN.md` with perceptual hue spacing and fixed lightness bands.
-- Fix `COLOR_WHEEL_REFACTOR_PLAN.md` to use fixed lightness per category instead of random ranges.
-- Update `color_wheel_next_gen.py` to support uniform-chroma mode for even hue consistency.
-- Adjust `COLOR_WHEEL_REFACTOR_PLAN.md` to define even chroma via shared minimum max chroma.
-- Adjust next-gen lightness targets: add `very_dark`, lighten `dark` and `light`, keep `extra_light` stable.
-- Optimize next-gen hue offset selection to maximize shared chroma for dark/light categories.
-- Anchor next-gen hue 1 at true red via a configurable `anchor_hue`.
-- Increase next-gen saturation by blending uniform and per-hue max chroma.
-- Compute true-red anchor from sRGB and use a gamma-blended chroma boost to raise saturation.
-- Add working history section to `COLOR_WHEEL_REFACTOR_PLAN.md` covering challenges and attempts.
-- Add yellow hue balancing to boost dark yellows and reduce light-yellow dominance.
-- Document current next-gen tuning values in `COLOR_WHEEL_REFACTOR_PLAN.md`.
-- Update `COLOR_WHEEL_REFACTOR_PLAN.md` with design corrections and per-wheel policy guidance.
-- Add xdark/normal modes and WheelSpec policy draft to `COLOR_WHEEL_REFACTOR_PLAN.md`.
-- Remove xdark/normal from the current WheelSpec draft per updated scope.
-- Replace `COLOR_WHEEL_REFACTOR_PLAN.md` with CAM16-based plan and updated rollout steps.
-- Update `COLOR_WHEEL_REFACTOR_PLAN.md` to make CAM16 the default (no flags).
-- Add CAM16 dependency choice notes and caching detail to `COLOR_WHEEL_REFACTOR_PLAN.md`.
-- Move color wheel modules into `qti_package_maker/common/color_wheel/` and add shims for compatibility.
-- Expand `color_wheel_next_gen` shim exports to include internal helpers used by tests.
-- Remove OKLCH next-gen module and tests; keep legacy wheel in `color_wheel/legacy_color_wheel.py`.
-- Add deprecation warning on `qti_package_maker.common.color_wheel` package import.
-- Update color wheel tests to import legacy module directly, avoiding deprecation warnings.
-- Select `colour-science` as the CAM16 dependency and add it to `pip_requirements.txt`.
-- Move color wheel implementations to `qti_package_maker/common/color_theory/` with a legacy facade in `qti_package_maker/common/color_wheel.py`.
-- Replace OKLCH next_gen code with CAM16 scaffolding in `qti_package_maker/common/color_theory/next_gen.py`.
-- Add `generate_color_wheel` facade with backend selection to `qti_package_maker/common/color_wheel.py`.
-- Add facade regression test for legacy backend parity.
-- Add CAM16 backend smoke test (requires colour-science).
-- Boost CAM16 dark mode saturation and soften light modes for pastel output.
-- Add CAM16 spec helper in `next_gen.py` and test J/M/Q ranges in pytest.
-- Add a Remaining Items section to `docs/COLOR_WHEEL_REFACTOR_PLAN.md`.
-- Add CAM16 debug HTML output with per-swatch J/M/Q values.
-- Anchor CAM16 debug output to best-red offsets per mode.
-- Make CAM16 debug output deterministic (no M variation) and force hue 1 to max M.
-- Add XKCD color name labels to CAM16 debug HTML.
-- Stabilize red scan scoring to avoid blowups when R is zero.
-- Add CAM16-UCS radius, gamut margin, and per-hue max-M utilization to CAM16 debug HTML.
-- Adjust CAM16 target J values for dark/light and update cached light best-red offset.
-- Split CAM16 next-gen logic into focused modules (cam16_utils, generator, red_scan, html_tables, specs, utils).
-- Add `wheel_specs.yaml` for CAM16 mode parameters with defaults loaded in `wheel_specs.py`.
-- Update cached best-red offsets for dark and light modes after retuning J targets.
-- Add optional UCS radius targets for light/xlight modes to lift pastel colorfulness.
-- Load wheel modes and best-red offsets from `wheel_specs.yaml` for all color wheel tools.
-- Add pytest coverage to verify YAML-defined mode order and best-red offsets.
-- Simplify `wheel_specs.yaml` to only include per-mode `target_j` and `red_offset`.
-- Treat target UCS radius as primary in light modes and surface UCS target diagnostics in CAM16 debug output.
-- Enforce XOR between shared_m_quantile and target_ucs_r; expose control selection in debug output.
-- Treat red offsets as global per mode (not tied to number of hues).
-- Adjust CAM16 target J values for xdark, normal, and light; remove M and gamut_limit from debug table.
-- Rotate CAM16 wheels so hue 1 starts at the true red anchor.
-- Emit legacy red RGB distance summary in CAM16 HTML output.
-- Wire CAM16 adapter and wheel generation skeleton in `qti_package_maker/common/color_theory/next_gen.py`.
-- Adjust CAM16 plan to keep CAM16 opt-in until the default is intentionally flipped.
-- Use American spelling everywhere except for the `colour-science` package name.
-- Add `rgb_color_name_match` helpers for closest xkcd color name matching via seaborn.
-- Add `seaborn` to `pip_requirements.txt` for xkcd color lookups.
-- Remove `webcolors` dependency now that xkcd names are used.
-- Remove `rcp-color-utils.py` scratch module from `qti_package_maker/common/color_theory/`.
-- Add pytest coverage for `rgb_color_name_match`.
-- Refine CAM16 anchor selection to scan offsets and pick the closest RGB match to the anchor.
-- Adjust CAM16 anchor selection to prefer lower green/blue for hue 1 (truer red).
-- Anchor selection now evaluates the reddest achievable hue at max chroma for the mode.
-- Anchor selection now scans all 360 hue offsets to find the minimal green/blue red.
-- Add multi-stage best-red offset search and cache for hue 1 anchoring.
-- Seed best-red cache with dark/16 offset 29.9 for the true red anchor.
-- Seed best-red cache with updated xdark/dark/normal/light/xlight offsets for 16 colors.
-- Add xdark/normal specs for best-red calculations without changing default table modes.
-- Expand --best-red to report xdark/dark/normal/light/xlight (or "all").
-- Add --red-scan HTML output for 5-degree and 1-degree red offset inspection.
-- Refine red_scan.html to show coarse/fine/micro narrowing for true red selection.
-- Update red scoring to use G/B balance and R/(G+B) ratio.
-- Rotate CAM16 wheels by redness score when anchoring to true red.
-- Adjust micro-step size for red scan to 0.2 degrees.
-- Switch red scoring to minimize (G+B)/R and |G-B|/(G+B).
-- Switch red scoring to minimize |G-B|/(G+B) and (G+B)/(2R).
-- Use summed red score (|G-B|/(G+B) + (G+B)/(2R)) for ranking.
-- Deduplicate micro-step offsets in red scan output.
-- Quantize micro-step offsets to the 0.2 grid for red scan output.
-- Generate micro offsets using (base + i * micro_step) % 360.
-- Bundle red scan output for all modes into a single HTML file when using --best-red.
-- Render red scan bundles in-memory without per-mode temp files.
-- Switch next-gen CLI to named args (no positional args).
-- Remove --scan-mode now that red scan bundles all modes by default.
-- Add pytest coverage for CAM16 next-gen helpers and red scan HTML.
-- Force hue 1 for all modes to use max chroma in the HTML table to match the chosen offset.
-- Switch next-gen CLI to argparse and make --best-red also write red_scan.html.
-- Update TODO to reflect completed BBQ reads and current unimplemented engine items.
-- Mark Canvas QTI 1.2 ORDER as won't implement.
-- Move module-level asserts into pytest unit coverage.
-- Clarify engine prefix selection fix recommendation in modularity report.
-- Expand pytest coverage for writers, manifest helpers, base engine helpers, and package interface.
-- Expand TODO with actionable fixups, extraction checks, reliability tasks, tests, and docs follow-ups.
-- Expand ROADMAP with near-, mid-, long-term priorities and out-of-scope items.
-- Add round-trip pytest coverage for BBQ, text2qti, and okla_chrst_bqgen.
-- Restore legacy TODO and ROADMAP content to preserve prior planning details.
-- Add multi-engine round-trip pytest coverage across BBQ, text2qti, and okla_chrst_bqgen.
-- Fix engine selection ambiguity, item bank merge type tracking, and BBQ NUM zero-division handling with tests.
-- Expand ROADMAP priorities with additional near-, mid-, and long-term items and out-of-scope notes.
-- Add pytest coverage for QTI writer ZIP layout and manifest references.
-- Add reader error-path tests and strengthen QTI writer XML assertions.
-- Add pytest coverage for xml formatter utilities.
-- Expand pytest coverage for validator CRC checks, yaml tools, tabulate compat, string helpers, and color wheel.
+- **Refactor plan & docs**: refine hue spacing and fixed lightness bands; define even chroma via shared min max chroma; add working history; add design corrections and per-wheel policy guidance; add/remove xdark/normal policy drafts per scope; replace plan with CAM16-based plan and rollout steps; add dependency notes; keep CAM16 opt-in until default; add Remaining Items.
+- **Module structure & compatibility**: move color wheel modules into `color_wheel/` with shims; expand shim exports for tests; remove OKLCH next-gen module/tests while keeping legacy in `legacy_color_wheel.py`; add deprecation warning and update tests to import legacy directly; move implementations to `color_theory/` with legacy facade; add `generate_color_wheel` facade; add legacy parity + CAM16 smoke tests.
+- **CAM16 implementation & tuning**: select `colour-science` and wire CAM16 adapter/skeleton; adjust J targets (add very_dark, lighten dark/light, xdark/normal tweaks); boost dark saturation and soften light/pastel output; rotate wheels so hue 1 anchors to true red; emit legacy red RGB distance in HTML; use American spelling (except `colour-science`).
+- **Debug & inspection tooling**: add CAM16 debug HTML; anchor to best-red offsets; make deterministic; add XKCD name labels; add CAM16-UCS radius/gamut margin/per-hue max-M utilization; remove M/gamut_limit from debug; add UCS target diagnostics; add control selection indicator; add CAM16 spec helper and J/M/Q range tests.
+- **Red anchor & scan tooling**: optimize hue offsets and anchor selection; scan all offsets and choose reddest at max chroma; adjust red scoring (|G-B|/(G+B) + (G+B)/(2R)); add multi-stage best-red search, cache seeding/updates; add --best-red + red-scan HTML (coarse/fine/micro), bundle all modes, 0.2 micro step; switch CLI to argparse/named args and remove --scan-mode; treat red offsets as global per mode.
+- **YAML-driven config**: add `wheel_specs.yaml` and load defaults in `wheel_specs.py`; load modes/offsets from YAML across tools; simplify YAML to per-mode `target_j`/`red_offset`; add pytest coverage for YAML mode order and offsets; enforce XOR between `shared_m_quantile` and `target_ucs_r`.
+- **Color name matching & deps**: add `rgb_color_name_match` using seaborn xkcd; add `seaborn` dependency; remove `webcolors`; remove `rcp-color-utils.py`.
+- **Testing & engine work**: move module-level asserts into pytest; expand pytest coverage for writers/manifest/helpers/round-trips/validators/xml formatter/yaml tools/string helpers/color wheel; add round-trip coverage across BBQ/text2qti/okla_chrst_bqgen; add QTI ZIP/manifest tests and error-path coverage; fix engine selection ambiguity, item bank merge type tracking, BBQ NUM zero-division handling; update TODO/ROADMAP, mark Canvas QTI 1.2 ORDER as won't implement, expand ROADMAP priorities, and preserve legacy TODO/ROADMAP content.
 
 ## 2025-12-29
 

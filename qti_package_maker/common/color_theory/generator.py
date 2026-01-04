@@ -124,8 +124,8 @@ def _colors_for_hues(hues, spec, mode, apply_variation=True):
 
 	colors = []
 	for hue, max_m in zip(hues, max_ms):
-		m_cap = min(max_m, spec.m_max)
 		if spec.target_ucs_r is None:
+			m_cap = min(max_m, spec.m_max)
 			if shared_m is None:
 				raise ValueError(f"Mode '{mode}' must define shared_m_quantile or target_ucs_r")
 			m = shared_m
@@ -138,6 +138,7 @@ def _colors_for_hues(hues, spec, mode, apply_variation=True):
 			m = max(spec.m_min, min(spec.m_max, m))
 			m = min(m, m_cap)
 		else:
+			m_cap = max_m
 			m = _m_for_target_ucs_r(spec.target_j, hue, spec.target_ucs_r, m_cap)
 			if apply_variation and spec.allow_m_variation > 0:
 				variation = (random.random() * 2.0 - 1.0) * spec.allow_m_variation * m
