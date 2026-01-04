@@ -1,8 +1,7 @@
-lxml
+colour-science
 crcmod
+lxml
 num2words
 pyyaml
-tabulate
 seaborn
-#BeautifulSoup4
-colour-science
+tabulate
