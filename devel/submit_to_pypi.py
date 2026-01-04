@@ -322,9 +322,9 @@ def require_python_version(requires_python: str) -> None:
 
 
 def require_git_clean(project_dir: str) -> None:
-	"""Ensure the git working tree is clean."""
+	"""Ensure the git working tree has no staged or unstaged changes."""
 	result = run_command_allow_fail(
-		["git", "status", "--porcelain"],
+		["git", "status", "--porcelain", "--untracked-files=no"],
 		project_dir,
 		True,
 	)
@@ -335,7 +335,7 @@ def require_git_clean(project_dir: str) -> None:
 		lines = status.splitlines()
 		sample = "\n".join(lines[:5])
 		fail(
-			"Working tree is not clean. Commit or stash changes before release.\n"
+			"Working tree has tracked changes. Commit or stash before release.\n"
 			f"{sample}"
 		)
 
