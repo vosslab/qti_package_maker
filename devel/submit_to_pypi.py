@@ -911,11 +911,12 @@ def test_install(
 
 #============================================
 
-def resolve_project_url(repo: str, package_name: str) -> str:
+def resolve_project_url(repo: str, package_name: str, version: str) -> str:
 	"""Resolve the project page URL."""
+	normalized_version = normalize_version_string(version)
 	if repo == "pypi":
-		return f"{PYPI_PROJECT_BASE}{canonicalize_name(package_name)}/"
-	return f"{TESTPYPI_PROJECT_BASE}{canonicalize_name(package_name)}/"
+		return f"{PYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
+	return f"{TESTPYPI_PROJECT_BASE}{canonicalize_name(package_name)}/{normalized_version}/"
 
 #============================================
 
@@ -1037,7 +1038,7 @@ def main() -> None:
 
 	test_install(sys.executable, project_dir, package_name, import_name, index_url, version)
 
-	project_url = resolve_project_url(args.repo, package_name)
+	project_url = resolve_project_url(args.repo, package_name, version)
 	if project_url:
 		print_info(f"Project URL: {project_url}")
 	open_project_url(project_url)
