@@ -339,6 +339,11 @@ def validate_version_string(version: str) -> None:
 		fail(f"Invalid version string: {version} ({exc})")
 
 
+def normalize_version_string(version: str) -> str:
+	"""Return the normalized PEP 440 version string."""
+	return str(Version(version))
+
+
 def read_requires_python(pyproject_data: dict) -> str:
 	"""Read the requires-python field from pyproject data."""
 	project_data = pyproject_data.get("project", {})
@@ -731,8 +736,16 @@ def check_version_exists(
 	available_versions, latest_version = parse_pip_versions_output(output)
 	if latest_version:
 		print_info(f"Latest version on index: {latest_version}")
-	if available_versions and version in available_versions:
-		fail(f"Version {version} already exists on the index.")
+	normalized_version = normalize_version_string(version)
+	if available_versions:
+		normalized_versions: set[str] = set()
+		for item in available_versions:
+			try:
+				normalized_versions.add(normalize_version_string(item))
+			except InvalidVersion:
+				normalized_versions.add(item)
+		if normalized_version in normalized_versions:
+			fail(f"Version {version} already exists on the index.")
 	if not available_versions:
 		print_warning("No versions reported by pip index.")
 
@@ -859,6 +872,7 @@ def test_install(
 
 		venv_python = get_venv_python(venv_dir)
 		run_command([venv_python, "-m", "pip", "install", "--upgrade", "pip"], project_dir, False)
+		normalized_version = normalize_version_string(version)
 		install_command = [
 			venv_python,
 			"-m",
@@ -869,7 +883,7 @@ def test_install(
 			"--force-reinstall",
 			"--index-url",
 			index_url,
-			f"{package_name}=={version}",
+			f"{package_name}=={normalized_version}",
 		]
 		if Version(version).is_prerelease:
 			install_command.insert(4, "--pre")
@@ -940,6 +954,7 @@ def main() -> None:
 	print_info(f"pyproject: {pyproject_path}")
 	print_info(f"Package name: {package_name}")
 	print_info(f"Version: {version}")
+	print_info(f"Normalized version: {normalize_version_string(version)}")
 	print_info(f"VERSION file: {version_file}")
 	print_info(f"Import name: {import_name}")
 	print_info(f"Repository: {args.repo}")
