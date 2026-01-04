@@ -47,7 +47,7 @@ from qti_package_maker.common.color_theory.red_scan import (
 	_write_red_scan_bundle_html,
 	_write_red_scan_html,
 )
-from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_VIEWING, DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS, WheelSpec
+from qti_package_maker.common.color_theory.wheel_specs import DEFAULT_VIEWING, DEFAULT_WHEEL_MODE_ORDER, DEFAULT_WHEEL_SPECS, WheelSpec, _build_wheel_spec, _validate_colorfulness_control
 
 
 def main():

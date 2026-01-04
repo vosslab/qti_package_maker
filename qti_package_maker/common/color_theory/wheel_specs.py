@@ -76,6 +76,14 @@ def _validate_colorfulness_control(mode, spec):
 				ucs=spec.target_ucs_r,
 			)
 		)
+	if has_shared:
+		if not (0.0 <= float(spec.shared_m_quantile) <= 1.0):
+			raise ValueError(
+				"Mode '{mode}' shared_m_quantile must be between 0.0 and 1.0; got {value}".format(
+					mode=mode,
+					value=spec.shared_m_quantile,
+				)
+			)
 
 
 def _load_wheel_specs_from_yaml():

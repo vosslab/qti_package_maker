@@ -10,6 +10,9 @@ from qti_package_maker.common.color_theory import next_gen
 # Third Party
 import yaml
 
+# Pip3 Library
+import pytest
+
 
 def test_generate_color_wheel_returns_hex():
 	first_mode = next_gen.DEFAULT_WHEEL_MODE_ORDER[0]
@@ -25,8 +28,10 @@ def test_redness_score_prefers_red():
 
 def test_write_html_color_table(tmp_path):
 	output = tmp_path / "next_gen_table.html"
-	modes = list(next_gen.DEFAULT_WHEEL_MODE_ORDER)
-	next_gen.write_html_color_table(str(output), num_colors=4, modes=modes[:3])
+	required = ["dark", "light", "xlight"]
+	modes = [mode for mode in next_gen.DEFAULT_WHEEL_MODE_ORDER if mode in required]
+	assert modes == required
+	next_gen.write_html_color_table(str(output), num_colors=4, modes=modes)
 	content = output.read_text()
 	assert "Color Name" in content
 	assert "White / Dark" in content
@@ -105,6 +110,29 @@ def test_colorfulness_control_xor():
 		has_shared = spec.shared_m_quantile is not None
 		has_ucs = spec.target_ucs_r is not None
 		assert has_shared != has_ucs, mode
+
+
+def test_shared_m_quantile_range_validation():
+	bad_yaml = """
+viewing:
+  surround: Average
+  white_point: D65
+  adapting_luminance: 64.0
+  background_luminance: 20.0
+modes:
+  dark:
+    target_j: 40.0
+    red_offset: 25.0
+    shared_m_quantile: 1.10
+    target_ucs_r: null
+"""
+	data = yaml.safe_load(bad_yaml)
+	modes = data.get("modes") or {}
+	see = modes.get("dark") or {}
+	defaults = next_gen.DEFAULT_WHEEL_SPECS["dark"]
+	spec = next_gen._build_wheel_spec(see, defaults=defaults)
+	with pytest.raises(ValueError):
+		next_gen._validate_colorfulness_control("dark", spec)
 
 
 def test_yaml_mode_order_matches_default():

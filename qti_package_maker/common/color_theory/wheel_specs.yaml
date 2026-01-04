@@ -5,27 +5,27 @@ viewing:
   background_luminance: 20.0
 modes:
   xdark:
-    target_j: 25.0
+    target_j: 20.0
     red_offset: 27.2
     shared_m_quantile: 0.50
     target_ucs_r: null
   dark:
-    target_j: 40.0
-    red_offset: 25.0
-    shared_m_quantile: 0.40
+    target_j: 30.0
+    red_offset: 27.2
+    shared_m_quantile: 0.30
     target_ucs_r: null
   normal:
     target_j: 50.0
-    red_offset: 19.2
-    shared_m_quantile: 0.25
+    red_offset: 19.8
+    shared_m_quantile: 0.10
     target_ucs_r: null
   light:
-    target_j: 75.0
-    red_offset: 20.6
+    target_j: 80.0
+    red_offset: 17.4
     shared_m_quantile: null
-    target_ucs_r: 25.0
+    target_ucs_r: 26.0
   xlight:
-    target_j: 85.0
+    target_j: 90.0
     red_offset: 17.0
     shared_m_quantile: null
     target_ucs_r: 16.0

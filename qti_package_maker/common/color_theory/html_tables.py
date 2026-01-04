@@ -23,9 +23,13 @@ def write_html_color_table(filename, num_colors=16, modes=None):
 
 	if not modes:
 		raise ValueError("No modes available for HTML color table")
-	dark_mode = modes[0]
-	light_mode = modes[1] if len(modes) > 1 else modes[0]
-	extra_light_mode = modes[2] if len(modes) > 2 else modes[0]
+	required = ["dark", "light", "xlight"]
+	missing = [mode for mode in required if mode not in modes]
+	if missing:
+		raise ValueError(f"Legacy HTML table requires modes {required}; missing {missing}")
+	dark_mode = "dark"
+	light_mode = "light"
+	extra_light_mode = "xlight"
 
 	anchor_hex = "ff0000"
 	hues = _select_hues_for_anchor(num_colors, dark_mode, anchor_hex, samples=48)
@@ -82,7 +86,12 @@ def write_html_color_table(filename, num_colors=16, modes=None):
 		f.write("</table></body></html>")
 
 	print(f"HTML color table saved as {filename}")
-	_print_legacy_red_comparison(dark_wheel[0], light_wheel[0], extra_light_wheel[0])
+	_print_legacy_red_comparison(
+		dark_wheel[0],
+		light_wheel[0],
+		extra_light_wheel[0],
+		labels=(dark_mode, light_mode, extra_light_mode),
+	)
 
 
 def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repeats=1):

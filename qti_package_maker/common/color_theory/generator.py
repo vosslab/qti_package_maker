@@ -41,15 +41,17 @@ def _rotate_colors_to_target(colors, target_hex):
 	return colors[red_index:] + colors[:red_index]
 
 
-def _print_legacy_red_comparison(dark_hex, light_hex, extra_light_hex):
+def _print_legacy_red_comparison(dark_hex, light_hex, extra_light_hex, labels=None):
 	legacy_dark = legacy_color_wheel.dark_color_wheel["red"]
 	legacy_light = legacy_color_wheel.light_color_wheel["red"]
 	legacy_extra_light = legacy_color_wheel.extra_light_color_wheel["red"]
+	if labels is None:
+		labels = ("dark", "light", "extra light")
 
 	print("Legacy red RGB distance:")
-	print(f"- dark: {legacy_dark} -> {dark_hex} (diff {_rgb_distance(legacy_dark, dark_hex):.1f})")
-	print(f"- light: {legacy_light} -> {light_hex} (diff {_rgb_distance(legacy_light, light_hex):.1f})")
-	print(f"- extra light: {legacy_extra_light} -> {extra_light_hex} (diff {_rgb_distance(legacy_extra_light, extra_light_hex):.1f})")
+	print(f"- {labels[0]}: {legacy_dark} -> {dark_hex} (diff {_rgb_distance(legacy_dark, dark_hex):.1f})")
+	print(f"- {labels[1]}: {legacy_light} -> {light_hex} (diff {_rgb_distance(legacy_light, light_hex):.1f})")
+	print(f"- {labels[2]}: {legacy_extra_light} -> {extra_light_hex} (diff {_rgb_distance(legacy_extra_light, extra_light_hex):.1f})")
 
 
 def _redness_score(hex_value):
