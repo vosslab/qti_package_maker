@@ -4,6 +4,7 @@
 
 # Standard Library
 import argparse
+import math
 import random
 import sys
 import types
@@ -31,10 +32,10 @@ class WheelSpec:
 
 DEFAULT_WHEEL_SPECS = {
 	"very_dark": WheelSpec(target_j=25.0, m_min=20.0, m_max=90.0, shared_m_quantile=0.45, allow_m_variation=0.18, max_m_blend=0.45),
-	"xdark": WheelSpec(target_j=20.0, m_min=22.0, m_max=95.0, shared_m_quantile=0.50, allow_m_variation=0.18, max_m_blend=0.50),
-	"dark": WheelSpec(target_j=38.0, m_min=18.0, m_max=85.0, shared_m_quantile=0.40, allow_m_variation=0.15, max_m_blend=0.40),
-	"normal": WheelSpec(target_j=62.0, m_min=8.0, m_max=45.0, shared_m_quantile=0.25, allow_m_variation=0.08, max_m_blend=0.25),
-	"light": WheelSpec(target_j=82.0, m_min=1.5, m_max=10.0, shared_m_quantile=0.12, allow_m_variation=0.03, max_m_blend=0.15),
+	"xdark": WheelSpec(target_j=25.0, m_min=22.0, m_max=95.0, shared_m_quantile=0.50, allow_m_variation=0.18, max_m_blend=0.50),
+	"dark": WheelSpec(target_j=40.0, m_min=18.0, m_max=85.0, shared_m_quantile=0.40, allow_m_variation=0.15, max_m_blend=0.40),
+	"normal": WheelSpec(target_j=55.0, m_min=8.0, m_max=45.0, shared_m_quantile=0.25, allow_m_variation=0.08, max_m_blend=0.25),
+	"light": WheelSpec(target_j=75.0, m_min=1.5, m_max=10.0, shared_m_quantile=0.12, allow_m_variation=0.03, max_m_blend=0.15),
 	"xlight": WheelSpec(target_j=90.0, m_min=1.0, m_max=8.0, shared_m_quantile=0.08, allow_m_variation=0.02, max_m_blend=0.10),
 }
 
@@ -51,7 +52,7 @@ _BEST_RED_OFFSETS = {
 	("xdark", 16, "ff0000"): 27.2,
 	("dark", 16, "ff0000"): 25.4,
 	("normal", 16, "ff0000"): 19.2,
-	("light", 16, "ff0000"): 23.0,
+	("light", 16, "ff0000"): 17.4,
 	("xlight", 16, "ff0000"): 17.0,
 }
 
@@ -176,6 +177,39 @@ def _rgb_distance(hex_a, hex_b):
 	return ((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2) ** 0.5
 
 
+def _srgb_hex_to_cam16_spec(hex_value):
+	r, g, b = _hex_to_rgb(hex_value)
+	rgb = [r / 255.0, g / 255.0, b / 255.0]
+	rgb_colourspace = colour.RGB_COLOURSPACES["sRGB"]
+	XYZ = colour.RGB_to_XYZ(rgb, rgb_colourspace, apply_cctf_decoding=True) * 100.0
+	XYZ_w, L_A, Y_b, surround, _xy_w = _get_viewing_conditions()
+	return colour.XYZ_to_CAM16(XYZ, XYZ_w, L_A, Y_b, surround)
+
+
+def _cam16_ucs_radius(cam):
+	jab = colour.JMh_CAM16_to_CAM16UCS((cam.J, cam.M, cam.h))
+	_jp, ap, bp = jab
+	return float(math.hypot(ap, bp))
+
+
+def _gamut_margin(rgb_linear):
+	r, g, b = rgb_linear
+	return min(r, g, b, 1.0 - r, 1.0 - g, 1.0 - b)
+
+
+def _gamut_limit(rgb_linear):
+	r, g, b = rgb_linear
+	options = {
+		"R0": r,
+		"G0": g,
+		"B0": b,
+		"R1": 1.0 - r,
+		"G1": 1.0 - g,
+		"B1": 1.0 - b,
+	}
+	return min(options, key=options.get)
+
+
 def _resolve_anchor_hex(anchor_hex):
 	if anchor_hex:
 		if anchor_hex == "legacy":
@@ -201,9 +235,12 @@ def _anchor_cam16_hue(anchor_hex):
 def _redness_score(hex_value):
 	r, g, b = _hex_to_rgb(hex_value)
 	gb = g + b
-	gb_balance = abs(g - b) / (gb + 1e-6)
-	gb_over_2r = gb / (2.0 * r + 1e-6)
-	return (gb_balance + gb_over_2r, gb_balance, gb_over_2r, -r)
+	gb_safe = max(gb, 1.0)
+	r_safe = max(r, 1.0)
+	gb_balance = abs(g - b) / gb_safe
+	gb_over_2r = gb / (2.0 * r_safe)
+	penalty = 10.0 if r == 0 else 0.0
+	return (gb_balance + gb_over_2r + penalty, gb_balance, gb_over_2r, -r)
 
 
 def _rotate_colors_to_target(colors, target_hex):
@@ -442,7 +479,7 @@ def _max_m_for_hue(j, h, steps=12, m_hi=100.0, cache_key=None):
 	return result
 
 
-def _colors_for_hues(hues, spec, mode, apply_variation=True):
+def _shared_m_and_max_ms(hues, spec, mode):
 	max_ms = []
 	for hue in hues:
 		cache_key = (mode, round(spec.target_j, 2), round(hue, 1))
@@ -450,6 +487,11 @@ def _colors_for_hues(hues, spec, mode, apply_variation=True):
 
 	shared_m = _quantile(max_ms, spec.shared_m_quantile)
 	shared_m = max(spec.m_min, min(spec.m_max, shared_m))
+	return shared_m, max_ms
+
+
+def _colors_for_hues(hues, spec, mode, apply_variation=True):
+	shared_m, max_ms = _shared_m_and_max_ms(hues, spec, mode)
 
 	colors = []
 	for hue, max_m in zip(hues, max_ms):
@@ -482,6 +524,8 @@ def _color_for_hue(hue, spec, mode, m_override=None):
 	XYZ = cam16_jmh_to_xyz(spec.target_j, m, hue)
 	rgb = _xyz_to_srgb(XYZ, apply_encoding=True)
 	return _srgb_to_hex(rgb)
+
+
 
 
 #====================================================================
@@ -606,6 +650,59 @@ def write_html_color_table(filename, num_colors=16, modes=None):
 	_print_legacy_red_comparison(dark_wheel[0], light_wheel[0], extra_light_wheel[0])
 
 
+def write_html_color_table_cam16_debug(filename, num_colors=16, modes=None, repeats=1):
+	if modes is None:
+		modes = ["xdark", "dark", "normal", "light", "xlight"]
+
+	with open(filename, "w") as f:
+		f.write("<!DOCTYPE html><html lang='en'><head><meta charset='UTF-8'><title>CAM16 Debug</title>"
+				"<style>"
+				"table {width: 100%; border-collapse: collapse; text-align: center; margin-bottom: 24px;} "
+				"th, td {padding: 8px; border: 1px solid black;} "
+				"th {background-color: #333; color: white;} "
+				".swatch {height: 32px;}"
+				"</style></head><body>")
+
+		anchor_hex = _resolve_anchor_hex(None)
+		for mode in modes:
+			spec = DEFAULT_WHEEL_SPECS.get(mode)
+			target_j = spec.target_j if spec else 0.0
+			f.write(f"<h1>{mode} (target J {target_j:.1f})</h1>")
+			for repeat in range(repeats):
+				f.write(f"<h2>run {repeat + 1}</h2>")
+				f.write("<table><tr><th>Hue</th><th>Swatch</th><th>Hex</th><th>XKCD Name</th><th>J</th><th>Q</th><th>UCS_r</th><th>M_max_hue</th><th>M_util</th><th>gamut_margin</th></tr>\n")
+				hues = _select_hues_for_anchor(num_colors, mode, anchor_hex, samples=48)
+				shared_m, max_ms = _shared_m_and_max_ms(hues, spec, mode)
+				colors = _colors_for_hues(hues, spec, mode, apply_variation=False)
+				if spec is not None and colors:
+					colors[0] = _color_for_hue(hues[0], spec, mode, m_override=spec.m_max)
+				for i, (hex_value, max_m) in enumerate(zip(colors, max_ms)):
+					cam = _srgb_hex_to_cam16_spec(hex_value)
+					ucs_r = _cam16_ucs_radius(cam)
+					XYZ = cam16_jmh_to_xyz(cam.J, cam.M, cam.h)
+					rgb_linear = _xyz_to_srgb(XYZ, apply_encoding=False)
+					gamut_margin = _gamut_margin(rgb_linear)
+					m_util = cam.M / max_m if max_m > 0 else 0.0
+					matched_name = rgb_color_name_match.hex_to_best_xkcd_name(hex_value)
+					f.write("<tr>")
+					f.write(f"<td>{i + 1}</td>")
+					f.write(f"<td class='swatch' style='background-color:#{hex_value};'></td>")
+					f.write(f"<td>{hex_value}</td>")
+					f.write(f"<td>{matched_name}</td>")
+					f.write(f"<td>{cam.J:.2f}</td>")
+					f.write(f"<td>{cam.Q:.2f}</td>")
+					f.write(f"<td>{ucs_r:.2f}</td>")
+					f.write(f"<td>{max_m:.2f}</td>")
+					f.write(f"<td>{m_util:.3f}</td>")
+					f.write(f"<td>{gamut_margin:.4f}</td>")
+					f.write("</tr>\n")
+				f.write("</table>")
+
+		f.write("</body></html>")
+
+	print(f"CAM16 debug table saved as {filename}")
+
+
 def main():
 	if "qti_package_maker" not in sys.modules:
 		try:
@@ -619,6 +716,8 @@ def main():
 	parser.add_argument("--best-red", action="store_true", help="Report best red offsets and write red scan HTML.")
 	parser.add_argument("--scan-output", default="red_scan.html", help="Output file for red scan HTML.")
 	parser.add_argument("--output", default="color_table_next_gen.html", help="Output HTML filename.")
+	parser.add_argument("--cam16-debug", action="store_true", help="Write CAM16 debug HTML output.")
+	parser.add_argument("--cam16-debug-output", default="color_table_cam16_debug.html", help="Output CAM16 debug HTML filename.")
 	parser.add_argument("--num-colors", type=int, default=16, help="Number of hues to generate.")
 	parser.add_argument("--modes", nargs="*", help="Modes to render in the table.")
 	args = parser.parse_args()
@@ -634,6 +733,12 @@ def main():
 		return
 
 	write_html_color_table(args.output, num_colors=args.num_colors, modes=args.modes or None)
+	if args.cam16_debug:
+		write_html_color_table_cam16_debug(
+			args.cam16_debug_output,
+			num_colors=args.num_colors,
+			modes=args.modes or None,
+		)
 
 
 if __name__ == "__main__":

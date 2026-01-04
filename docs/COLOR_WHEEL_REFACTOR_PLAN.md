@@ -43,7 +43,7 @@ Supported modes (current scope):
 Tune visually.
 - very_dark: J 25
 - dark:      J 40
-- light:     J 80
+- light:     J 75
 - xlight:    J 88 to 90
 
 ## Colorfulness Policy
@@ -113,6 +113,12 @@ All mechanics are shared.
 4) Keep CAM16 opt-in behind an explicit backend switch.
 5) Tune J and M ranges by eye.
 6) Flip CAM16 to default when stable; keep legacy explicitly available.
+
+## Remaining Items
+- Decide when to flip CAM16 to default and update legacy naming/API accordingly.
+- Add a brightness Q cap path (optional) and tune if dominance appears in light modes.
+- Keep J/M/Q range tests in place and adjust tolerances as the ranges evolve.
+- Tighten up docs (README/tables) once the default flips.
 
 ## Working History (Challenges + Attempts)
 - Initial OKLCH sampling with per-hue max chroma looked inconsistent; some hues were far more vivid

@@ -38,6 +38,16 @@
 - Add facade regression test for legacy backend parity.
 - Add CAM16 backend smoke test (requires colour-science).
 - Boost CAM16 dark mode saturation and soften light modes for pastel output.
+- Add CAM16 spec helper in `next_gen.py` and test J/M/Q ranges in pytest.
+- Add a Remaining Items section to `docs/COLOR_WHEEL_REFACTOR_PLAN.md`.
+- Add CAM16 debug HTML output with per-swatch J/M/Q values.
+- Anchor CAM16 debug output to best-red offsets per mode.
+- Make CAM16 debug output deterministic (no M variation) and force hue 1 to max M.
+- Add XKCD color name labels to CAM16 debug HTML.
+- Stabilize red scan scoring to avoid blowups when R is zero.
+- Add CAM16-UCS radius, gamut margin, and per-hue max-M utilization to CAM16 debug HTML.
+- Adjust CAM16 target J values for dark/light and update cached light best-red offset.
+- Adjust CAM16 target J values for xdark, normal, and light; remove M and gamut_limit from debug table.
 - Rotate CAM16 wheels so hue 1 starts at the true red anchor.
 - Emit legacy red RGB distance summary in CAM16 HTML output.
 - Wire CAM16 adapter and wheel generation skeleton in `qti_package_maker/common/color_theory/next_gen.py`.
