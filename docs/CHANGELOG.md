@@ -14,9 +14,15 @@
 - **Debug & inspection tooling**: add CAM16 debug HTML; anchor to best-red offsets; make deterministic; add XKCD name labels; add CAM16-UCS radius/gamut margin/per-hue max-M utilization; remove M/gamut_limit from debug; add UCS target diagnostics; add control selection indicator; add clamp_reason and prefer per-hue M_max caps for UCS control; add CAM16 spec helper and J/M/Q range tests.
 - **Light UCS control**: remove mode-level M caps for UCS-driven modes and skip max-M anchoring in debug/HTML for UCS modes.
 - **Validation**: enforce shared_m_quantile in [0.0, 1.0] and add pytest coverage for invalid quantiles.
+- **Release tooling**: remove repo-derived CLI args from `devel/submit_to_pypi.py`, require VERSION file, and fix rich stderr output.
+- **Release tooling**: test installs now pin the exact version (with --pre when needed) and project URLs use canonicalized names.
+- **Release tooling**: always check for existing versions; `--version-check` now runs the check and exits.
+- **Release tooling**: remove clean/upgrade/test-install/open toggles and index/repo URL overrides; these steps now run unconditionally.
+- **Release tooling**: add pre-checks (PEP 440 version parse, requires-python, git clean/main, version tag, twine, pytest when installed, and dist empty after clean).
 - **Red anchor & scan tooling**: optimize hue offsets and anchor selection; scan all offsets and choose reddest at max chroma; adjust red scoring (|G-B|/(G+B) + (G+B)/(2R)); add multi-stage best-red search, cache seeding/updates; add --best-red + red-scan HTML (coarse/fine/micro), bundle all modes, 0.2 micro step; switch CLI to argparse/named args and remove --scan-mode; treat red offsets as global per mode.
 - **YAML-driven config**: add `wheel_specs.yaml` and load defaults in `wheel_specs.py`; load modes/offsets from YAML across tools; simplify YAML to per-mode `target_j`/`red_offset`; add pytest coverage for YAML mode order and offsets; enforce XOR between `shared_m_quantile` and `target_ucs_r`.
 - **YAML-driven config**: remove hardcoded mode names from tests and HTML defaults; use YAML mode order everywhere.
+- **Versioning**: sync `pyproject.toml` and root `VERSION` to 26.01rc1.
 - **Debug & inspection tooling**: label legacy red distance output with the actual YAML mode names used.
 - **HTML output**: prefer `dark`/`light`/`xlight` modes by name (when present) for the legacy-style color table columns.
 - **HTML output**: require `dark`/`light`/`xlight` in YAML for the legacy table; error if missing.
