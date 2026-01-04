@@ -77,3 +77,12 @@ def test_cam16_j_m_q_ranges():
 
 			assert cam.Q > 0.0
 			assert cam.Q < 260.0
+
+
+def test_target_ucs_r_increases_m():
+	j = 75.0
+	h = 0.0
+	max_m = 20.0
+	low = next_gen._m_for_target_ucs_r(j, h, 6.0, max_m=max_m, steps=8)
+	high = next_gen._m_for_target_ucs_r(j, h, 12.0, max_m=max_m, steps=8)
+	assert high >= low

@@ -47,6 +47,10 @@
 - Stabilize red scan scoring to avoid blowups when R is zero.
 - Add CAM16-UCS radius, gamut margin, and per-hue max-M utilization to CAM16 debug HTML.
 - Adjust CAM16 target J values for dark/light and update cached light best-red offset.
+- Split CAM16 next-gen logic into focused modules (cam16_utils, generator, red_scan, html_tables, specs, utils).
+- Add `wheel_specs.yaml` for CAM16 mode parameters with defaults loaded in `wheel_specs.py`.
+- Update cached best-red offsets for dark and light modes after retuning J targets.
+- Add optional UCS radius targets for light/xlight modes to lift pastel colorfulness.
 - Adjust CAM16 target J values for xdark, normal, and light; remove M and gamut_limit from debug table.
 - Rotate CAM16 wheels so hue 1 starts at the true red anchor.
 - Emit legacy red RGB distance summary in CAM16 HTML output.
