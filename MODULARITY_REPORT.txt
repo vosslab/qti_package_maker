@@ -1,0 +1,127 @@
+QTI Package Maker - Modularity and Risk Review
+Date: 2026-01-03
+
+Scope: codebase inspection (core interface, item model, engines, common utilities), plus TODO/ROADMAP review.
+
+1) Modularity assessment (strengths)
+- Engines are isolated per format with a consistent BaseEngine flow (process_item_bank, get_outfile_name).
+- ItemBank and ItemTypes decouple the domain model from format adapters.
+- Engine auto-registration reduces manual wiring and keeps extensions modular.
+- Common utilities (string_functions, manifest helpers, anti_cheat) avoid duplication across engines.
+
+2) High-risk or breakable areas
+- Ambiguous engine selection by prefix: init_engine picks the first engine whose sanitized name startswith the input.
+  Concrete fix: prefer exact match; else require a unique prefix; otherwise raise an error listing
+  matching candidates for the user to choose. File: qti_package_maker/package_interface.py
+- ItemBank.merge does not set first_item_type on the merged bank; allow_mixed=False can later accept
+  a different type even though existing items are of another type.
+  File: qti_package_maker/assessment_items/item_bank.py
+- ItemBank.merge overwrites duplicate CRC keys silently and does not warn; collisions or divergent items
+  can be lost without notice.
+  File: qti_package_maker/assessment_items/item_bank.py
+- MC/MA compute answer_index from raw choices_list while storing cleaned choices_list; if answer_text is
+  unprefixed but choices_list entries are prefixed, index lookup can be wrong or fail.
+  File: qti_package_maker/assessment_items/item_types.py
+- CRC16 computation requires ASCII; any non-ASCII content raises ValueError and can break parsing/writing.
+  File: qti_package_maker/common/string_functions.py
+- BBQ NUM writer divides by answer_float to compute tolerance message; answer_float == 0 triggers
+  ZeroDivisionError.
+  File: qti_package_maker/engines/bbq_text_upload/write_item.py
+- process_random_item_from_item_bank shuffles ItemBank in place; this mutates global order and can
+  affect later outputs in the same session.
+  File: qti_package_maker/engines/base_engine.py
+- text2qti reader captures choice_feedback/answer_feedback on item objects, but the core item model
+  does not define these fields and writers drop them, so data is silently lost.
+  Files: qti_package_maker/engines/text2qti/read_package.py, qti_package_maker/assessment_items/item_types.py
+- Several modules execute asserts at import time; unexpected failures or -O optimizations can change
+  behavior and prevent imports.
+  Files: qti_package_maker/common/string_functions.py, qti_package_maker/assessment_items/validator.py,
+  read_package modules
+
+3) Medium/low risk observations
+- engine_registration.print_engine_table prints inside the loop (table repeated per engine).
+  File: qti_package_maker/engines/engine_registration.py
+- Global shuffle in bbq_text_upload.write_item mutates item_cls.choices_list in place and can affect
+  later engines in the same run.
+- AntiCheat modifies question/choice text after CRC is computed; duplicate detection based on CRC
+  may not reflect anti-cheat variants.
+
+4) TODO / Roadmap implementation ideas
+- Histogram of answer choices:
+  - Extend ItemBank.gather_histogram_data to include counts by letter and by normalized choice text.
+  - Cache histogram summaries per item type to avoid recomputation in large banks.
+- Text cleanup:
+  - Add a canonical normalization function in common/string_functions to strip leading/trailing &nbsp;,
+    collapse whitespace, and remove extra CRC prefixes beyond the first.
+  - Apply normalization to question_text, choices_list, and answers_list in BaseItem init.
+- Quiet mode:
+  - Add a quiet/verbose flag to QTIPackageInterface and BaseEngine, then guard prints consistently.
+- Shuffle mechanism:
+  - Add shuffle_choices: bool to MC/MA items and respect it in writers (HTML selftest, BBQ, QTI).
+- General read engine capabilities:
+  - Implement auto-detect in QTIPackageInterface: check extension; for zip, inspect imsmanifest.xml;
+    for xml, sniff for QTI 1.2 vs 2.1 tags; for txt, detect BBQ/text2qti markers.
+- BBQ reads for ORDER/NUM/FIB/MULTI_FIB appear already implemented in
+  qti_package_maker/engines/bbq_text_upload/read_package.py (TODO may be stale).
+- "Track CRC codes for uniqueness":
+  - Add an optional collision map (crc16 -> list of question_text hashes) and warn on mismatches.
+- Unimplemented item functions list in docs/TODO.md references add_item.py files that no longer
+  exist in canvas_qti_v1_2 or blackboard_qti_v2_1; the current write_item.py supports more types.
+  Consider updating TODO to reflect current structure.
+
+5) Hints and Feedback - recommended implementation
+Data model (minimal additions):
+- BaseItem:
+  - hints: list[str] = []
+  - feedback_correct: str | None
+  - feedback_incorrect: str | None
+- MC/MA:
+  - choice_feedback: dict[choice_id, str] (optional)
+  - choice_ids: list[str] aligned with choices_list (computed from choice text or explicit IDs)
+- NUM/FIB/MULTI_FIB:
+  - answer_feedback: str | None (or per-blank feedback for MULTI_FIB)
+
+Choice IDs:
+- Avoid using choice text as dict keys (text changes during prefix stripping or HTML cleaning).
+- Derive a stable id per choice: crc16 of cleaned choice text, or a sequential choice_### stored at
+  item creation and preserved through writes/reads.
+
+Parsing / text formats:
+- text2qti already parses feedback lines; formalize:
+  - Hints: a block starting with "?? " or "HINT: " before answers.
+  - Feedback: keep existing "..." / "+" / "-" syntax, map to feedback_correct/incorrect.
+  - Store per-choice feedback when present.
+- BBQ: define a stable inline syntax inside question_text, e.g.:
+  - [[HINT]] ... [[/HINT]] for multiple hints.
+  - [[FB_CORRECT]] ... [[/FB_CORRECT]], [[FB_INCORRECT]] ... .
+  - Parser strips these blocks into item fields; writer reinserts for formats that support them.
+
+Writers:
+- QTI 2.1 (blackboard_qti_v2_1):
+  - Use outcomeDeclaration FEEDBACKBASIC (already in item_xml_helpers.create_outcome_declarations_big).
+  - Use responseProcessing_big to set FEEDBACKBASIC to correct_fb / incorrect_fb.
+  - Add modalFeedback or feedbackBlock elements with identifiers correct_fb / incorrect_fb.
+  - For hints, map to feedbackBlock with showHide="show" (always visible per roadmap).
+- QTI 1.2 (canvas_qti_v1_2):
+  - Map feedback_correct/incorrect to itemfeedback plus respcondition with displayfeedback.
+  - For hints, either map to itemfeedback or embed in material as a "Hint:" section if LMS does not
+    support formal hints.
+- HTML selftest:
+  - Add a Hint toggle per item; if multiple hints, reveal sequentially.
+  - Use existing CSS variables and add a small hint block UI.
+  - Add feedback_correct/incorrect to result div, and per-choice feedback on selection.
+- Human readable:
+  - Render a "Hints:" block with numbered hints.
+  - Render feedback blocks under the answer key.
+
+Readers:
+- QTI readers (if added later) should parse feedback/hints into the new fields.
+- text2qti and BBQ readers should populate hints/feedback fields (not ad-hoc attributes).
+
+Tests:
+- Add smoke tests that round-trip hints and feedback through text2qti and BBQ.
+- Add writer tests for QTI 2.1 and HTML selftest to ensure hint blocks and feedback elements appear.
+
+Open questions to decide:
+- Do hints/feedback affect CRC and duplicate detection?
+- Do we need per-choice stable IDs stored in the model or derived on the fly?
