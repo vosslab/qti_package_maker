@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-01-13
+
+### Changed
+- Resolve README merge markers and restore the question types/engine sections.
+- Make README ISO-8859-1 compatible by replacing non-ASCII table symbols.
+- Fix README formatting in the Python API example block.
+
 ## 2026-01-03
 
 ### Added
