@@ -43,7 +43,7 @@ Useful repo commands:
 
 ## Commit & Pull Request Guidelines
 
-- Commit subjects in history are short and action-oriented (e.g., “Fix…”, “Add…”, “Refactor…”).
+- Commit subjects in history are short and action-oriented (e.g., "Fix...", "Add...", "Refactor...").
 - Include in PRs:
   - what formats/engines are affected (e.g., `canvas_qti_v1_2`, `bbq_text_upload`);
   - a minimal repro or sample input file name/pattern (`bbq-<name>-questions.txt`);

@@ -38,7 +38,7 @@ def clean_html_for_xml(html_str: str) -> str:
 	html_str = re.sub(r'&[#a-zA-Z0-9]+;', '', html_str)
 
 	# Step 5: Clean up URLs by removing query parameters after '?' to simplify validation
-	# Example: href="https://example.com/page?query=123" → href="https://example.com/page"
+	# Example: href="https://example.com/page?query=123" -> href="https://example.com/page"
 	html_str = re.sub(r'(href=[\'"])(https?://[^\'"]+?)\?.*?([\'"])', r'\1\2\3', html_str)
 
 	# Step 6: Temporarily remove SMILES values (which contain special characters)

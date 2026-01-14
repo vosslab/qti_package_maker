@@ -128,7 +128,7 @@ def create_MC_resprocessing(choices_list, answer_text):
 	respcondition = lxml.etree.SubElement(resprocessing, "respcondition")
 	conditionvar = lxml.etree.SubElement(respcondition, "conditionvar")
 
-	# Multiple Choice (Single) → NO `<and>`, NO `<not>`, just a single `<varequal>`
+	# Multiple Choice (Single) -> NO `<and>`, NO `<not>`, just a single `<varequal>`
 	correct_choice_id = f"choice_{choices_list.index(answer_text)+1:03d}"
 	lxml.etree.SubElement(conditionvar, "varequal", respident="response1").text = correct_choice_id
 

@@ -263,7 +263,7 @@ def test_colorfulness(rcp):
         "Purple": (0.5, 0, 1)
     }
 
-    print("\n🔹 **Testing Colorfulness Computation** 🔹\n")
+    print("\n== Testing Colorfulness Computation ==\n")
     for name, rgb in test_colors.items():
         cfn = rcp.colorfulness(rgb)
         print(f"{name:<10}: {cfn:.2f}")
@@ -272,5 +272,4 @@ def test_colorfulness(rcp):
 if __name__ == "__main__x":
     rcp = RCPColorUtils()
     test_colorfulness(rcp)
-
 

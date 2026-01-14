@@ -137,9 +137,9 @@ class QTIv2Engine(BaseEngine):
 Okay, I am leaning towards Dynamic Import Approach 1, because of one reason, code would be separated better. If I use class inheritance, then reading can be difficult because a function could be called from the base or overrides and it would be hard to tell where it came from. Anyway I am slightly torn on this issue class inheritance is nice, but it's abstraction limits one from figuring out the code.
 
 
-add_item functions are “very dissimilar,”
+add_item functions are "very dissimilar,"
 
-and they are perhaps the LONGEST part of the code. I could maybe do a mix with class inheritance, that would import a different module and thus run different questions and thus keep the code separate, but still have the "For example, if 70-80% of your code is shared across engines and you’re just tweaking parts of the output, inheritance could make sense." excluding the add_item 70-80% of your code is shared, but the add_item only shared about 10%.
+and they are perhaps the LONGEST part of the code. I could maybe do a mix with class inheritance, that would import a different module and thus run different questions and thus keep the code separate, but still have the "For example, if 70-80% of your code is shared across engines and you're just tweaking parts of the output, inheritance could make sense." excluding the add_item 70-80% of your code is shared, but the add_item only shared about 10%.
 
 ==========================================================================================
 ==========================================================================================

@@ -1,5 +1,12 @@
 # Changelog
 
+## 2026-01-14
+
+### Changed
+- Replace Unicode box-drawing and emoji in `docs/CODE_DESIGN.md` with ASCII equivalents.
+- Replace checkmark/cross table markers with yes/X in `docs/ENGINES.md`.
+- Replace Unicode status symbols in test output strings and use ASCII-safe escapes for sub/superscript mappings.
+
 ## 2026-01-13
 
 ### Changed

@@ -78,7 +78,7 @@ Keep the adapter thin so we can swap later if needed.
 5) Choose shared M using a low quantile of per hue maxima.
 6) Assign per hue M within the allowed band.
 7) Clamp by max M and optional brightness Q limit.
-8) Convert CAM16 → XYZ → sRGB hex.
+8) Convert CAM16 -> XYZ -> sRGB hex.
 
 No hue specific logic.
 

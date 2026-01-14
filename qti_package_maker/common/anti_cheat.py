@@ -280,7 +280,7 @@ def main():
 	assert "<table><tr><td>Do not modify this table content.</td></tr></table>" in modified_text
 	assert "<code>print('This should not be changed')</code>" in modified_text
 
-	print("✅ insert_hidden_terms() passed all tests.")
+	print("[OK] insert_hidden_terms() passed all tests.")
 
 	# ========= Test wrap_text_in_no_click_div() (div_adder) =========
 	print("\n-- Testing wrap_text_in_no_click_div() --")
@@ -290,13 +290,12 @@ def main():
 	assert protected_text.startswith("<div "), "wrap_text_in_no_click_div() did not wrap correctly."
 	assert protected_text.endswith("</div>"), "wrap_text_in_no_click_div() did not wrap correctly."
 
-	print("✅ wrap_text_in_no_click_div() passed all tests.")
+	print("[OK] wrap_text_in_no_click_div() passed all tests.")
 
-	print("\n✅ All tests passed successfully!")
+	print("\n[OK] All tests passed successfully!")
 
 if __name__ == "__main__":
 	main()
-
 
 
 

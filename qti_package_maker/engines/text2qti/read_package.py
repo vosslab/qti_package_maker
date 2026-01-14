@@ -364,7 +364,7 @@ b) 1
 	assert mc_question_cls.question_text == "What is 2+3?"
 	assert mc_question_cls.choices_list == ["6", "1", "5"]
 	assert mc_question_cls.answer_text == "5"
-	print("✔ Multiple-Choice test passed.\n")
+	print("[OK] Multiple-Choice test passed.\n")
 
 	# -------------------------------
 	# Multiple-Answers (MA) Test
@@ -382,7 +382,7 @@ rex
 	assert "Triceratops" in ma_question.answers_list
 	assert "T. rex" in ma_question.answers_list
 	assert len(ma_question.answers_list) == 2
-	print("✔ Multiple-Answers test passed.\n")
+	print("[OK] Multiple-Answers test passed.\n")
 
 	# -------------------------------
 	# Numerical (NUM) Test - Exact
@@ -394,7 +394,7 @@ rex
 	num_question = read_NUM(num_text, 3)
 	assert num_question.answer_float == 5.0
 	assert num_question.tolerance_float == 0.0
-	print("✔ Numerical test (exact) passed.\n")
+	print("[OK] Numerical test (exact) passed.\n")
 
 	# -------------------------------
 	# Numerical (NUM) Test - Tolerance
@@ -407,7 +407,7 @@ rex
 	num_tol_question = read_NUM(num_tolerance_text, 4)
 	assert num_tol_question.answer_float == 1.4142
 	assert num_tol_question.tolerance_float == 0.0001
-	print("✔ Numerical test (tolerance) passed.\n")
+	print("[OK] Numerical test (tolerance) passed.\n")
 
 	# -------------------------------
 	# Fill-in-the-Blank (FIB) Test
@@ -420,16 +420,16 @@ rex
 	all_text.append(fib_text)
 	fib_question = read_FIB(fib_text, 5)
 	assert set(fib_question.answers_list) == {"Santa", "Santa Claus", "Saint Nicholas"}
-	print("✔ Fill-in-the-Blank test passed.\n")
+	print("[OK] Fill-in-the-Blank test passed.\n")
 
 	import random
 	random.shuffle(all_text)
 	all_text = '\n'.join(all_text)
 	process_text_lines(all_text, allow_mixed=True)
-	print("✔ All at once test passed.\n")
+	print("[OK] All at once test passed.\n")
 
 
-	print("✅ All tests passed successfully!")
+	print("[OK] All tests passed successfully!")
 
 if __name__ == "__main__":
 	main()

@@ -1,16 +1,13 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
+ascii_compliance.txt
+.DS_Store
+pyflakes.txt
+
 *.py[cod]
 *$py.class
-.DS_Store
 *.html
 *.zip
-pyflakes.txt
-human-*.txt
-bbq-*.txt
-new_bbq-*.txt
 *.xml
-bptools.py
 
 # C extensions
 *.so

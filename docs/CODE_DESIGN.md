@@ -7,9 +7,9 @@ _A deep dive into the architecture and philosophy behind the QTI Package Maker_
 This document provides a **high-level overview** of how the QTI Package Maker is structured, including how it **reads**, **stores**, and **writes** assessment item data across multiple formats.
 
 The system is designed to be:
-- **Extensible** – New formats can be added easily.
-- **Modular** – Components are independent but work together.
-- **Format-agnostic** – The internal structure remains the same, regardless of file format.
+- **Extensible** - New formats can be added easily.
+- **Modular** - Components are independent but work together.
+- **Format-agnostic** - The internal structure remains the same, regardless of file format.
 
 ## **Designed Usage**
 
@@ -46,24 +46,24 @@ The project consists of **four main layers**:
 
 ```
 qti_package_maker/
-│── engines/
-│   ├── qti_v1_2/
-│   │   ├── engine_class.py
-│   │   ├── add_item.py
-│   ├── qti_v2_1/
-│   │   ├── engine_class.py
-│   │   ├── add_item.py
-│   ├── human_readable/
-│   │   ├── engine_class.py
-│── common/
-│   ├── base_package_maker.py
-│   ├── string_functions.py
-│── package_interface.py
+|-- engines/
+|   |-- qti_v1_2/
+|   |   |-- engine_class.py
+|   |   |-- add_item.py
+|   |-- qti_v2_1/
+|   |   |-- engine_class.py
+|   |   |-- add_item.py
+|   |-- human_readable/
+|   |   |-- engine_class.py
+|-- common/
+|   |-- base_package_maker.py
+|   |-- string_functions.py
+|-- package_interface.py
 ```
 
 ---
 
-### **1️⃣ Master Controller: `QTIPackageInterface`**
+### **1) Master Controller: `QTIPackageInterface`**
 This class is the **main entry point** for interacting with the package. It:
 - **Reads assessment items** from different formats (QTI 1.2, QTI 2.1, human-readable, etc.).
 - **Stores them centrally** in an `ItemBank`.
@@ -101,7 +101,7 @@ class QTIPackageInterface:
 
 ---
 
-### **2️⃣ Assessment Item Storage: `ItemBank`**
+### **2) Assessment Item Storage: `ItemBank`**
 Since each **engine** (QTI 1.2, QTI 2.1, human-readable) handles file formats differently, all assessment items are converted into a **unified format** before being written back. The `ItemBank` class ensures that assessment items are stored **independently from any file format**.
 
 ```python
@@ -122,7 +122,7 @@ class ItemBank:
 
 ---
 
-### **3️⃣ Internal Representation: `AssessmentItem` Classes**
+### **3) Internal Representation: `AssessmentItem` Classes**
 Instead of storing assessment items as raw text or format-specific data, they are converted into structured **Python objects**.
 
 ```python
@@ -145,7 +145,7 @@ class Matching(AssessmentItem):
 
 ---
 
-## **🛠️ Contributing**
+## **Contributing**
 
 ### **Adding a New Engine**
 To support a new format (e.g., JSON, CSV), create a folder in `engines/` and implement:
@@ -167,12 +167,11 @@ pytest tests/
 ```
 
 ### **Opening a Pull Request**
-Once tested, submit a PR on GitHub! 🎉
+Once tested, submit a PR on GitHub!
 
 ---
 
-## **📜 License**
+## **License**
 This project is licensed under the **GPL v3 License**.
 
 ---
-

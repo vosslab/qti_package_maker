@@ -349,8 +349,14 @@ def convert_sub_sup(pretty_question):
 	"""Replace <sub> and <sup> HTML tags with Unicode equivalents using regex."""
 
 	# Define subscript and superscript mappings
-	subscript_map = str.maketrans("0123456789+-=()", "₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎")
-	superscript_map = str.maketrans("0123456789+-=()", "⁰¹²³⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾")
+	subscript_map = str.maketrans(
+		"0123456789+-=()",
+		"\u2080\u2081\u2082\u2083\u2084\u2085\u2086\u2087\u2088\u2089\u208A\u208B\u208C\u208D\u208E",
+	)
+	superscript_map = str.maketrans(
+		"0123456789+-=()",
+		"\u2070\u00B9\u00B2\u00B3\u2074\u2075\u2076\u2077\u2078\u2079\u207A\u207B\u207C\u207D\u207E",
+	)
 
 	# Convert <sub> tags
 	def subscript_replace(match):

@@ -40,21 +40,21 @@
 
 | Engine name         | Can read   | Can write   |
 |---------------------|------------|-------------|
-| bbq_text_upload     | ✅         | ✅          |
-| blackboard_qti_v2_1 | ❌         | ✅          |
-| canvas_qti_v1_2     | ❌         | ✅          |
-| html_selftest       | ❌         | ✅          |
-| human_readable      | ❌         | ✅          |
-| text2qti            | ✅         | ✅          |
+| bbq_text_upload     | yes        | yes         |
+| blackboard_qti_v2_1 | X          | yes         |
+| canvas_qti_v1_2     | X          | yes         |
+| html_selftest       | X          | yes         |
+| human_readable      | X          | yes         |
+| text2qti            | yes        | yes         |
 
 ### Assessment item types
 
 | Item type   | bbq text upload   | blackboard qti v2.1   | canvas qti v1.2   | html selftest   | human readable   | text2qti   |
 |-------------|-------------------|-----------------------|-------------------|-----------------|------------------|------------|
-| FIB         | ✅                | ✅                    | ❌                | ✅             | ✅               | ✅         |
-| MA          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
-| MATCH       | ✅                | ✅                    | ✅                | ✅             | ✅               | ❌         |
-| MC          | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
-| MULTI_FIB   | ✅                | ✅                    | ✅                | ✅             | ✅               | ❌         |
-| NUM         | ✅                | ✅                    | ✅                | ✅             | ✅               | ✅         |
-| ORDER       | ✅                | ✅                    | ❌                | ✅             | ✅               | ❌         |
+| FIB         | yes               | yes                   | X                 | yes            | yes              | yes        |
+| MA          | yes               | yes                   | yes               | yes            | yes              | yes        |
+| MATCH       | yes               | yes                   | yes               | yes            | yes              | no         |
+| MC          | yes               | yes                   | yes               | yes            | yes              | yes        |
+| MULTI_FIB   | yes               | yes                   | yes               | yes            | yes              | no         |
+| NUM         | yes               | yes                   | yes               | yes            | yes              | yes        |
+| ORDER       | yes               | yes                   | X                 | yes            | yes              | no         |
