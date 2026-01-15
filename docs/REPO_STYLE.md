@@ -68,6 +68,8 @@ Repo-wide conventions for this project and related repos.
 - Use underscores between words and avoid spaces.
 - Choose clear, descriptive names.
 - Keep well-known root-level docs (for example VERSION, README.md, AGENTS.md).
+- I prefer to use social media links instead of hard coding my email in repos. For example, Neil Voss, https://bsky.app/profile/neilvosslab.bsky.social
+
 
 ### Recommended common docs
 - `AGENTS.md`: agent instructions, tool constraints, and repo-specific workflow guardrails.
