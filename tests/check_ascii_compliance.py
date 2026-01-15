@@ -108,6 +108,9 @@ def apply_simple_fixes(text: str) -> tuple[str, bool]:
 
 	# Replace non-breaking spaces with regular spaces.
 	fixed_text = fixed_text.replace("\u00A0", " ")
+	fixed_text = fixed_text.replace("\u2004", " ")
+	fixed_text = fixed_text.replace("\u2005", " ")
+	fixed_text = fixed_text.replace("\uFEFF", " ")
 
 	# Replace curly quotes and apostrophes with straight equivalents.
 	fixed_text = re.sub(r"[\u201C\u201D]", '"', fixed_text)
@@ -140,8 +143,14 @@ def apply_simple_fixes(text: str) -> tuple[str, bool]:
 
 	# Replace common mathematical symbols.
 	fixed_text = fixed_text.replace("\u2260", "!=")
+	fixed_text = fixed_text.replace("\u2264", "<=")
+	fixed_text = fixed_text.replace("\u2265", ">=")
 	fixed_text = fixed_text.replace("\u00B1", "+/-")
 	fixed_text = fixed_text.replace("\u2248", "~")
+
+	# Replace or drop additional symbol-like characters.
+	fixed_text = fixed_text.replace("\u037C", "(c)")
+	fixed_text = fixed_text.replace("\u200E", "")
 
 	# Remove object replacement characters.
 	fixed_text = fixed_text.replace("\uFFFC", "")
