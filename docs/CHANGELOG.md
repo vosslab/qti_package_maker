@@ -5,6 +5,7 @@
 ### Changed
 - Simplify `color_wheel.py` public API to single function `generate_color_wheel()`.
 - Switch default color wheel backend from legacy to CAM16.
+- Restore public color wheel shims for named wheels and legacy helpers, backed by CAM16 output.
 - Remove unused imports from `next_gen.py` and `generator.py`.
 - Update color wheel tests to import internal functions directly from source modules.
 - Fix bugs in `main.py`: typo in `_validate_hsl` error message, undefined `l` variable, remove dead `sys.exit()` call.
