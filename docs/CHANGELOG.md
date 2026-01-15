@@ -1,5 +1,18 @@
 # Changelog
 
+## 2026-01-15
+
+### Changed
+- Simplify `color_wheel.py` public API to single function `generate_color_wheel()`.
+- Switch default color wheel backend from legacy to CAM16.
+- Remove unused imports from `next_gen.py` and `generator.py`.
+- Update color wheel tests to import internal functions directly from source modules.
+- Fix bugs in `main.py`: typo in `_validate_hsl` error message, undefined `l` variable, remove dead `sys.exit()` call.
+- Remove unused `pytest` imports from test files.
+
+### Fixed
+- Resolve all 46 pyflakes errors (reduced to 0).
+
 ## 2026-01-14
 
 ### Changed

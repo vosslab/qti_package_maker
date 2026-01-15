@@ -4,14 +4,25 @@
 from pathlib import Path
 import re
 
-# QTI Package Maker
-from qti_package_maker.common.color_theory import next_gen
-
-# Third Party
-import yaml
-
 # Pip3 Library
 import pytest
+import yaml
+
+# QTI Package Maker
+from qti_package_maker.common.color_theory import next_gen
+from qti_package_maker.common.color_theory.cam16_utils import _srgb_hex_to_cam16_spec
+from qti_package_maker.common.color_theory.generator import (
+	_max_m_for_hue,
+	_m_for_target_ucs_r,
+	_redness_score,
+)
+from qti_package_maker.common.color_theory.hue_layout import _generate_hues_equal
+from qti_package_maker.common.color_theory.red_scan import _select_hues_for_anchor
+from qti_package_maker.common.color_theory.wheel_specs import (
+	DEFAULT_WHEEL_SPECS,
+	_build_wheel_spec,
+	_validate_colorfulness_control,
+)
 
 
 def test_generate_color_wheel_returns_hex():
@@ -22,8 +33,8 @@ def test_generate_color_wheel_returns_hex():
 
 
 def test_redness_score_prefers_red():
-	assert next_gen._redness_score("ff0000") < next_gen._redness_score("0000ff")
-	assert next_gen._redness_score("ff0000") < next_gen._redness_score("000000")
+	assert _redness_score("ff0000") < _redness_score("0000ff")
+	assert _redness_score("ff0000") < _redness_score("000000")
 
 
 def test_write_html_color_table(tmp_path):
@@ -67,8 +78,8 @@ def test_write_html_color_table_cam16_debug(tmp_path):
 
 def test_cam16_j_m_q_ranges():
 	num_colors = 8
-	for mode, spec in next_gen.DEFAULT_WHEEL_SPECS.items():
-		hues = next_gen._generate_hues_equal(num_colors, offset=0.0)
+	for mode, spec in DEFAULT_WHEEL_SPECS.items():
+		hues = _generate_hues_equal(num_colors, offset=0.0)
 		colors = next_gen.generate_color_wheel(
 			num_colors,
 			mode=mode,
@@ -78,10 +89,10 @@ def test_cam16_j_m_q_ranges():
 		)
 
 		for hue, hex_value in zip(hues, colors):
-			cam = next_gen._srgb_hex_to_cam16_spec(hex_value)
+			cam = _srgb_hex_to_cam16_spec(hex_value)
 			assert abs(cam.J - spec.target_j) <= 5.0
 
-			max_m = next_gen._max_m_for_hue(
+			max_m = _max_m_for_hue(
 				spec.target_j,
 				hue,
 				cache_key=(mode, round(spec.target_j, 2), round(hue, 1)),
@@ -100,13 +111,13 @@ def test_target_ucs_r_increases_m():
 	j = 75.0
 	h = 0.0
 	max_m = 20.0
-	low = next_gen._m_for_target_ucs_r(j, h, 6.0, max_m=max_m, steps=8)
-	high = next_gen._m_for_target_ucs_r(j, h, 12.0, max_m=max_m, steps=8)
+	low = _m_for_target_ucs_r(j, h, 6.0, max_m=max_m, steps=8)
+	high = _m_for_target_ucs_r(j, h, 12.0, max_m=max_m, steps=8)
 	assert high >= low
 
 
 def test_colorfulness_control_xor():
-	for mode, spec in next_gen.DEFAULT_WHEEL_SPECS.items():
+	for mode, spec in DEFAULT_WHEEL_SPECS.items():
 		has_shared = spec.shared_m_quantile is not None
 		has_ucs = spec.target_ucs_r is not None
 		assert has_shared != has_ucs, mode
@@ -129,10 +140,10 @@ modes:
 	data = yaml.safe_load(bad_yaml)
 	modes = data.get("modes") or {}
 	see = modes.get("dark") or {}
-	defaults = next_gen.DEFAULT_WHEEL_SPECS["dark"]
-	spec = next_gen._build_wheel_spec(see, defaults=defaults)
+	defaults = DEFAULT_WHEEL_SPECS["dark"]
+	spec = _build_wheel_spec(see, defaults=defaults)
 	with pytest.raises(ValueError):
-		next_gen._validate_colorfulness_control("dark", spec)
+		_validate_colorfulness_control("dark", spec)
 
 
 def test_yaml_mode_order_matches_default():
@@ -150,5 +161,5 @@ def test_yaml_offsets_used_for_anchor():
 		offset = (values or {}).get("red_offset")
 		if offset is None:
 			continue
-		hues = next_gen._select_hues_for_anchor(16, mode, None)
+		hues = _select_hues_for_anchor(16, mode, None)
 		assert abs(hues[0] - float(offset)) < 1e-6

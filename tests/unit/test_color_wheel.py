@@ -4,24 +4,25 @@
 import random
 import re
 
-# Pip3 Library
-import pytest
-
 # QTI Package Maker
 from qti_package_maker.common import color_wheel
 from qti_package_maker.common.color_theory import next_gen
+from qti_package_maker.common.color_theory.legacy_color_wheel import (
+	default_color_wheel as legacy_default_color_wheel,
+	min_difference,
+)
 
 
 def test_min_difference_cases():
-	assert color_wheel.min_difference([40, 41]) == 1
-	assert color_wheel.min_difference([30, 15, 36]) == 6
-	assert color_wheel.min_difference([84, 25, 24, 37]) == 1
-	assert color_wheel.min_difference([84, 30, 30, 42, 56, 72]) == 0
+	assert min_difference([40, 41]) == 1
+	assert min_difference([30, 15, 36]) == 6
+	assert min_difference([84, 25, 24, 37]) == 1
+	assert min_difference([84, 30, 30, 42, 56, 72]) == 0
 
 
 def test_facade_legacy_backend_matches_legacy():
 	random.seed(0)
-	legacy_colors = color_wheel.default_color_wheel(5)
+	legacy_colors = legacy_default_color_wheel(5)
 	random.seed(0)
 	facade_colors = color_wheel.generate_color_wheel(5, backend="legacy")
 	assert facade_colors == legacy_colors

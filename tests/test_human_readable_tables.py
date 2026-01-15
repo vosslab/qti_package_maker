@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# Standard Library
-
-# Pip3 Library
-import pytest
-
 # QTI Package Maker
 from qti_package_maker import package_interface
 

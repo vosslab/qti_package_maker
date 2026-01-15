@@ -11,7 +11,6 @@ from qti_package_maker.common.color_theory.cam16_utils import cam16_jmh_to_xyz, 
 from qti_package_maker.common.color_theory.color_utils import _hex_to_rgb, _rgb_distance, _srgb_to_hex
 from qti_package_maker.common.color_theory.hue_layout import (
 	_generate_hues_anchor,
-	_generate_hues_equal,
 	_generate_hues_offset,
 	_generate_hues_optimized,
 )

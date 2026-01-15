@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-# Standard Library
-
-# Pip3 Library
-import pytest
-
 # QTI Package Maker
 from qti_package_maker.engines.bbq_text_upload import read_package
 

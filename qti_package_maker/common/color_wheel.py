@@ -1,21 +1,35 @@
 """
-Public facade for the legacy color wheel API.
+Public API for color wheel generation.
 
-Implementation lives in qti_package_maker.common.color_theory.legacy_color_wheel.
+Provides perceptually-distinct colors for multiple-choice answer highlighting.
 """
+
+# Standard Library
 import sys
-from qti_package_maker.common.color_theory.legacy_color_wheel import *  # noqa: F401,F403
+
+# QTI Package Maker
+from qti_package_maker.common.color_theory.legacy_color_wheel import (
+	default_color_wheel as _legacy_color_wheel,
+	write_html_color_table as _write_html_color_table,
+)
+
+__all__ = ["generate_color_wheel"]
 
 
-def generate_color_wheel(num_colors, backend="legacy", **kwargs):
+def generate_color_wheel(num_colors: int, backend: str = "cam16", **kwargs) -> list:
 	"""
-	Generate a color wheel using the selected backend.
+	Generate a list of perceptually-distinct hex color codes.
 
-	Currently supported backends:
-	- legacy (default)
+	Args:
+		num_colors: Number of colors to generate.
+		backend: Color generation algorithm ("cam16" or "legacy").
+		**kwargs: Backend-specific options (e.g., mode="dark" for cam16).
+
+	Returns:
+		List of hex color strings (e.g., ["a83232", "32a848", ...]).
 	"""
 	if backend == "legacy":
-		return default_color_wheel(num_colors, **kwargs)
+		return _legacy_color_wheel(num_colors, **kwargs)
 	if backend == "cam16":
 		from qti_package_maker.common.color_theory import next_gen
 		return next_gen.generate_color_wheel(num_colors, **kwargs)
@@ -31,7 +45,7 @@ def main():
 	if len(sys.argv) > 2:
 		num_colors = int(sys.argv[2])
 
-	write_html_color_table(filename, num_colors=num_colors)
+	_write_html_color_table(filename, num_colors=num_colors)
 
 
 if __name__ == "__main__":

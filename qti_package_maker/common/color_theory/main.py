@@ -44,7 +44,7 @@ class RCPColorUtils:
    def _validate_hsl(hsl):
       # **Step 1: Validate Input Format**
       if not isinstance(hsl, (list, tuple, np.ndarray)) or len(hsl) != 3:
-         raise ValueError(f"Invalid HSL input: {rgb}. Expected a 3-element list/tuple/array.")
+         raise ValueError(f"Invalid HSL input: {hsl}. Expected a 3-element list/tuple/array.")
 
       # **Step 2: Ensure RGB is in [0,1] range**
       if any(c < 0 or c > 1 for c in hsl):
@@ -143,7 +143,7 @@ class RCPColorUtils:
       new_rgb = self.hsl_to_rgb(hsl)
       print(f"new_rgb = {new_rgb}")
       current_cfn = self.colorfulness(new_rgb)
-      prev_cfn = -1  # Track previous value to detect when colorfulness stops changing
+      # prev_cfn tracking removed - was unused
       iteration = 0
       print(f"wanted colorfulness = {wanted_cfn:.2f}")
       while iteration < max_iterations:
@@ -155,7 +155,7 @@ class RCPColorUtils:
          print(f".. diff = {diff:.4f}")
          print(f".. colorfulness = {current_cfn:.2f}")
          print(f".. saturaturation = {s:4f}")
-         prev_cfn = current_cfn  # Update previous value
+         # prev_cfn tracking removed - was unused
          # Adjust saturation while ensuring it stays within [0,1]
          new_s = s + step_size * diff
          if not (0 <= new_s <= 1):
@@ -174,7 +174,7 @@ class RCPColorUtils:
       if iteration >= max_iterations:
          print(f"Max iterations reached. Final colorfulness: {current_cfn:.3f}, Wanted: {wanted_cfn:.3f}")
 
-      sys.exit(1)
+      # TODO: this function is incomplete - returns original HSL, not adjusted values
       return self.hsl_to_rgb(h, s, l)
 
    def set_perceived_brightness(self, rgb, wanted_pbr, step_size=0.001, max_iterations=100):
@@ -183,13 +183,16 @@ class RCPColorUtils:
       - Starts from the current lightness and increases or decreases it iteratively.
       """
       hsl = self.rgb_to_hsl(rgb)
+      h, s, l = hsl
       current_pbr = self.perceived_brightness(rgb)
       max_iterations = 10
       iteration = 0
 
+      # TODO: this function is incomplete - l is updated but hsl is not rebuilt
       while abs(current_pbr - wanted_pbr) > 0.02 and iteration < max_iterations:
          print(f"{current_pbr} - {wanted_pbr}")
          l = max(0, min(1, l + step_size * (wanted_pbr - current_pbr)))  # Keep within [0,1]
+         hsl = (h, s, l)
          new_rgb = self.hsl_to_rgb(hsl)
          current_pbr = self.perceived_brightness(new_rgb)
          iteration += 1
