@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-01-16
+
+### Changed
+- Refresh README.md to a concise overview with a quick start and curated documentation links.
+- Refresh docs/INSTALL.md and docs/USAGE.md to minimal, evidence-based stubs.
+- Add docs/CODE_ARCHITECTURE.md and docs/FILE_STRUCTURE.md and link them from README.md.
+- Prune README.md documentation links to the required core set plus a short "More docs" list.
+
 ## 2026-01-15
 
 ### Changed
