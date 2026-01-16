@@ -7,6 +7,12 @@
 - Refresh docs/INSTALL.md and docs/USAGE.md to minimal, evidence-based stubs.
 - Add docs/CODE_ARCHITECTURE.md and docs/FILE_STRUCTURE.md and link them from README.md.
 - Prune README.md documentation links to the required core set plus a short "More docs" list.
+- Remove shebangs from non-executable color_theory modules to satisfy shebang_not_executable lint.
+- Fix mixed-indentation lines in item_types, anti_cheat, and text2qti read_package.
+- Remove invalid python shebangs from non-executable modules flagged by lint.
+- Remove shebangs from pytest modules flagged as non-executable.
+- Remove shebangs from additional non-executable engine/test modules flagged by lint.
+- Remove remaining non-executable shebangs from unit tests to satisfy shebang alignment checks.
 
 ## 2026-01-15
 

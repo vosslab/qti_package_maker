@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Hue layout helpers."""
 
 # Standard Library

@@ -155,8 +155,14 @@ class MC(BaseItem):
 
 #============================================
 class MA(BaseItem):
-	def __init__(self, question_text: str, choices_list: list, answers_list: list,
-			  min_answers_required: int = 1, allow_all_correct: bool = True):
+	def __init__(
+		self,
+		question_text: str,
+		choices_list: list,
+		answers_list: list,
+		min_answers_required: int = 1,
+		allow_all_correct: bool = True,
+	):
 		self.choices_list = string_functions.remove_prefix_from_list(choices_list)
 		self.answers_list = string_functions.remove_prefix_from_list(answers_list)
 		self.min_answers_required = min_answers_required

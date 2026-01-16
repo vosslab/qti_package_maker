@@ -1,89 +1,159 @@
-import os
 import subprocess
+import pathlib
+import tokenize
 
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 
 #============================================
-def list_tracked_python_files() -> list[str]:
+def list_tracked_python_files() -> list[pathlib.Path]:
 	"""
 	List tracked Python files in the repo.
 
 	Returns:
-		list[str]: Absolute paths to tracked .py files.
+		list[pathlib.Path]: Absolute paths to tracked .py files.
 	"""
 	result = subprocess.run(
-		["git", "-C", REPO_ROOT, "ls-files", "--", "*.py"],
+		["git", "-C", str(REPO_ROOT), "ls-files", "--", "*.py"],
 		capture_output=True,
 		text=True,
 	)
 	if result.returncode != 0:
 		message = result.stderr.strip() or "Failed to list tracked Python files."
 		raise RuntimeError(message)
-	paths = []
+	paths: list[pathlib.Path] = []
 	for line in result.stdout.splitlines():
 		if not line:
 			continue
 		if line.startswith("old_shell_folder/"):
 			continue
-		paths.append(os.path.join(REPO_ROOT, line))
+		paths.append(REPO_ROOT / line)
 	return paths
 
 
 #============================================
-def inspect_file(path: str) -> tuple[int | None, int | None, list[int]]:
+def multiline_string_lines(path: pathlib.Path) -> set[int]:
 	"""
-	Check a file for tab/space indentation usage.
+	Collect lines that are part of multiline string tokens.
 
 	Args:
 		path: File path.
 
 	Returns:
-		tuple[int | None, int | None, list[int]]: First tab line, first space line,
-			and line numbers with mixed indentation.
+		set[int]: Line numbers inside multiline strings.
 	"""
+	in_string: set[int] = set()
+	with tokenize.open(path) as handle:
+		tokens = tokenize.generate_tokens(handle.readline)
+		for token in tokens:
+			if token.type != tokenize.STRING:
+				continue
+			start_line = token.start[0]
+			end_line = token.end[0]
+			if end_line > start_line:
+				in_string.update(range(start_line, end_line + 1))
+	return in_string
+
+
+#============================================
+def inspect_file(path: pathlib.Path) -> list[int]:
+	"""
+	Check a file for mixed leading indentation.
+
+	Args:
+		path: File path.
+
+	Returns:
+		list[int]: Line numbers with mixed indentation within a single line.
+	"""
+	ignore_lines = multiline_string_lines(path)
+	with tokenize.open(path) as handle:
+		lines = handle.read().splitlines()
+	bad_lines = []
+	for line_number, line in enumerate(lines, 1):
+		if line_number in ignore_lines:
+			continue
+		if not line.strip():
+			continue
+		prefix_chars = []
+		for ch in line:
+			if ch == " " or ch == "\t":
+				prefix_chars.append(ch)
+				continue
+			break
+		if not prefix_chars:
+			continue
+		has_tab = "\t" in prefix_chars
+		has_space = " " in prefix_chars
+		if has_tab and has_space:
+			bad_lines.append(line_number)
+			continue
+	return bad_lines
+
+
+#============================================
+def summarize_indentation(path: pathlib.Path) -> tuple[int, int] | None:
+	"""
+	Return first tab line and first space line if both exist.
+
+	Args:
+		path: File path.
+
+	Returns:
+		tuple[int, int] | None: First tab line and first space line, or None.
+	"""
+	ignore_lines = multiline_string_lines(path)
+	with tokenize.open(path) as handle:
+		lines = handle.read().splitlines()
 	first_tab_line = None
 	first_space_line = None
-	mixed_lines = []
-	with open(path, "r", encoding="utf-8", errors="replace") as handle:
-		for line_number, line in enumerate(handle, 1):
-			stripped = line.lstrip(" \t")
-			if stripped.strip() == "":
+	for line_number, line in enumerate(lines, 1):
+		if line_number in ignore_lines:
+			continue
+		if not line.strip():
+			continue
+		prefix_chars = []
+		for ch in line:
+			if ch == " " or ch == "\t":
+				prefix_chars.append(ch)
 				continue
-			indent = line[:len(line) - len(stripped)]
-			if not indent:
-				continue
-			if "\t" in indent and " " in indent:
-				mixed_lines.append(line_number)
-				continue
-			if indent.startswith("\t"):
-				if first_tab_line is None:
-					first_tab_line = line_number
-			elif indent.startswith(" "):
-				if first_space_line is None:
-					first_space_line = line_number
-	return first_tab_line, first_space_line, mixed_lines
+			break
+		if not prefix_chars:
+			continue
+		has_tab = "\t" in prefix_chars
+		has_space = " " in prefix_chars
+		if has_tab and first_tab_line is None:
+			first_tab_line = line_number
+		if has_space and first_space_line is None:
+			first_space_line = line_number
+		if first_tab_line and first_space_line:
+			return (first_tab_line, first_space_line)
+	return None
 
 
 #============================================
 def test_indentation_style() -> None:
 	"""
-	Fail on mixed indentation across or within a file.
+	Fail on mixed indentation within a line or within a file.
 	"""
 	errors = []
 	for path in sorted(list_tracked_python_files()):
-		first_tab_line, first_space_line, mixed_lines = inspect_file(path)
-		if mixed_lines:
-			display_path = os.path.relpath(path, REPO_ROOT)
-			for line_number in mixed_lines[:3]:
-				errors.append(f"{display_path}:{line_number}: mixed indent within line")
+		bad_lines = inspect_file(path)
+		if bad_lines:
+			display_path = path.relative_to(REPO_ROOT)
+			for line_number in bad_lines[:5]:
+				errors.append(
+					f"{display_path}:{line_number}: mixed indentation within line"
+				)
 			continue
-		if first_tab_line and first_space_line:
-			display_path = os.path.relpath(path, REPO_ROOT)
+		indent_lines = summarize_indentation(path)
+		if indent_lines is not None:
+			display_path = path.relative_to(REPO_ROOT)
+			tab_line, space_line = indent_lines
 			errors.append(
 				f"{display_path}: tabs and spaces in file "
-				f"(tab line {first_tab_line}, space line {first_space_line})"
+				f"(tab line {tab_line}, space line {space_line})"
 			)
 	if errors:
 		message = "\n".join(errors)

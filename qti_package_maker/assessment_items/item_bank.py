@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Standard Library
 import re
 import inspect

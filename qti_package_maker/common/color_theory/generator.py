@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """CAM16 wheel generation and shared helpers."""
 
 # Standard Library

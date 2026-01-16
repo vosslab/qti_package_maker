@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Small RGB/hex helpers for color wheel tooling."""
 
 

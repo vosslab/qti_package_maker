@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import inspect
 import pathlib
 import pkgutil

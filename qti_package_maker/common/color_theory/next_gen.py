@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """CAM16-based color wheel generator using colour-science."""
 
 # Standard Library

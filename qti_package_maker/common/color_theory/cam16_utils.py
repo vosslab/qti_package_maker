@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """CAM16 conversion helpers backed by colour-science."""
 
 # Standard Library

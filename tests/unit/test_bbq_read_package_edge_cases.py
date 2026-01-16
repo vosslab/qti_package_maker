@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # QTI Package Maker
 from qti_package_maker.engines.bbq_text_upload import read_package
 

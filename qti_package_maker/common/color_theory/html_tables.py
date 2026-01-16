@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """HTML output for manual color evaluation."""
 
 # QTI Package Maker

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Red scan tools and best-red offset selection."""
 
 # QTI Package Maker

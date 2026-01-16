@@ -75,6 +75,7 @@ fi
 RESULT=$(wc -l < "${PYFLAKES_OUT}")
 
 N=5
+SMALL_LIMIT=20
 
 # Success if no errors were found
 if [ "${RESULT}" -eq 0 ]; then
@@ -165,6 +166,16 @@ print_unclassified() {
 		}
 	' "${PYFLAKES_OUT}" | shorten_paths
 }
+
+if [ "${RESULT}" -le "${SMALL_LIMIT}" ]; then
+	echo ""
+	echo "Last ${N} errors"
+	grep -E ':[0-9]+:[0-9]+:' "${PYFLAKES_OUT}" | tail -n "${N}" | shorten_paths
+	echo "-------------------------"
+	echo ""
+	echo "Found ${RESULT} pyflakes errors written to REPO_ROOT/pyflakes.txt"
+	exit 1
+fi
 
 echo ""
 echo "First ${N} errors"

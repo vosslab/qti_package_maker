@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # QTI Package Maker
 from qti_package_maker import package_interface
 

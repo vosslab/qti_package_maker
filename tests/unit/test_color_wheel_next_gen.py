@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Standard Library
 from pathlib import Path
 import re

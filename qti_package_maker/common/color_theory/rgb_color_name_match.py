@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Closest xkcd color name helpers using seaborn."""
 
 # Standard Library

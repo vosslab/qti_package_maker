@@ -281,9 +281,15 @@ def make_item_cls_from_block(question_block: str):
 		return read_MC(question_block, item_number)
 
 	# Check for Numerical (NUM): Matches any of the three valid formats
-	if re.search(r"^=\s*\d+(\.\d+)?\s*\+\-\s*\d+(\.\d+)?", question_block, re.MULTILINE) or \
-	   re.search(r"^=\s*\[\s*\d+(\.\d+)?,\s*\d+(\.\d+)?\s*\]", question_block, re.MULTILINE) or \
-	   re.search(r"^=\s*\d+(_\d+)*", question_block, re.MULTILINE):
+	if (
+		re.search(r"^=\s*\d+(\.\d+)?\s*\+\-\s*\d+(\.\d+)?", question_block, re.MULTILINE)
+		or re.search(
+			r"^=\s*\[\s*\d+(\.\d+)?,\s*\d+(\.\d+)?\s*\]",
+			question_block,
+			re.MULTILINE,
+		)
+		or re.search(r"^=\s*\d+(_\d+)*", question_block, re.MULTILINE)
+	):
 		return read_NUM(question_block, item_number)
 
 	# Check for Fill-in-the-Blank (FIB): Requires at least one "* answer"

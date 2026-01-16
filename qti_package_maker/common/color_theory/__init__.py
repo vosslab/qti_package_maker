@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Color theory utilities and implementations."""
 
 # QTI Package Maker

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """Wheel mode specifications and viewing defaults."""
 
 # Standard Library
