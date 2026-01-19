@@ -10,6 +10,7 @@
 - Use git rev-parse to determine REPO_ROOT in pytest conftest.
 - Scope html_selftest MATCH drag-and-drop initialization by item id to avoid multi-item collisions.
 - Scope html_selftest MATCH/ORDER dropzone queries to each item container and add output tests for scoping.
+- Use append_const for bbq_converter format shortcuts so flags like -s do not suggest an argument.
 
 ## 2026-01-16
 

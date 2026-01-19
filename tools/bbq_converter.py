@@ -50,7 +50,7 @@ def parse_args(format_shortcuts) -> argparse.Namespace:
 	# Register format shortcut options
 	for engine_name, (short_opt, short_name, desc_text) in format_shortcuts.items():
 		parser.add_argument(short_opt, f"--{short_name}", f"--{engine_name}", dest="output_format",
-				action="append", const=engine_name, nargs='?', help=desc_text)
+				action="append_const", const=engine_name, help=desc_text)
 
 	args = parser.parse_args()
 
