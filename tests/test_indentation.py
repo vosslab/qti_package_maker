@@ -28,7 +28,10 @@ def list_tracked_python_files() -> list[pathlib.Path]:
 			continue
 		if line.startswith("old_shell_folder/"):
 			continue
-		paths.append(REPO_ROOT / line)
+		path = REPO_ROOT / line
+		if not path.exists():
+			continue
+		paths.append(path)
 	return paths
 
 

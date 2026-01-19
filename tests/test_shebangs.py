@@ -12,7 +12,7 @@ SKIP_DIRS = {
 	"old_shell_folder",
 }
 PYTHON_SHEBANG = "#!/usr/bin/env python3"
-REPORT_NAME = "shebang_report.txt"
+REPORT_NAME = "report_shebang.txt"
 
 
 #============================================
@@ -155,6 +155,11 @@ def test_shebang_executable_alignment() -> None:
 	"""
 	Ensure shebangs and executable bits are aligned.
 	"""
+	# Delete old report file before running
+	report_path = os.path.join(REPO_ROOT, REPORT_NAME)
+	if os.path.exists(report_path):
+		os.remove(report_path)
+
 	errors = categorize_errors()
 	if all(not values for values in errors.values()):
 		return

@@ -13,6 +13,7 @@ import subprocess
 import datetime
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 # PIP3 modules
@@ -430,9 +431,14 @@ def require_twine_available(python_exe: str, project_dir: str) -> None:
 
 def require_index_reachable(index_url: str) -> None:
 	"""Ensure the package index URL is reachable."""
+	# Validate URL scheme to prevent file:// or other dangerous schemes
+	parsed = urllib.parse.urlparse(index_url)
+	if parsed.scheme not in ('http', 'https'):
+		fail(f"Invalid URL scheme (only http/https allowed): {index_url}")
+
 	request = urllib.request.Request(index_url, method="GET")
 	try:
-		with urllib.request.urlopen(request, timeout=5) as response:
+		with urllib.request.urlopen(request, timeout=5) as response:  # nosec B310
 			if response.status >= 400:
 				fail(f"Index URL returned HTTP {response.status}: {index_url}")
 	except urllib.error.URLError as exc:
