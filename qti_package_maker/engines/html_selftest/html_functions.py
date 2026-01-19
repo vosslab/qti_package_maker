@@ -21,6 +21,15 @@ def format_question_text(crc16_text: str, question_text: str):
 	return html_content
 
 #============================================
+def escape_non_iso_8859_1(html_text: str) -> str:
+	"""
+	Replace non-ISO-8859-1 characters with numeric HTML entities.
+	"""
+	if html_text is None:
+		return ""
+	return html_text.encode("iso-8859-1", "xmlcharrefreplace").decode("iso-8859-1")
+
+#============================================
 def add_result_div(crc16_text: str):
 	# Add a div to display the result message, styled with inline CSS
 	style = (

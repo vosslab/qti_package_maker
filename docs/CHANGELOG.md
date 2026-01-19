@@ -5,6 +5,7 @@
 ### Changed
 - Replace yaml.load usage with a safe loader path that preserves duplicate key checks.
 - Update unit tests to use pytest tmp_path instead of hardcoded /tmp paths for Bandit compliance.
+- Escape non-ISO-8859-1 characters in html_selftest HTML output with numeric entities.
 
 ## 2026-01-16
 
