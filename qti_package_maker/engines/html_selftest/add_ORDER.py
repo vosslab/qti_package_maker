@@ -11,21 +11,26 @@ def _choice_token(crc16_text: str, idx: int) -> str:
 	return f"{crc16_text}_{idx:03d}"
 
 #==============
-def generate_drag_and_drop_js():
+def generate_drag_and_drop_js(crc16_text: str):
 	js = "<script>\n"
-	js += "let draggedItem = null;\n"
+	js += f"function initDragAndDrop_{crc16_text}() {{\n"
+	js += f"  const container = document.getElementById('question_html_{crc16_text}');\n"
+	js += "  if (!container) {\n"
+	js += "    return;\n"
+	js += "  }\n"
+	js += "  let draggedItem = null;\n"
 
-	js += 'document.querySelectorAll(".draggable").forEach(item => {\n'
-	js += '  item.addEventListener("dragstart", function() {\n'
-	js += "    draggedItem = this;\n"
-	js += '    setTimeout(() => this.style.opacity = "0.5", 0);\n'
+	js += '  container.querySelectorAll(".draggable").forEach(item => {\n'
+	js += '    item.addEventListener("dragstart", function() {\n'
+	js += "      draggedItem = this;\n"
+	js += '      setTimeout(() => this.style.opacity = "0.5", 0);\n'
+	js += "    });\n"
+	js += '    item.addEventListener("dragend", function() {\n'
+	js += '      this.style.opacity = "1";\n'
+	js += "    });\n"
 	js += "  });\n"
-	js += '  item.addEventListener("dragend", function() {\n'
-	js += '    this.style.opacity = "1";\n'
-	js += "  });\n"
-	js += "});\n"
 
-	js += 'document.querySelectorAll(".dropzone").forEach(zone => {\n'
+	js += '  container.querySelectorAll(".dropzone").forEach(zone => {\n'
 	js += '  zone.addEventListener("dragover", e => { e.preventDefault(); zone.style.backgroundColor = "var(--qti-dropzone-hover-bg, #e6e6e6)"; });\n'
 	js += '  zone.addEventListener("dragleave", () => {\n'
 	js += '    if (!zone.dataset.value) { zone.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)"; }\n'
@@ -43,7 +48,10 @@ def generate_drag_and_drop_js():
 	js += "    zone.title = draggedItem.getAttribute('title');\n"
 	js += "    zone.dataset.value = draggedItem.dataset.value;\n"
 	js += "  });\n"
-	js += "});\n"
+	js += "  });\n"
+
+	js += "}\n"
+	js += f"initDragAndDrop_{crc16_text}();\n"
 
 	js += "</script>\n"
 	return js
@@ -57,12 +65,18 @@ def generate_check_answers_js(crc16_text: str):
 	"""
 	js = "<script>\n"
 	js += f"function checkAnswer_{crc16_text}() {{\n"
+	js += f"  const container = document.getElementById('question_html_{crc16_text}');\n"
+	js += "  if (!container) {\n"
+	js += "    return;\n"
+	js += "  }\n"
 	js += "  let correct = 0;\n"
 	js += "  let total = 0;\n"
-	js += '  document.querySelectorAll(".dropzone").forEach((zone, index) => {\n'
+	js += '  const dropzones = container.querySelectorAll(".dropzone");\n'
+	js += "  const feedbackCells = container.querySelectorAll('.feedback');\n"
+	js += "  dropzones.forEach((zone, index) => {\n"
 	js += "    const expected = zone.dataset.correct;\n"
 	js += "    const actual = zone.dataset.value;\n"
-	js += "    const feedbackCell = document.querySelectorAll('.feedback')[index];\n"
+	js += "    const feedbackCell = feedbackCells[index];\n"
 	js += "    total++;\n"
 	js += "    if (actual && actual === expected) {\n"
 	js += "      correct++;\n"
@@ -146,7 +160,7 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, ordered
 	raw_html = generate_core_html(crc16_text, question_text, ordered_answers_list)
 	formatted_html = string_functions.format_html_lxml(raw_html)
 	full_html = formatted_html
-	full_html += generate_drag_and_drop_js()
+	full_html += generate_drag_and_drop_js(crc16_text)
 	full_html += generate_check_answers_js(crc16_text)
 	full_html += javascript_functions.add_reset_game_javascript(crc16_text)
 	return full_html

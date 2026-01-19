@@ -44,9 +44,13 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text = "<script>\n"
 	# Function definition with unique identifier
 	javascript_text += f"\tfunction resetGame_{crc16_text}() {{\n"
+	javascript_text += f"\t\tconst container = document.getElementById('question_html_{crc16_text}');\n"
+	javascript_text += "\t\tif (!container) {\n"
+	javascript_text += "\t\t\treturn;\n"
+	javascript_text += "\t\t}\n"
 
 	# Reset all dropzones
-	javascript_text += '\t\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
+	javascript_text += '\t\tcontainer.querySelectorAll(".dropzone").forEach(zone => {\n'
 	javascript_text += '\t\t\tzone.textContent = "Drop Your Choice Here";\n'
 	javascript_text += '\t\t\tdelete zone.dataset.value;\n'
 	javascript_text += '\t\t\tzone.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)";\n'
@@ -56,7 +60,7 @@ def add_reset_game_javascript(crc16_text: str):
 	javascript_text += "\t\t});\n\n"
 
 	# Clear the feedback column AND reset its color
-	javascript_text += '\t\tdocument.querySelectorAll(".feedback").forEach(cell => {\n'
+	javascript_text += '\t\tcontainer.querySelectorAll(".feedback").forEach(cell => {\n'
 	javascript_text += '\t\t\tcell.textContent = "";\n'
 	javascript_text += '\t\t\tcell.style.backgroundColor = "transparent";\n'
 	javascript_text += "\t\t});\n"

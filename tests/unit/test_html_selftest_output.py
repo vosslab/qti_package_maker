@@ -58,3 +58,33 @@ def test_html_selftest_num_input_uses_theme_class(sample_items):
 	item_cls = _build_item("NUM", sample_items["NUM"])
 	html_text = html_write_item.NUM(item_cls)
 	assert "qti-input" in html_text
+
+
+def _assert_scoped_dropzone_queries(html_text: str, crc16_text: str) -> None:
+	container_marker = f"question_html_{crc16_text}"
+	assert container_marker in html_text
+	assert f"document.getElementById('question_html_{crc16_text}')" in html_text
+	assert (
+		'container.querySelectorAll(".dropzone")' in html_text
+		or "container.querySelectorAll('.dropzone')" in html_text
+	)
+	assert (
+		'container.querySelectorAll(".feedback")' in html_text
+		or "container.querySelectorAll('.feedback')" in html_text
+	)
+	assert 'document.querySelectorAll(".dropzone")' not in html_text
+	assert "document.querySelectorAll('.dropzone')" not in html_text
+	assert 'document.querySelectorAll(".feedback")' not in html_text
+	assert "document.querySelectorAll('.feedback')" not in html_text
+
+
+def test_html_selftest_match_scopes_dropzone_queries(sample_items):
+	item_cls = _build_item("MATCH", sample_items["MATCH"])
+	html_text = html_write_item.MATCH(item_cls)
+	_assert_scoped_dropzone_queries(html_text, item_cls.item_crc16)
+
+
+def test_html_selftest_order_scopes_dropzone_queries(sample_items):
+	item_cls = _build_item("ORDER", sample_items["ORDER"])
+	html_text = html_write_item.ORDER(item_cls)
+	_assert_scoped_dropzone_queries(html_text, item_cls.item_crc16)

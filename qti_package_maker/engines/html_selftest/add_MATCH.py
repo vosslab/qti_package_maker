@@ -93,15 +93,21 @@ def generate_check_answers_js(crc16_text: str):
 	js_content += f"\tfunction checkAnswer_{crc16_text}() {{\n"
 
 	# Initialize score tracking
+	js_content += f"\t\tconst container = document.getElementById('question_html_{crc16_text}');\n"
+	js_content += "\t\tif (!container) {\n"
+	js_content += "\t\t\treturn;\n"
+	js_content += "\t\t}\n"
 	js_content += "\t\tlet score = 0;\n"
 	js_content += "\t\tlet possible = 0;\n"
 	js_content += "\t\tlet feedbackText = \"\";\n\n"
 
 	# Loop through each dropzone to check answers
-	js_content += "\t\tdocument.querySelectorAll(\".dropzone\").forEach((zone, index) => {\n"
+	js_content += "\t\tconst dropzones = container.querySelectorAll(\".dropzone\");\n"
+	js_content += "\t\tconst feedbackCells = container.querySelectorAll(\".feedback\");\n"
+	js_content += "\t\tdropzones.forEach((zone, index) => {\n"
 	js_content += "\t\t\tlet selectedValue = zone.dataset.value;\n"
 	js_content += "\t\t\tlet correctValue = zone.dataset.correct;\n"
-	js_content += "\t\t\tlet feedbackCell = document.querySelectorAll(\".feedback\")[index];\n\n"
+	js_content += "\t\t\tlet feedbackCell = feedbackCells[index];\n\n"
 
 	# Check if the answer is correct
 	js_content += "\t\t\tif (selectedValue === correctValue) {\n"
