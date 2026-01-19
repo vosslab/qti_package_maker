@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import glob
 import os
 import sys
 
@@ -17,12 +18,47 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument(
 		"-i",
 		"--input",
-		dest="input_file",
+		dest="input_files",
+		nargs="+",
 		required=True,
-		help="Input file to fix",
+		help="Input file(s) or glob(s) to fix",
 	)
 	args = parser.parse_args()
 	return args
+
+
+#============================================
+def expand_inputs(inputs: list[str]) -> tuple[list[str], list[str]]:
+	"""Expand input paths and globs into files.
+
+	Args:
+		inputs: Input paths or glob patterns.
+
+	Returns:
+		tuple[list[str], list[str]]: (resolved files, missing inputs)
+	"""
+	resolved = []
+	missing = []
+	seen = set()
+	for entry in inputs:
+		matches = glob.glob(entry, recursive=True)
+		if matches:
+			candidates = matches
+		else:
+			candidates = [entry]
+
+		found_any = False
+		for candidate in candidates:
+			if os.path.isfile(candidate):
+				if candidate not in seen:
+					resolved.append(candidate)
+					seen.add(candidate)
+				found_any = True
+			elif os.path.exists(candidate):
+				found_any = True
+		if not found_any:
+			missing.append(entry)
+	return resolved, missing
 
 
 #============================================
@@ -149,18 +185,23 @@ def main() -> int:
 		int: Process exit code.
 	"""
 	args = parse_args()
-	input_file = args.input_file
-
-	if not os.path.isfile(input_file):
-		message = f"{input_file}:0:0: file not found"
-		print(message, file=sys.stderr)
+	input_files, missing = expand_inputs(args.input_files)
+	if missing:
+		for entry in missing:
+			message = f"{entry}:0:0: file not found"
+			print(message, file=sys.stderr)
+		return 1
+	if not input_files:
+		print("No files matched inputs.", file=sys.stderr)
 		return 1
 
-	data = read_bytes(input_file)
-	fixed, changed = fix_whitespace_bytes(data)
-	if changed:
-		write_bytes(input_file, fixed)
-	return 0
+	exit_code = 0
+	for input_file in input_files:
+		data = read_bytes(input_file)
+		fixed, changed = fix_whitespace_bytes(data)
+		if changed:
+			write_bytes(input_file, fixed)
+	return exit_code
 
 
 if __name__ == "__main__":

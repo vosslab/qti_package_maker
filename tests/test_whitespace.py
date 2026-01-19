@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+import git_file_utils
+
 
 SCOPE_ENV = "REPO_HYGIENE_SCOPE"
 FAST_ENV = "FAST_REPO_HYGIENE"
@@ -86,19 +88,8 @@ def filter_files(repo_root: str, paths: list[str]) -> list[str]:
 #============================================
 def gather_files(repo_root: str) -> list[str]:
 	"""Collect tracked files to scan."""
-	result = subprocess.run(
-		["git", "ls-files", "-z"],
-		capture_output=True,
-		text=True,
-		cwd=repo_root,
-	)
-	if result.returncode != 0:
-		message = result.stderr.strip() or "Failed to list tracked files."
-		raise AssertionError(message)
 	tracked_paths = []
-	for path in result.stdout.split("\0"):
-		if not path:
-			continue
+	for path in git_file_utils.list_tracked_files(repo_root):
 		tracked_paths.append(os.path.join(repo_root, path))
 	return filter_files(repo_root, tracked_paths)
 
@@ -106,25 +97,9 @@ def gather_files(repo_root: str) -> list[str]:
 #============================================
 def gather_changed_files(repo_root: str) -> list[str]:
 	"""Collect changed files using git diff and index lists."""
-	commands = [
-		["git", "diff", "--name-only", "--diff-filter=ACMRTUXB", "-z"],
-		["git", "diff", "--name-only", "--cached", "--diff-filter=ACMRTUXB", "-z"],
-	]
 	changed_paths = []
-	for command in commands:
-		result = subprocess.run(
-			command,
-			capture_output=True,
-			text=True,
-			cwd=repo_root,
-		)
-		if result.returncode != 0:
-			message = result.stderr.strip() or "Failed to list changed files."
-			raise AssertionError(message)
-		for path in result.stdout.split("\0"):
-			if not path:
-				continue
-			changed_paths.append(os.path.join(repo_root, path))
+	for path in git_file_utils.list_changed_files(repo_root):
+		changed_paths.append(os.path.join(repo_root, path))
 	return filter_files(repo_root, changed_paths)
 
 

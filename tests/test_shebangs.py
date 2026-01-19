@@ -1,6 +1,8 @@
 import os
 import stat
 
+import git_file_utils
+
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 SKIP_DIRS = {
@@ -18,22 +20,40 @@ REPORT_NAME = "report_shebang.txt"
 #============================================
 def iter_repo_files() -> list[str]:
 	"""
-	Collect regular files under the repo root.
+	Collect tracked, non-deleted regular files under the repo root.
 
 	Returns:
 		list[str]: Absolute file paths.
 	"""
 	paths = []
-	for root, dirs, files in os.walk(REPO_ROOT):
-		dirs[:] = [name for name in dirs if name not in SKIP_DIRS]
-		for name in files:
-			path = os.path.join(root, name)
-			if os.path.islink(path):
-				continue
-			if not os.path.isfile(path):
-				continue
-			paths.append(path)
+	for rel_path in git_file_utils.list_tracked_files(REPO_ROOT):
+		if path_has_skip_dir(rel_path):
+			continue
+		path = os.path.join(REPO_ROOT, rel_path)
+		if os.path.islink(path):
+			continue
+		if not os.path.isfile(path):
+			continue
+		paths.append(path)
 	return paths
+
+
+#============================================
+def path_has_skip_dir(rel_path: str) -> bool:
+	"""
+	Check whether a relative path includes a skipped directory.
+
+	Args:
+		rel_path: Path relative to the repo root.
+
+	Returns:
+		bool: True if any skipped directory is part of the path.
+	"""
+	parts = rel_path.split(os.sep)
+	for part in parts:
+		if part in SKIP_DIRS:
+			return True
+	return False
 
 
 #============================================

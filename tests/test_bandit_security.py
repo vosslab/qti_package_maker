@@ -2,6 +2,8 @@ import os
 import shutil
 import subprocess
 
+import git_file_utils
+
 
 SKIP_ENV = "SKIP_REPO_HYGIENE"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -9,31 +11,53 @@ SKIP_DIRS = [".git", ".venv", "old_shell_folder"]
 
 
 #============================================
-def bandit_exclude_arg() -> str:
+def path_has_skip_dir(rel_path: str) -> bool:
 	"""
-	Build the bandit exclude argument.
+	Check whether a relative path includes a skipped directory.
 	"""
-	value = ",".join(SKIP_DIRS)
-	return value
+	parts = rel_path.split(os.sep)
+	for part in parts:
+		if part in SKIP_DIRS:
+			return True
+	return False
+
+
+#============================================
+def list_python_files(repo_root: str) -> list[str]:
+	"""
+	List tracked Python files, excluding skipped directories.
+	"""
+	paths = []
+	for rel_path in git_file_utils.list_tracked_files(
+		repo_root,
+		patterns=["*.py"],
+		error_message="Failed to list tracked Python files.",
+	):
+		if path_has_skip_dir(rel_path):
+			continue
+		path = os.path.join(repo_root, rel_path)
+		if not os.path.isfile(path):
+			continue
+		paths.append(path)
+	return paths
 
 
 #============================================
 def run_bandit(repo_root: str) -> tuple[int, str]:
 	"""
-	Run bandit recursively and return (exit_code, combined_output).
+	Run bandit on tracked Python files and return (exit_code, combined_output).
 	"""
 	bandit_bin = shutil.which("bandit")
 	if not bandit_bin:
 		raise AssertionError("bandit not found on PATH.")
+	files = list_python_files(repo_root)
+	if not files:
+		return (0, "")
 	command = [
 		bandit_bin,
-		"-r",
-		repo_root,
 		"--severity-level",
 		"medium",
-		"-x",
-		bandit_exclude_arg(),
-	]
+	] + files
 	result = subprocess.run(
 		command,
 		capture_output=True,
