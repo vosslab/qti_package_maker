@@ -12,6 +12,10 @@ SKIP_ENV = "SKIP_REPO_HYGIENE"
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ERROR_RE = re.compile(r":[0-9]+:[0-9]+:")
 CODEPOINT_RE = re.compile(r"non-ISO-8859-1 character U\+([0-9A-Fa-f]{4,6})")
+SKIP_FILE_PATTERNS = [
+	r"^human_readable-.*\.html$",
+]
+SKIP_FILE_REGEXES = [re.compile(pattern) for pattern in SKIP_FILE_PATTERNS]
 ERROR_SAMPLE_COUNT = 5
 PROGRESS_EVERY = 1
 
@@ -148,6 +152,9 @@ def filter_files(repo_root: str, paths: list[str]) -> list[str]:
 		if path_has_skip_dir(repo_root, abs_path):
 			continue
 		if not os.path.isfile(abs_path):
+			continue
+		base_name = os.path.basename(abs_path)
+		if any(regex.match(base_name) for regex in SKIP_FILE_REGEXES):
 			continue
 		ext = os.path.splitext(abs_path)[1].lower()
 		if ext not in EXTENSIONS:
