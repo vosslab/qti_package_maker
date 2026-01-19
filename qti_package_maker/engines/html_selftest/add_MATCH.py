@@ -8,62 +8,72 @@ from qti_package_maker.common import string_functions
 from qti_package_maker.engines.html_selftest import html_functions
 from qti_package_maker.engines.html_selftest import javascript_functions
 #============================================
-def generate_drag_and_drop_js():
+def generate_drag_and_drop_js(crc16_text: str):
 	"""
 	Build drag-and-drop JavaScript for MATCH items.
 	"""
 	js_content = ""
 	# Open script tag
 	js_content += "<script>\n"
-	# Define the dragged item
-	js_content += "\tlet draggedItem = null;\n\n"
+	# Function definition with unique identifier
+	js_content += f"\tfunction initDragAndDrop_{crc16_text}() {{\n"
+	js_content += f"\t\tconst container = document.getElementById('question_html_{crc16_text}');\n"
+	js_content += "\t\tif (!container) {\n"
+	js_content += "\t\t\treturn;\n"
+	js_content += "\t\t}\n"
+	js_content += "\t\tlet draggedItem = null;\n\n"
 
 	# Enable drag functionality for each choice
-	js_content += '\tdocument.querySelectorAll(".draggable").forEach(item => {\n'
-	js_content += '\t\titem.addEventListener("dragstart", function() {\n'
-	js_content += "\t\t\tdraggedItem = this;\n"
-	js_content += '\t\t\tsetTimeout(() => this.style.opacity = "0.5", 0);\n'  # Reduce opacity while dragging
-	js_content += "\t\t});\n\n"
+	js_content += '\t\tcontainer.querySelectorAll(".draggable").forEach(item => {\n'
+	js_content += '\t\t\titem.addEventListener("dragstart", function() {\n'
+	js_content += "\t\t\t\tdraggedItem = this;\n"
+	js_content += '\t\t\t\tsetTimeout(() => this.style.opacity = "0.5", 0);\n'
+	js_content += "\t\t\t});\n\n"
 
-	js_content += '\t\titem.addEventListener("dragend", function() {\n'
-	js_content += '\t\t\tthis.style.opacity = "1";\n'  # Restore opacity
-	js_content += "\t\t});\n"
-	js_content += "\t});\n\n"
+	js_content += '\t\t\titem.addEventListener("dragend", function() {\n'
+	js_content += '\t\t\t\tthis.style.opacity = "1";\n'
+	js_content += "\t\t\t});\n"
+	js_content += "\t\t});\n\n"
 
 	# Enable drop functionality for each drop zone
-	js_content += '\tdocument.querySelectorAll(".dropzone").forEach(zone => {\n'
+	js_content += '\t\tcontainer.querySelectorAll(".dropzone").forEach(zone => {\n'
 
-	#  Store the original background color when an item is dropped
-	js_content += '\t\tzone.addEventListener("drop", function() {\n'
-	js_content += "\t\t\tthis.dataset.originalBgColor = draggedItem.style.backgroundColor;\n"  # Store choice color
-	js_content += "\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n"  # Maintain color
-	js_content += '\t\t\tthis.style.border = "2px solid var(--qti-dropzone-border-filled, #888888)";\n'  # Change border to solid
-	js_content += "\t\t\tthis.style.color = draggedItem.querySelector(\"span\").style.color;\n"  # Match letter color
-	js_content += '\t\t\tthis.style.fontWeight = "bold";\n\n'
+	# Store the original background color when an item is dropped
+	js_content += '\t\t\tzone.addEventListener("drop", function() {\n'
+	js_content += "\t\t\t\tif (!draggedItem) {\n"
+	js_content += "\t\t\t\t\treturn;\n"
+	js_content += "\t\t\t\t}\n"
+	js_content += "\t\t\t\tthis.dataset.originalBgColor = draggedItem.style.backgroundColor;\n"
+	js_content += "\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n"
+	js_content += '\t\t\t\tthis.style.border = "2px solid var(--qti-dropzone-border-filled, #888888)";\n'
+	js_content += "\t\t\t\tthis.style.color = draggedItem.querySelector(\"span\").style.color;\n"
+	js_content += '\t\t\t\tthis.style.fontWeight = "bold";\n\n'
 
 	# Handle text truncation for drop zones
-	js_content += "\t\t\tlet choiceText = draggedItem.innerText.trim();\n"
-	js_content += '\t\t\tthis.innerHTML = choiceText.length > 30 ? choiceText.substring(0, 27) + "..." : choiceText;\n'
-	js_content += "\t\t\tthis.dataset.value = draggedItem.dataset.value;\n"
-	js_content += '\t\t\tthis.title = draggedItem.getAttribute("title");\n'  # Add tooltip with full text
-	js_content += "\t\t});\n\n"
+	js_content += "\t\t\t\tlet choiceText = draggedItem.innerText.trim();\n"
+	js_content += '\t\t\t\tthis.innerHTML = choiceText.length > 30 ? choiceText.substring(0, 27) + "..." : choiceText;\n'
+	js_content += "\t\t\t\tthis.dataset.value = draggedItem.dataset.value;\n"
+	js_content += '\t\t\t\tthis.title = draggedItem.getAttribute("title");\n'
+	js_content += "\t\t\t});\n\n"
 
-	#  Restore the stored background color on drag leave
-	js_content += '\t\tzone.addEventListener("dragleave", function() {\n'
-	js_content += '\t\t\tif (!this.dataset.value) {\n'
-	js_content += '\t\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)";\n'
-	js_content += '\t\t\t} else {\n'
-	js_content += '\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n'
-	js_content += '\t\t\t}\n'
-	js_content += "\t\t});\n\n"
+	# Restore the stored background color on drag leave
+	js_content += '\t\t\tzone.addEventListener("dragleave", function() {\n'
+	js_content += '\t\t\t\tif (!this.dataset.value) {\n'
+	js_content += '\t\t\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-bg, #f8f8f8)";\n'
+	js_content += '\t\t\t\t} else {\n'
+	js_content += '\t\t\t\t\tthis.style.backgroundColor = this.dataset.originalBgColor;\n'
+	js_content += '\t\t\t\t}\n'
+	js_content += "\t\t\t});\n\n"
 
-	#  Prevents accidental clearing when dragging over a filled drop zone
-	js_content += '\t\tzone.addEventListener("dragover", function(e) {\n'
-	js_content += "\t\t\te.preventDefault();\n"
-	js_content += '\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-hover-bg, #e6e6e6)";\n'
+	# Prevents accidental clearing when dragging over a filled drop zone
+	js_content += '\t\t\tzone.addEventListener("dragover", function(e) {\n'
+	js_content += "\t\t\t\te.preventDefault();\n"
+	js_content += '\t\t\t\tthis.style.backgroundColor = "var(--qti-dropzone-hover-bg, #e6e6e6)";\n'
+	js_content += "\t\t\t});\n"
+
 	js_content += "\t\t});\n"
-
-	js_content += "\t});\n"
+	js_content += "\t}\n"
+	js_content += f"\tinitDragAndDrop_{crc16_text}();\n"
 	# Close script tag
 	js_content += "</script>\n"
 	return js_content
@@ -242,7 +252,7 @@ def generate_html(item_number: int, crc16_text: str, question_text: str, prompts
 	formatted_html = string_functions.format_html_lxml(raw_html)
 	# Append JavaScript AFTER formatting (to avoid breaking <script> tags)
 	full_page_html = formatted_html
-	full_page_html += generate_drag_and_drop_js()
+	full_page_html += generate_drag_and_drop_js(crc16_text)
 	full_page_html += generate_check_answers_js(crc16_text)
 	full_page_html += javascript_functions.add_reset_game_javascript(crc16_text)
 	return full_page_html
