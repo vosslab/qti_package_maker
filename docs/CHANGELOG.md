@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-01-19
+
+### Changed
+- Replace yaml.load usage with a safe loader path that preserves duplicate key checks.
+- Update unit tests to use pytest tmp_path instead of hardcoded /tmp paths for Bandit compliance.
+
 ## 2026-01-16
 
 ### Changed

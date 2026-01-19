@@ -7,9 +7,10 @@ import pytest
 from tools import bbq_converter
 
 
-def test_extract_core_name_success():
+def test_extract_core_name_success(tmp_path):
 	assert bbq_converter.extract_core_name("bbq-biology-questions.txt") == "biology"
-	assert bbq_converter.extract_core_name("/tmp/bbq-chem-questions.txt") == "chem"
+	bbq_path = tmp_path / "bbq-chem-questions.txt"
+	assert bbq_converter.extract_core_name(str(bbq_path)) == "chem"
 
 
 def test_extract_core_name_rejects_bad_names():

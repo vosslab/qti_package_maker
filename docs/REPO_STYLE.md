@@ -12,7 +12,7 @@ Repo-wide conventions for this project and related repos.
 ## Naming
 - Use SCREAMING_SNAKE_CASE for Markdown docs filenames, with the .md extension
 - For non-Markdown filenames, use only lowercase ASCII letters, numbers, and underscores.
-- Prefer snake_case for most filenames. Avoid CamelCase in filenames. 
+- Prefer snake_case for most filenames. Avoid CamelCase in filenames.
 - Use underscores between words and avoid spaces.
 - Use `.md` for docs, `.sh` for shell, `.py` for Python.
 - Keep filenames descriptive, and consistent with the primary thing the file provides.

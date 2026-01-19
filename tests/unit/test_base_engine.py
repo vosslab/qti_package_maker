@@ -62,9 +62,9 @@ def test_process_item_bank_empty():
 	assert engine.process_random_item_from_item_bank(empty_bank) is None
 
 
-def test_validate_write_item_module_accepts_correct_path():
+def test_validate_write_item_module_accepts_correct_path(tmp_path):
 	write_item_module = types.SimpleNamespace()
-	write_item_module.__file__ = "/tmp/dummy/write_item.py"
+	write_item_module.__file__ = str(tmp_path / "dummy" / "write_item.py")
 	def mc_writer(item_cls):
 		return "ok"
 	write_item_module.MC = mc_writer
@@ -72,9 +72,9 @@ def test_validate_write_item_module_accepts_correct_path():
 	engine.validate_write_item_module()
 
 
-def test_validate_write_item_module_rejects_wrong_path():
+def test_validate_write_item_module_rejects_wrong_path(tmp_path):
 	write_item_module = types.SimpleNamespace()
-	write_item_module.__file__ = "/tmp/not_dummy/write_item.py"
+	write_item_module.__file__ = str(tmp_path / "not_dummy" / "write_item.py")
 	def mc_writer(item_cls):
 		return "ok"
 	write_item_module.MC = mc_writer
@@ -83,9 +83,9 @@ def test_validate_write_item_module_rejects_wrong_path():
 		engine.validate_write_item_module()
 
 
-def test_get_available_question_types():
+def test_get_available_question_types(tmp_path):
 	write_item_module = types.SimpleNamespace()
-	write_item_module.__file__ = "/tmp/dummy/write_item.py"
+	write_item_module.__file__ = str(tmp_path / "dummy" / "write_item.py")
 	def mc_writer(item_cls):
 		return "ok"
 	def hidden_writer(item_cls):
@@ -97,9 +97,9 @@ def test_get_available_question_types():
 	assert "MC" in available
 
 
-def test_process_item_bank_skips_unsupported(capsys):
+def test_process_item_bank_skips_unsupported(capsys, tmp_path):
 	write_item_module = types.SimpleNamespace()
-	write_item_module.__file__ = "/tmp/dummy/write_item.py"
+	write_item_module.__file__ = str(tmp_path / "dummy" / "write_item.py")
 	def mc_writer(item_cls):
 		return "ok"
 	write_item_module.MC = mc_writer
@@ -113,9 +113,9 @@ def test_process_item_bank_skips_unsupported(capsys):
 	assert items == ["ok"]
 
 
-def test_process_random_item_does_not_reorder():
+def test_process_random_item_does_not_reorder(tmp_path):
 	write_item_module = types.SimpleNamespace()
-	write_item_module.__file__ = "/tmp/dummy/write_item.py"
+	write_item_module.__file__ = str(tmp_path / "dummy" / "write_item.py")
 	def mc_writer(item_cls):
 		return "ok"
 	write_item_module.MC = mc_writer
