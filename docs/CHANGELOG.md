@@ -6,6 +6,8 @@
 - Replace yaml.load usage with a safe loader path that preserves duplicate key checks.
 - Update unit tests to use pytest tmp_path instead of hardcoded /tmp paths for Bandit compliance.
 - Escape non-ISO-8859-1 characters in html_selftest HTML output with numeric entities.
+- Add tests dir to sys.path in pytest conftest to allow local test imports.
+- Use git rev-parse to determine REPO_ROOT in pytest conftest.
 
 ## 2026-01-16
 

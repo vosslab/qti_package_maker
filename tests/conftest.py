@@ -1,12 +1,19 @@
 # Standard Library
 import os
+import subprocess
 import sys
 
 # Pip3 Library
 import pytest
 
 
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = subprocess.check_output(
+	["git", "rev-parse", "--show-toplevel"],
+	text=True,
+).strip()
+TESTS_DIR = os.path.abspath(os.path.dirname(__file__))
+if TESTS_DIR not in sys.path:
+	sys.path.insert(0, TESTS_DIR)
 if REPO_ROOT not in sys.path:
 	sys.path.insert(0, REPO_ROOT)
 
