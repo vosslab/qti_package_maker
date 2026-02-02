@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-02-02
+
+### Added
+- Add tests/test_strip_prefix.py to guard decimal handling in prefix stripping helpers.
+- Expand decimal cases in tests/test_strip_prefix.py for numeric prefixes like 0.0089 and 12.5.
+
+### Changed
+- Restrict prefix dot matching to non-decimal cases to preserve numeric answers.
+
 ## 2026-01-19
 
 ### Changed

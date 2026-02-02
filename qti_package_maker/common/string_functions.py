@@ -173,8 +173,8 @@ def strip_crc_prefix(question_text: str) -> str:
 	return re.sub(crc_pattern, '', question_text, count=1)
 
 #==============================================================
-# Prefix: letter + (. : )) OR digit + (: )) OR digit + dot not followed by digit
-PREFIX_RE = re.compile(r'^([A-Za-z][\.\:\)]|[0-9](?:[\:\)]|\.(?!\d)))\s*')
+# Prefix: letter/digit + ) or : or dot that is not followed by a digit
+PREFIX_RE = re.compile(r'^([A-Za-z0-9](?:\)|:|\.(?!\d)))\s*')
 OUTER_TAG_RE = re.compile(r'^<(?P<tag>\w+)([^>]*)>(?P<inner>.*)</\1>$', re.IGNORECASE)
 HTML_TAG_RE = re.compile(r'<[^>]+>')
 
