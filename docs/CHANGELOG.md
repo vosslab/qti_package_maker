@@ -5,9 +5,14 @@
 ### Added
 - Add tests/test_strip_prefix.py to guard decimal handling in prefix stripping helpers.
 - Expand decimal cases in tests/test_strip_prefix.py for numeric prefixes like 0.0089 and 12.5.
+- Add tests/unit/test_bump_version.py to cover YY.MM prerelease validation.
 
 ### Changed
 - Restrict prefix dot matching to non-decimal cases to preserve numeric answers.
+- Fix YY.MM regex parsing in devel/bump_version.py for short prerelease versions.
+- Allow bare YY.MM versions in bump_version validation.
+- Treat YY.MM and YY.MM prerelease strings as version candidates in bump_version scanning.
+- Force VERSION file updates even when the existing value is not a recognized version.
 
 ## 2026-01-19
 
