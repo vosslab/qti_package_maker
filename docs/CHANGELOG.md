@@ -13,6 +13,7 @@
 - Treat YY.MM and YY.MM prerelease strings as version candidates in bump_version scanning.
 - Force VERSION file updates even when the existing value is not a recognized version.
 - Allow --update-all --set-version to proceed when multiple versions are discovered.
+- Skip pip upgrades in devel/submit_to_pypi.py to avoid Homebrew-managed pip failures.
 
 ## 2026-01-19
 
