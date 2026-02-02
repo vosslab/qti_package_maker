@@ -875,10 +875,21 @@ def main() -> None:
 		if not explicit_version:
 			raise SystemExit("--set-version requires a non-empty value.")
 
+	base_version_display = ""
 	if base_version_override:
 		base_version = base_version_override
+		base_version_display = base_version
+	elif explicit_version and args.update_all:
+		versions = sorted(set(entry["version"] for entry in entries))
+		if len(versions) == 1:
+			base_version = versions[0]
+			base_version_display = base_version
+		else:
+			base_version = ""
+			base_version_display = "multiple"
 	else:
 		base_version = choose_base_version(entries, args.source)
+		base_version_display = base_version
 
 	if base_version_override and not args.update_all:
 		known_versions = {entry["version"] for entry in entries}
@@ -887,7 +898,7 @@ def main() -> None:
 				f"Base version not found: {base_version}. Use --update-all to override."
 			)
 
-	if args.enforce_yy_mm:
+	if args.enforce_yy_mm and base_version:
 		validate_yy_mm_patch(base_version)
 	if explicit_version:
 		new_version = explicit_version
@@ -896,11 +907,15 @@ def main() -> None:
 	if args.enforce_yy_mm:
 		validate_yy_mm_patch(new_version)
 
-	print(f"Base version: {base_version}")
+	print(f"Base version: {base_version_display}")
 	print(f"New version: {new_version}")
 
-	if base_version == new_version:
-		raise SystemExit("New version matches current version. Nothing to do.")
+	if args.update_all:
+		if all(entry["version"] == new_version for entry in entries):
+			raise SystemExit("New version matches current version. Nothing to do.")
+	else:
+		if base_version == new_version:
+			raise SystemExit("New version matches current version. Nothing to do.")
 
 	if args.update_all:
 		selected = list(entries)
