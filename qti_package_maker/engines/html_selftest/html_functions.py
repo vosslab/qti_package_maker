@@ -79,6 +79,27 @@ def add_selftest_theme_css():
 .qti-choice-3 { background-color: var(--qti-choice-3-bg); color: var(--qti-choice-3-fg); }
 .qti-choice-4 { background-color: var(--qti-choice-4-bg); color: var(--qti-choice-4-fg); }
 .qti-choice-5 { background-color: var(--qti-choice-5-bg); color: var(--qti-choice-5-fg); }
+.qti-selftest ul[id^="choices_"] {
+  list-style: none;
+  padding-left: 0;
+  margin: 0 0 12px 0;
+}
+.qti-selftest ul[id^="choices_"] > li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 6px 0;
+}
+.qti-selftest ul[id^="choices_"] > li > label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.qti-selftest ul[id^="choices_"] > li > input[type="radio"],
+.qti-selftest ul[id^="choices_"] > li > input[type="checkbox"] {
+  margin: 0;
+}
 .qti-dropzone {
   background-color: var(--qti-dropzone-bg, #f8f8f8);
 }
@@ -97,6 +118,9 @@ def add_selftest_theme_css():
   background-color: var(--qti-input-bg, #ffffff);
   color: var(--qti-input-fg, inherit);
   border: 1px solid var(--qti-input-border, #999999);
+  font-size: 1.1em;
+  line-height: 1.2;
+  padding: 4px 6px;
 }
 .qti-feedback-success {
   background-color: var(--qti-success-bg, #ccffcc);

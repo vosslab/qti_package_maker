@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-02-03
+
+### Changed
+- Align html_selftest MC/MA choice inputs and labels with flex layout styling.
+- Increase html_selftest input font size and apply theme input styling to FIB inputs.
+
 ## 2026-02-02
 
 ### Added
