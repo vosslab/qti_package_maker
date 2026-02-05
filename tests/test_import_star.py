@@ -3,11 +3,12 @@ import os
 import tokenize
 
 import git_file_utils
+from get_repo_root import get_repo_root
 
 SCOPE_ENV = "REPO_HYGIENE_SCOPE"
 FAST_ENV = "FAST_REPO_HYGIENE"
 SKIP_ENV = "SKIP_REPO_HYGIENE"
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = get_repo_root()
 SKIP_DIRS = {".git", ".venv", "__pycache__", "old_shell_folder"}
 
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 2026-02-05
+
+### Added
+- Add Agent Self-Check Questions section to AGENTS.md with key questions agents should answer after reading repository guidelines.
+
+### Changed
+- Add adaptive CSS Grid layouts for html_selftest MC/MA choices based on choice count.
+- Use CSS Grid auto-fit with minmax to automatically arrange choices based on rendered width.
+- Apply compact grid (min 150px columns) for 4-5 choices, standard grid (min 200px) for 6+ choices.
+- Keep vertical layout for 2-3 choices for optimal readability.
+
 ## 2026-02-03
 
 ### Changed

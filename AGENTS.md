@@ -58,6 +58,21 @@ When making edits, document them in `docs/CHANGELOG.md`.
 See repo style in docs/REPO_STYLE.md.
 Agents may run programs in the tests folder, including smoke tests and pyflakes/mypy runner scripts.
 
+## Agent Self-Check Questions
+
+After reading this file, agents should be able to answer these questions:
+
+- **How do I run code without installing the package?** Use `source source_me_for_testing.sh` to set PYTHONPATH to the repo root.
+- **What Python version should I use?** Python 3.12 at `/opt/homebrew/opt/python@3.12/bin/python3.12`.
+- **How do I run tests?** Use `python3.12 -m pytest tests/` or run specific test files directly.
+- **What indentation style is required?** Tabs, not spaces (see `docs/PYTHON_STYLE.md`).
+- **Where do I document changes?** In `docs/CHANGELOG.md` with entries grouped by date.
+- **How do I convert a BBQ file to different formats?** Use `tools/bbq_converter.py -i <file> -s` for HTML selftest, `-1` for Canvas QTI, `--all` for all formats.
+- **What are the main item types?** MC, MA, NUM, FIB, MULTI_FIB, MATCH, ORDER (see `qti_package_maker/assessment_items/item_types.py`).
+- **Where are the engine implementations?** In `qti_package_maker/engines/<engine_name>/` with `write_item.py` and `engine_class.py`.
+- **How do I test a specific engine?** Run smoke tests like `python3.12 tests/test_all_engines.py` or engine-specific integration tests in `tests/integration/`.
+- **What style guides should I follow?** `docs/PYTHON_STYLE.md` for Python, `docs/REPO_STYLE.md` for repo conventions, `docs/MARKDOWN_STYLE.md` for docs.
+
 ## Environment
 Codex must run Python using `/opt/homebrew/opt/python@3.12/bin/python3.12` (use Python 3.12 only).
 On this user's macOS (Homebrew Python 3.12), Python modules are installed to `/opt/homebrew/lib/python3.12/site-packages/`.

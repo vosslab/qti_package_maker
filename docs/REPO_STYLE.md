@@ -47,6 +47,12 @@ Repo-wide conventions for this project and related repos.
 - Document shared helpers and modules in `docs/USAGE.md` when used across scripts.
 - Use `tests/test_pyflakes_code_lint.py` and `tests/test_ascii_compliance.py` for repo-wide lint checks, with `tests/check_ascii_compliance.py` for single-file ASCII/ISO-8859-1 checks and `tests/fix_ascii_compliance.py` for single-file fixes.
 - For smoke tests, reuse stable output folder names (for example `output_smoke/`) instead of creating one-off output directory names; reusing/overwriting avoids repeated delete-approval prompts.
+- In test scripts that need the repository root, import and use the shared `tests/get_repo_root.py` module:
+  ```python
+  from get_repo_root import get_repo_root
+  REPO_ROOT = get_repo_root()
+  ```
+  This module uses `git rev-parse --show-toplevel` and is propagated across repos automatically.
 
 ## Dependency manifests
 - Store Python standard dependencies in `pip_requirements.txt` at the repo root and developer dependencies, e.g., pytest in `pip_requirements-dev.txt`.

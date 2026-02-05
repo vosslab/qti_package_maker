@@ -18,8 +18,11 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 	html_content += html_functions.format_question_text(crc16_text, question_text)
 	# Begin the form for the multiple-choice options
 	html_content += "<form>\n"
+	# Determine the best layout class based on choice count and text length
+	layout_class = html_functions.determine_choice_layout_class(choices_list)
+	class_attr = f' class="{layout_class}"' if layout_class else ""
 	# Add an unordered list to contain the choices, identified by a unique ID
-	html_content += f"<ul id=\"choices_{crc16_text}\">\n"
+	html_content += f"<ul id=\"choices_{crc16_text}\"{class_attr}>\n"
 	# Loop through each answer choice
 	for idx, choice_text in enumerate(choices_list):
 		# Extract the choice text and whether it is the correct answer

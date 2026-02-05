@@ -90,6 +90,16 @@ def add_selftest_theme_css():
   gap: 8px;
   margin: 6px 0;
 }
+.qti-selftest ul[id^="choices_"].qti-auto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 6px 12px;
+}
+.qti-selftest ul[id^="choices_"].qti-auto-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 6px 12px;
+}
 .qti-selftest ul[id^="choices_"] > li > label {
   display: inline-flex;
   align-items: center;
@@ -270,3 +280,31 @@ def add_reset_game_button(crc16_text: str, button_text: str="Reset Game"):
 	# "Reset Game" button
 	js_function = f"resetGame_{crc16_text}"
 	return make_button(button_text, js_function, "md-button md-button--secondary custom-button qti-btn qti-btn-reset")
+
+#============================================
+def determine_choice_layout_class(choices_list: list) -> str:
+	"""
+	Determine the CSS grid class for MC/MA choice layout based on choice count.
+
+	Uses CSS Grid auto-fit to let the browser automatically arrange choices
+	based on their actual rendered width. No measurement needed in Python.
+
+	Returns one of:
+	- "" (empty string): default vertical layout (2-3 choices)
+	- "qti-auto-grid-compact": responsive grid with min 150px columns (4-5 choices)
+	- "qti-auto-grid": responsive grid with min 200px columns (6+ choices)
+	"""
+	num_choices = len(choices_list)
+
+	# For 2-3 choices, keep vertical layout (clearest to read)
+	if num_choices <= 3:
+		return ""
+
+	# For 4-5 choices, use compact grid (min 150px per choice)
+	# Will fit 2-3 columns on typical screens, adapts to actual width
+	if num_choices <= 5:
+		return "qti-auto-grid-compact"
+
+	# For 6+ choices, use standard grid (min 200px per choice)
+	# Will fit 2-4 columns depending on choice content width
+	return "qti-auto-grid"
