@@ -88,3 +88,65 @@ def test_html_selftest_order_scopes_dropzone_queries(sample_items):
 	item_cls = _build_item("ORDER", sample_items["ORDER"])
 	html_text = html_write_item.ORDER(item_cls)
 	_assert_scoped_dropzone_queries(html_text, item_cls.item_crc16)
+
+
+@pytest.mark.parametrize("num_choices,expected_class", [
+	(2, ""),  # 2 choices: vertical layout (no class)
+	(3, ""),  # 3 choices: vertical layout (no class)
+	(4, "qti-auto-grid-compact"),  # 4 choices: compact grid
+	(5, "qti-auto-grid-compact"),  # 5 choices: compact grid
+	(6, "qti-auto-grid"),  # 6 choices: standard grid
+	(7, "qti-auto-grid"),  # 7 choices: standard grid
+	(8, "qti-auto-grid"),  # 8+ choices: standard grid
+])
+def test_determine_choice_layout_class(num_choices, expected_class):
+	"""Test that determine_choice_layout_class returns correct classes for different choice counts."""
+	choices_list = [f"Choice {i}" for i in range(num_choices)]
+	result = html_functions.determine_choice_layout_class(choices_list)
+	assert result == expected_class
+
+
+@pytest.mark.parametrize("num_choices,expected_class", [
+	(3, None),  # 3 choices: no grid class expected
+	(4, "qti-auto-grid-compact"),
+	(6, "qti-auto-grid"),
+])
+def test_html_selftest_mc_adaptive_grid_classes(num_choices, expected_class):
+	"""Test that MC items get correct adaptive grid classes in HTML output."""
+	choices_list = [f"Choice {chr(65 + i)}" for i in range(num_choices)]
+	item = item_types.MC(
+		question_text="Test question",
+		choices_list=choices_list,
+		answer_text=choices_list[0]
+	)
+	html_text = html_write_item.MC(item)
+
+	if expected_class:
+		assert f'class="{expected_class}"' in html_text
+	else:
+		# For 3 choices, should have <ul id="choices_..."> with no class attribute
+		assert '<ul id="choices_' in html_text
+		assert 'class="qti-auto-grid' not in html_text
+
+
+@pytest.mark.parametrize("num_choices,expected_class", [
+	(3, None),  # 3 choices: no grid class expected
+	(4, "qti-auto-grid-compact"),
+	(6, "qti-auto-grid"),
+])
+def test_html_selftest_ma_adaptive_grid_classes(num_choices, expected_class):
+	"""Test that MA items get correct adaptive grid classes in HTML output."""
+	choices_list = [f"Choice {chr(65 + i)}" for i in range(num_choices)]
+	item = item_types.MA(
+		question_text="Select all that apply",
+		choices_list=choices_list,
+		answers_list=[choices_list[0], choices_list[1]]
+	)
+	html_text = html_write_item.MA(item)
+
+	if expected_class:
+		assert f'class="{expected_class}"' in html_text
+	else:
+		# For 3 choices, should have <ul id="choices_..."> with no class attribute
+		assert '<ul id="choices_' in html_text
+		assert 'class="qti-auto-grid' not in html_text

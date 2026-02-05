@@ -4,6 +4,7 @@
 
 ### Added
 - Add Agent Self-Check Questions section to AGENTS.md with key questions agents should answer after reading repository guidelines.
+- Add unit tests for adaptive grid layout: test_determine_choice_layout_class, test_html_selftest_mc_adaptive_grid_classes, test_html_selftest_ma_adaptive_grid_classes.
 
 ### Changed
 - Add adaptive CSS Grid layouts for html_selftest MC/MA choices based on choice count.
