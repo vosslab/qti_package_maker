@@ -14,6 +14,8 @@ def test_bbq_write_mc_basic():
 	assert item.item_crc16 in text
 	assert text.count("Correct") == 1
 	assert text.count("Incorrect") == 1
+	assert text.count("\n") <= 1
+	assert text.rstrip("\n").count("\n") == 0
 
 
 def test_bbq_write_ma_basic():

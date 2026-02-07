@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-02-06
+
+### Changed
+- Add extra blank-line spacing between major XML sections in Canvas QTI v1.2 and Blackboard QTI v2.1 outputs to improve manual readability.
+- Add unit assertions for QTI spacing patterns and reinforce BBQ text upload single-line output behavior.
+
 ## 2026-02-05
 
 ### Added

@@ -1,6 +1,7 @@
 
 # Standard Library
 import os
+import re
 import time
 import shutil
 import zipfile
@@ -16,7 +17,19 @@ from qti_package_maker.engines.blackboard_qti_v2_1 import assessment_meta
 #from qti_package_maker.engines.blackboard_qti_v2_1 import item_xml_helpers
 
 #==============
+def _add_readability_spacing(xml_text: str) -> str:
+	"""
+	Add blank lines between major QTI 2.1 XML blocks for easier manual inspection.
+	"""
+	xml_text = re.sub(r"(</responseDeclaration>\n)(\s*<outcomeDeclaration\b)", r"\1\n\2", xml_text)
+	xml_text = re.sub(r"(<outcomeDeclaration\b[^>]*\/>\n)(\s*<itemBody>)", r"\1\n\2", xml_text)
+	xml_text = re.sub(r"(</outcomeDeclaration>\n)(\s*<itemBody>)", r"\1\n\2", xml_text)
+	xml_text = re.sub(r"(</itemBody>\n)(\s*<responseProcessing\b)", r"\1\n\2", xml_text)
+	if not xml_text.endswith("\n"):
+		xml_text += "\n"
+	return xml_text
 
+#==============
 class EngineClass(base_engine.BaseEngine):
 	"""
 	Blackboard QTI 2.1 writer that packages items into a ZIP bundle.
@@ -105,7 +118,9 @@ class EngineClass(base_engine.BaseEngine):
 			# Step 4: Write the XML string to a file
 			# Open the file in write mode and save the XML data
 			with open(item_global_path, "w", encoding="utf-8") as f:
-				f.write(assessment_item_xml_string.decode("utf-8"))
+				xml_text = assessment_item_xml_string.decode("utf-8")
+				xml_text = _add_readability_spacing(xml_text)
+				f.write(xml_text)
 				self.save_count += 1
 
 
@@ -121,7 +136,9 @@ class EngineClass(base_engine.BaseEngine):
 		assessment_meta_xml_string = lxml.etree.tostring(assessment_meta_etree,
 			pretty_print=True, xml_declaration=True, encoding="UTF-8")
 		with open(self.assessment_meta_file_path, "w", encoding="utf-8") as f:
-			f.write(assessment_meta_xml_string.decode("utf-8"))
+			xml_text = assessment_meta_xml_string.decode("utf-8")
+			xml_text = _add_readability_spacing(xml_text)
+			f.write(xml_text)
 		return
 
 	#==============
@@ -133,7 +150,9 @@ class EngineClass(base_engine.BaseEngine):
 			xml_declaration=True, encoding="UTF-8")
 		manifest_path = os.path.join(self.output_dir, "imsmanifest.xml")
 		with open(manifest_path, "w", encoding="utf-8") as f:
-			f.write(manifest_xml_string.decode("utf-8"))
+			xml_text = manifest_xml_string.decode("utf-8")
+			xml_text = _add_readability_spacing(xml_text)
+			f.write(xml_text)
 		return
 
 	#==============

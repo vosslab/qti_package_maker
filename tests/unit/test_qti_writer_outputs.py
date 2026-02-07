@@ -61,6 +61,9 @@ def test_qti12_zip_layout_and_manifest(tmp_path, monkeypatch):
 		_assert_manifest_refs_present(manifest_bytes, zip_names)
 
 		items_bytes = zipf.read("canvas_qti12_questions/canvas_qti12_questions.xml")
+		items_text = items_bytes.decode("utf-8")
+		assert "</item>\n\n      <item" in items_text
+		assert "</itemmetadata>\n\n        <presentation>" in items_text
 		root = _parse_xml_bytes(items_bytes)
 		assert root.tag.endswith("questestinterop")
 
@@ -83,6 +86,9 @@ def test_qti21_zip_layout_and_manifest(tmp_path, monkeypatch):
 		_assert_manifest_refs_present(manifest_bytes, zip_names)
 
 		item_bytes = zipf.read("qti21_items/item_00001.xml")
+		item_text = item_bytes.decode("utf-8")
+		assert "</responseDeclaration>\n\n  <outcomeDeclaration" in item_text
+		assert "/>\n\n  <itemBody>" in item_text
 		item_root = _parse_xml_bytes(item_bytes)
 		assert item_root.tag.endswith("assessmentItem")
 		assert _find_first_by_local_name(item_root, "responseDeclaration") is not None
