@@ -1,5 +1,10 @@
 # Changelog
 
+## 2026-02-07
+
+### Added
+- Add temporary root note `TEMP_RDKit_QTI_IMPORT_NOTES.md` summarizing observed RDKit/script import behavior across Canvas QTI 1.2, Blackboard QTI 2.1, Blackboard BBQ text, and ADAPT QTI 1.2.
+
 ## 2026-02-06
 
 ### Changed
