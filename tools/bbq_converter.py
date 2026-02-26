@@ -4,7 +4,22 @@ import os
 import re
 import argparse
 
+import qti_package_maker
 from qti_package_maker import package_interface
+
+#=====================================================
+def _check_version():
+	repo_version_file = os.path.join(os.path.dirname(__file__), '..', 'VERSION')
+	if not os.path.isfile(repo_version_file):
+		return  # Not running from repo, skip check
+	with open(repo_version_file, 'r') as f:
+		repo_version = f.read().strip()
+	installed_version = qti_package_maker.__version__
+	if repo_version != installed_version:
+		print(f"VERSION MISMATCH: repo VERSION file says {repo_version}, "
+			f"but imported qti_package_maker is {installed_version}")
+		print("Run 'pip install -e .' from the repo root to sync.")
+		raise SystemExit(1)
 
 #=====================================================
 def parse_args(format_shortcuts) -> argparse.Namespace:
@@ -88,6 +103,8 @@ def main():
 	"""
 	Main function to handle the script execution logic.
 	"""
+	_check_version()
+
 	# Shortcuts for common formats (used for both -f and individual options)
 	format_shortcuts = {
 		'canvas_qti_v1_2':     ('-1', 'qti12', 	"Set output format to Canvas QTI v1.2"),
