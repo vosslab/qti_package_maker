@@ -6,13 +6,17 @@ Repo-wide conventions for this project and related repos.
 
 Core principles guide work in this repo. Cite them by name when making judgment calls. This file is the canonical home for all core principles; sibling docs and `AGENTS.md` should cross-reference, not restate.
 
-- **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today.
-- **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom.
 - **Focus on important issues.** Make sure we are worrying about the correct things, and not bikeshedding i.e. spending excessive time discussing trivial issues while neglecting more important ones.
-- **Prompt positively.** Tell the model what to do, not what to avoid. Small LMs can confuse negative prompting with positive instructions, which can lead to poor code and seriously flawed results.     Prefer direct instructions like "use explicit key access" over negative ones, like "do not use dict.get()"
+- **Use the scientific method.** Treat plans as hypotheses, not conclusions. Use small experiments, comparisons, and measurements to reduce uncertainty before locking in a design. Let evidence refine the plan as work proceeds.
+- **Fix the design, not the symptom.** When something behaves wrong, fix the design that allowed the problem. Do not add fallbacks, special cases, or broad try/except blocks just to hide the symptom.
+- **Long-term over short-term.** Accept a small cost now to avoid larger costs later. Prefer the durable fix over the quick patch, even when the durable fix takes more effort today.
+- **Design for adaptability.** Favor systems that can evolve as requirements and understanding change. Keep responsibilities clear and components replaceable so the software remains useful without repeated rewrites.
+- **Dream big.** Build on the ambition already present. Pursue the strongest, most durable, and most complete version of the work, then turn that ambition into practical next steps.
+- **Perfect is the enemy of good.** Prefer a good solution delivered promptly when further refinement would not materially improve the outcome. Spend additional effort where it changes correctness, durability, or user value.
 - **Atomic task decomposition.** Break hard problems into the smallest independently completable tasks. Each task should have one owner, one clear outcome, and one verification step.
-- **Be efficient with time.** Subagents and tokens are cheap, but wall time is not. Optimize for implementation time by spreading atomic tasks in parallel.
-- **Fresh subagent per task.** Give each independent task to a new subagent with a self-contained prompt. Reusing a subagent across tasks carries stale context, encourages drift, and weakens independent judgment.
+- **Prompt positively.** Tell the model what to do, not what to avoid. Small LMs can confuse negative prompting with positive instructions, which can lead to poor code and seriously flawed results.     Prefer direct instructions like "use explicit key access" over negative ones, like "do not use dict.get()"
+- **Fresh subagent per task.** Give each independent task to a new subagent with a self-contained prompt. Reusing a subagent across tasks carries stale context, encourages drift, and weakens independent judgment. When a subagent is performing suboptimal, kill and replace it rather than negotiating.
+- **Be efficient with time.** Subagents and tokens are cheap; wall time is not. Use parallel atomic tasks when the work is independent and doing so shortens implementation time.
 - **Finish the obvious.** Continue while the next safe step is defined by the plan, implied by the task, or required to verify the work. Obvious follow-on work is part of the task, not a bonus. Stop only at a real blocker, risky action, or change to the user's requested outcome.
 
 ## Repository structure
@@ -21,10 +25,6 @@ Core principles guide work in this repo. Cite them by name when making judgment 
 - Avoid deep nesting; keep paths short.
 - Keep `README.md` and `AGENTS.md` at the repo root.
 - Determine REPO_ROOT with `git rev-parse --show-toplevel`, not by deriving paths from the current working directory.
-
-## Project type marker
-
-Every repo carries `REPO_TYPE` at the repo root: one lowercase token plus newline. Tokens: `python`, `typescript`, `rust`, `swift`, `other`. Missing marker triggers detection via `tools/detect_repo_type.py`; if detection is unavailable or ambiguous, falls back to `LANG_UNKNOWN`. An unrecognized token in an existing marker (a typo or a not-yet-added type) logs a warning and falls back to `other`, rather than aborting propagation. `LANG_UNKNOWN` repos receive only universal walker-routed files (`docs/`, `tests/`, `devel/`); no `ROUTING_OVERRIDES` `exclude_repos` rule applies. The propagator (`propagate_style_guides.py` entry script + `repolib/` package: `repolib.repo.read_repo_type` reads the marker, `repolib.files.compute_propagation_plan` dispatches overlays) routes files by repo type; `reset_repo.py` writes the marker during bootstrap by calling `repolib` directly (no longer shells out to `propagate_style_guides.py`). `REPO_TYPE` is maintained after bootstrap; it controls future propagation behavior, not just initial scaffolding. File location is the primary routing determinant: every file under `templates/<type>/` ships to that type, files under `docs/`, `tests/`, and `devel/` ship universally. `docs/PYTHON_STYLE.md` ships to all repo types. The only routing exception encoded in `ROUTING_OVERRIDES` is `exclude_repos` (blocks a file from shipping back to its source repo). Conditional overlays (`_folder` convention, see `meta/docs/PROPAGATION_RULES.md`) are selected by a `conditional_overlays` manifest rule. A shared overlay routes one or more files under `templates/shared/<path>` to a chosen SET of repo types via a `shared_overlays` manifest rule (named `paths`, `repo_types`, and an optional `lacks_file` presence condition that ships only when a marker file is absent at the consumer); every `templates/shared/` file must be named by a rule or the shared walk raises. All propagation manifests live in `meta/propagation/manifests.yaml`. `swift` currently ships universal files only (no `templates/swift/` overlay); future swift-specific files are added by folder location (`templates/swift/<path>`) with no code change required.
 
 ## AGENTS.md files
 
@@ -88,6 +88,12 @@ Preferred structure:
 ## Pytest failure triage
 - For pytest test-writing rules, commands, and failure triage, see [PYTEST_STYLE.md](PYTEST_STYLE.md).
 
+## Source file size
+- Tracked authored source files stay under 1000 physical lines: 999 passes; 1000 fails.
+  `tests/test_source_file_line_limit.py` defines the scope.
+- Managers may exempt tracked external sources in `tests/source_file_line_limit_overrides.txt`,
+  one exact repo-relative path per line.
+
 ## Changelog rotation
 - Rotate `docs/CHANGELOG.md` when it reaches about 1000 lines (`wc -l docs/CHANGELOG.md`).
 - Keep complete day blocks together. Do not split entries from the same `## YYYY-MM-DD` heading across files.
@@ -134,7 +140,7 @@ Preferred structure:
 - When PATCH == 0, use shorthand `25.02b1` instead of `25.02.0b1`
 - Prefer zero-padded 0Y.0M for readability and lexicographic sorting. Packaging tools may normalize 25.02.* to 25.2.*; this does not affect version ordering.
 - Reference: [PyPA version specifiers](https://packaging.python.org/en/latest/specifications/version-specifiers/).
-- When `devel/make_release.py` is present (propagated from `templates/shared/devel/`), use it to
+- When `devel/make_release.py` is present, use it to
   prepare GitHub source releases: it checks CalVer freshness, ensures the version tag is free,
   verifies the committed LICENSE, builds and spot-checks zip and tgz archives, generates an
   LLM-drafted release description, and optionally writes `docs/RELEASE_HISTORY.md` and
@@ -158,6 +164,33 @@ Preferred structure:
   REPO_ROOT = file_utils.get_repo_root()
   ```
   This module uses `git rev-parse --show-toplevel` and is propagated across repos automatically.
+
+### source_me.sh contract
+
+- `source_me.sh` is a bash script sourced into your shell, not run directly. It
+  enforces bash, sources `~/.bashrc`, and exports the Python runtime flags
+  `PYTHONUNBUFFERED` and `PYTHONDONTWRITEBYTECODE`.
+- It arrives as a starter seed: each repo owns its copy after bootstrap, so
+  local edits stay put and are never overwritten.
+- Ordering invariant: `source ~/.bashrc` runs FIRST, before any repo-specific
+  environment extension. `~/.bashrc` applies local shell setup and clears
+  `PYTHONPATH`, so any `PYTHONPATH` line must come after it or be wiped.
+- The seed sets no `PYTHONPATH`. That omission is deliberate: most repos need
+  none, and a broad path would mask missing-dependency bugs. Whether a repo
+  needs one depends on that repo alone (does it ship a repo-root package), so
+  each repo adds the line for itself.
+- When a repo needs its repo-root modules importable while commands run from a
+  subdirectory without installing the repo -- most commonly a repo-root package
+  imported package-qualified (for example `import mypackage.module`), or scripts
+  under `tools/` or `tests/` that import repo-root modules -- uncomment the
+  canonical extension block in that repo's `source_me.sh`. Use exactly this
+  idiom (it assumes the repo is inside a Git work tree):
+  ```bash
+  # Must come after sourcing ~/.bashrc, which clears PYTHONPATH.
+  REPO_ROOT="$(git rev-parse --show-toplevel)"
+  export PYTHONPATH="$REPO_ROOT${PYTHONPATH:+:$PYTHONPATH}"
+  unset REPO_ROOT
+  ```
 
 ## Dependency manifests
 - Store Python standard dependencies in `pip_requirements.txt` at the repo root and developer dependencies, e.g., pytest in `pip_requirements-dev.txt`.
@@ -206,6 +239,7 @@ Preferred structure:
 - `docs/AUTHORS.md`: primary maintainers and notable contributors
 - `docs/CLAUDE_HOOK_USAGE_GUIDE.md`: generated hook behavior reference, not a repo style source of truth. If repo style differs from hook examples, update repo style docs and recommend a hook rule update upstream.
 - `docs/MARKDOWN_STYLE.md`: Markdown writing rules and formatting conventions for this repo.
+- `docs/PLAYWRIGHT_TEST_STYLE.md`: browser test authoring style for repos that serve HTML.
 - `docs/PYTEST_STYLE.md`: pytest test-writing rules, commands, fixture policy, and failure triage.
 - `docs/PYTHON_STYLE.md`: Python formatting, linting, and project-specific conventions.
 - `docs/REPO_STYLE.md`: repo-level organization, conventions, and file placement rules.

@@ -12,7 +12,9 @@ report_*.txt
 # === UNIVERSAL ===
 output*/
 _temp*.?*
-OTHER_REPOS/
+/OTHER_REPOS/
+/LOCAL_ONLY/
+
 # === PYTHON ===
 build/
 dist/
@@ -20,6 +22,7 @@ sdist/
 *.egg
 *.egg-info/
 site/
+
 # === NODE / PLAYWRIGHT ===
 node_modules/
 npm-debug.log*
@@ -29,5 +32,7 @@ playwright-report/
 # === LOCAL DATA ===
 # local-only evidence and sample trees, not tracked
 SAMPLES/
+
+
 
 

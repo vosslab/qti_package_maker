@@ -1,6 +1,7 @@
 # Standard Library
 import os
 import stat
+import pathlib
 
 # PIP3 modules
 import pytest
@@ -44,9 +45,13 @@ def read_shebang(path: str) -> str:
 	if line.startswith(b"#!["):
 		return ""
 	try:
-		return line.decode("utf-8").rstrip("\n")
+		decoded = line.decode("utf-8").rstrip("\n")
 	except UnicodeDecodeError:
-		return line.decode("utf-8", errors="replace").rstrip("\n")
+		decoded = line.decode("utf-8", errors="replace").rstrip("\n")
+	# WeBWorK loads this exact .conf heading as configuration data.
+	if decoded == "#!perl" and path.endswith(".conf"):
+		return ""
+	return decoded
 
 
 #============================================
@@ -206,3 +211,13 @@ def test_shebang_executable_alignment(path: str) -> None:
 	assert rel not in VIOLATIONS_BY_FILE, file_utils.format_violation_assert_message(
 		rel, VIOLATIONS_BY_FILE.get(rel, []), REPORT_NAME
 	)
+
+
+#============================================
+def test_webwork_perl_configuration_marker_is_not_a_shebang(
+	tmp_path: pathlib.Path,
+) -> None:
+	"""Treat WeBWorK's exact `#!perl` .conf heading as configuration data."""
+	path = tmp_path / "course.conf"
+	path.write_bytes(b"#!perl\n")
+	assert read_shebang(str(path)) == ""

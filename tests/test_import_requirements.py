@@ -36,6 +36,7 @@ IMPORT_REQUIREMENT_ALIASES = {
 	"crypto": "pycryptodome",
 	"cv2": "opencv-python",
 	"docx": "python-docx",
+	"fitz": "pymupdf",
 	"google": "google-api-python-client",
 	"googleapiclient": "google-api-python-client",
 	"imdb": "IMDbPY",
