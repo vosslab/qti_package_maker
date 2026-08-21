@@ -20,6 +20,7 @@ import zipfile
 
 # QTI Package Maker
 from qti_package_maker.engines.blackboard_export_zip import read_package
+from qti_package_maker.engines.blackboard_export_zip import read_items
 
 import file_utils
 
@@ -131,7 +132,7 @@ def test_repair_html_void_elements_lowercases_mixed_case_markup() -> None:
 	# docstring overclaimed no attributes were altered). Pin that normalization
 	# so a future docstring or behavior drift is caught here.
 	mixed_case_html = '<STRONG>bold</STRONG> <IMG SRC="a.png">'
-	repaired_html = read_package._repair_html_void_elements(mixed_case_html)
+	repaired_html = read_items._repair_html_void_elements(mixed_case_html)
 	assert "<strong>bold</strong>" in repaired_html
 	assert '<img src="a.png"' in repaired_html
 	assert "STRONG" not in repaired_html

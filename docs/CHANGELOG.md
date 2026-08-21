@@ -1,5 +1,15 @@
 # Changelog
 
+## 2026-08-20
+
+### Fixes and Maintenance
+
+- Split the Blackboard export ZIP reader into package orchestration, media recovery, and item XML
+  parsing modules without changing its public `read_items_from_file()` interface. Moved the HTML
+  void-element repair test to the item-parsing module where that behavior now lives.
+- Added manager-approved source-file-limit overrides for `floating-wiggling-castle.md` and
+  `rust-port-plan.md`; the Blackboard reader is now below the repository line limit.
+
 ## 2026-07-14
 
 ### Behavior or Interface Changes
