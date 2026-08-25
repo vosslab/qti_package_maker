@@ -90,8 +90,13 @@ def generate_javascript(crc16_text: str) -> str:
 	javascript_html += "\tconst totalCorrect = correctOptions.length;\n"
 	javascript_html += "\tconst totalSelected = selectedOptions.length;\n"
 
+	# Handle an empty selection before the broader too-few condition
+	javascript_html += "\tif (totalSelected === 0) {\n"
+	javascript_html += "\t\tresultDiv.className = 'qti-feedback-result';\n"
+	javascript_html += "\t\tresultDiv.textContent = 'Please select an answer.';\n"
+
 	# Check for a fully correct answer: engage success pill and disable Check
-	javascript_html += "\tif (numCorrectSelected === totalCorrect && totalSelected === totalCorrect) {\n"
+	javascript_html += "\t} else if (numCorrectSelected === totalCorrect && totalSelected === totalCorrect) {\n"
 	javascript_html += "\t\tresultDiv.className = 'qti-feedback-result qti-feedback-success';\n"
 	javascript_html += "\t\tresultDiv.textContent = 'CORRECT';\n"
 	javascript_html += "\t\tif (checkBtn) { checkBtn.disabled = true; }\n"
@@ -110,11 +115,6 @@ def generate_javascript(crc16_text: str) -> str:
 	javascript_html += "\t} else if (totalSelected === totalCorrect && numCorrectSelected < totalCorrect) {\n"
 	javascript_html += "\t\tresultDiv.className = 'qti-feedback-result qti-feedback-error';\n"
 	javascript_html += "\t\tresultDiv.textContent = `You selected the right number of choices, but only ${numCorrectSelected} out of ${totalCorrect} are correct.`;\n"
-
-	# Case: No selection: neutral pill
-	javascript_html += "\t} else if (totalSelected === 0) {\n"
-	javascript_html += "\t\tresultDiv.className = 'qti-feedback-result';\n"
-	javascript_html += "\t\tresultDiv.textContent = 'Please select an answer.';\n"
 
 	javascript_html += "\t}\n"  # Close the if statement
 

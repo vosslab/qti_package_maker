@@ -27,7 +27,7 @@ class EngineClass(base_engine.BaseEngine):
 	"""
 	media_policy = media_assets.POLICY_PACKAGE
 
-	def __init__(self, package_name: str, verbose: bool=False) -> None:
+	def __init__(self, package_name: str, verbose: bool = False) -> None:
 		# Call the base engine constructor
 		super().__init__(package_name, verbose)
 		# set the write_item module (required)
@@ -43,15 +43,18 @@ class EngineClass(base_engine.BaseEngine):
 		raise NotImplementedError
 
 	#==============
-	def save_package(self, item_bank: ItemBank, outfile: str = None) -> str:
+	def save_package(self, item_bank: ItemBank, outfile: str | None = None) -> str:
 		"""
 		Write one randomly selected item to an HTML self-test file.
 		"""
-		outfile = self.get_outfile_name('selftest', 'html', outfile)
+		if len(item_bank) == 0:
+			raise ValueError("Cannot save html_selftest output from an empty item bank.")
 		item_cls, formatted_html_text = self._pick_and_render_random_item(item_bank)
-		if formatted_html_text is not None:
-			formatted_html_text = self._embed_images_as_data_uris(
-				item_bank, item_cls, formatted_html_text)
+		if item_cls is None or formatted_html_text is None:
+			raise ValueError("No supported assessment item could be rendered by html_selftest.")
+		formatted_html_text = self._embed_images_as_data_uris(
+			item_bank, item_cls, formatted_html_text)
+		outfile = self.get_outfile_name('selftest', 'html', outfile)
 		with open(outfile, "w") as f:
 			# only one problem per file, only write one
 			f.write(formatted_html_text)
@@ -68,9 +71,6 @@ class EngineClass(base_engine.BaseEngine):
 		Mirrors BaseEngine.process_random_item_from_item_bank, but also returns
 		the chosen item so its CRC can label itemized media warnings.
 		"""
-		if len(item_bank) == 0:
-			print("No items to write out skipping")
-			return None, None
 		items = list(item_bank)
 		random.shuffle(items)
 		for item_cls in items:

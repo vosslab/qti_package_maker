@@ -1,4 +1,8 @@
 # Standard Library
+import json
+
+# Pip3 Library
+import lxml.html
 import pytest
 
 # QTI Package Maker
@@ -37,6 +41,21 @@ def test_html_selftest_outputs_are_valid_html(sample_items: dict, item_type: str
 	qti_package_maker.engines.html_selftest.html_functions.validate_selftest_html(html_text)
 
 
+@pytest.mark.parametrize("item_type", ["MC", "MA", "MATCH", "NUM", "FIB", "MULTI_FIB", "ORDER"])
+def test_html_selftest_output_lines_have_no_trailing_whitespace(
+	sample_items: dict, item_type: str
+) -> None:
+	item_cls = _build_item(item_type, sample_items[item_type])
+	html_text = getattr(qti_package_maker.engines.html_selftest.write_item, item_type)(item_cls)
+	assert all(line == line.rstrip(" \t") for line in html_text.split("\n"))
+
+
+def test_html_selftest_wrapper_removes_authored_trailing_whitespace() -> None:
+	raw_html = "<p>First line   \nSecond line\t</p>   \n"
+	html_text = qti_package_maker.engines.html_selftest.write_item._wrap_selftest_html(raw_html)
+	assert all(line == line.rstrip(" \t") for line in html_text.split("\n"))
+
+
 def test_html_selftest_theme_css_contains_palette_selectors(sample_items: dict) -> None:
 	item_cls = _build_item("MC", sample_items["MC"])
 	html_text = qti_package_maker.engines.html_selftest.write_item.MC(item_cls)
@@ -61,6 +80,31 @@ def test_html_selftest_num_input_uses_theme_class(sample_items: dict) -> None:
 	item_cls = _build_item("NUM", sample_items["NUM"])
 	html_text = qti_package_maker.engines.html_selftest.write_item.NUM(item_cls)
 	assert "qti-input" in html_text
+
+
+def test_html_selftest_mc_fragments_have_unique_element_ids() -> None:
+	item_one = qti_package_maker.assessment_items.item_types.MC(
+		"First question?", ["Alpha", "Beta"], "Alpha")
+	item_two = qti_package_maker.assessment_items.item_types.MC(
+		"Second question?", ["Gamma", "Delta"], "Gamma")
+	combined_html = "<div>"
+	combined_html += qti_package_maker.engines.html_selftest.write_item.MC(item_one)
+	combined_html += qti_package_maker.engines.html_selftest.write_item.MC(item_two)
+	combined_html += "</div>"
+	document = lxml.html.fromstring(combined_html)
+	element_ids = document.xpath("//*[@id]/@id")
+	assert len(element_ids) == len(set(element_ids))
+
+
+def test_multi_fib_answers_round_trip_through_html_attribute() -> None:
+	answers = ["O'Reilly", 'He said "yes"']
+	item_cls = qti_package_maker.assessment_items.item_types.MULTI_FIB(
+		"Complete [city].", {"city": answers})
+	html_text = qti_package_maker.engines.html_selftest.write_item.MULTI_FIB(item_cls)
+	document = lxml.html.fromstring(html_text)
+	input_element = next(iter(document.xpath("//input[contains(@class, 'fib-blank')]")), None)
+	assert input_element is not None
+	assert json.loads(input_element.attrib["data-answers"]) == answers
 
 
 def _assert_scoped_dropzone_queries(html_text: str, crc16_text: str) -> None:

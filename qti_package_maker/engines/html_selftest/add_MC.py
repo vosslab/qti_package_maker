@@ -32,13 +32,14 @@ def generate_core_html(crc16_text: str, question_text: str, choices_list: list, 
 		# Add a list item to contain the radio button and label
 		html_content += "  <li>\n"
 		# Add an input element of type "radio"
-		html_content += f"    <input type=\"radio\" id=\"option{idx}\" "
+		option_id = f"option_{crc16_text}_{idx}"
+		html_content += f"    <input type=\"radio\" id=\"{option_id}\" "
 		# Set the name attribute to group radio buttons together under the question's hex value
 		html_content += f" name=\"answer_{crc16_text}\" "
 		# Store whether the choice is correct as a custom data attribute
 		html_content += f" data-correct=\"{str(is_correct_bool).lower()}\">\n"
 		# Add a label with bold letter prefix and text wrapped in span for proper sub/sup rendering
-		html_content += f"    <label for=\"option{idx}\">"
+		html_content += f"    <label for=\"{option_id}\">"
 		html_content += f"<span style=\"font-weight: bold;\">{choice_letter}.</span> "
 		html_content += f"<span>{choice_text}</span></label>\n"
 		# Close the list item

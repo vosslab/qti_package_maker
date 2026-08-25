@@ -1,9 +1,10 @@
 
 # Standard Library
 import re
-import lxml.etree
+import math
 
 # Pip3 Library
+import lxml.etree
 
 # QTI Package Maker
 # none allowed here!!
@@ -185,10 +186,16 @@ def validate_NUM(question_text: str, answer_float: float, tolerance_float: float
 	Validate a Numeric question.
 	"""
 	validate_string_text(question_text, 'question_text')
-	if not isinstance(answer_float, (int, float)):
-		raise ValueError("Answer must be a number.")
-	if not isinstance(tolerance_float, (int, float)) or tolerance_float < 0:
-		raise ValueError("Tolerance must be a non-negative number.")
+	if isinstance(answer_float, bool) or not isinstance(answer_float, (int, float)):
+		raise ValueError("Answer must be a finite number.")
+	if isinstance(answer_float, float) and not math.isfinite(answer_float):
+		raise ValueError("Answer must be a finite number.")
+	if isinstance(tolerance_float, bool) or not isinstance(tolerance_float, (int, float)):
+		raise ValueError("Tolerance must be a finite non-negative number.")
+	if isinstance(tolerance_float, float) and not math.isfinite(tolerance_float):
+		raise ValueError("Tolerance must be a finite non-negative number.")
+	if tolerance_float < 0:
+		raise ValueError("Tolerance must be a finite non-negative number.")
 	return True
 
 #========================================================

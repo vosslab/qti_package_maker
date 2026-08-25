@@ -12,10 +12,19 @@ from qti_package_maker.engines.html_selftest import add_ORDER
 from qti_package_maker.engines.html_selftest import html_functions
 
 #==============================================================
+def _strip_line_trailing_whitespace(html_text: str) -> str:
+	"""Remove spaces and tabs from every emitted HTML line ending."""
+	clean_lines = [line.rstrip(" \t") for line in html_text.split("\n")]
+	clean_html = "\n".join(clean_lines)
+	return clean_html
+
+#==============================================================
 def _wrap_selftest_html(html_text: str) -> str:
 	theme_css = html_functions.add_selftest_theme_css()
 	wrapped = f"{theme_css}<div class=\"qti-selftest\">\n{html_text}\n</div>\n"
-	return html_functions.escape_non_ascii(wrapped)
+	ascii_html = html_functions.escape_non_ascii(wrapped)
+	clean_html = _strip_line_trailing_whitespace(ascii_html)
+	return clean_html
 
 #==============================================================
 def MC(item_cls: item_types.MC) -> str:

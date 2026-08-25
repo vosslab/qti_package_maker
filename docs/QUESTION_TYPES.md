@@ -24,8 +24,9 @@ assessments. Each type uses a consistent set of inputs.
 ## Numerical Entry (NUM)
 **Inputs:**
 - `question_text` (str)
-- `answer_float` (float): The correct numerical answer.
-- `tolerance_float` (float): Accepted tolerance range.
+- `answer_float` (int or float): The finite numerical answer; Boolean values are rejected.
+- `tolerance_float` (int or float): A finite, non-negative accepted tolerance range; Boolean
+  values are rejected.
 - `tolerance_message` (bool, default=True): Message for tolerance handling.
 
 ## Fill-in-the-Blank (FIB)

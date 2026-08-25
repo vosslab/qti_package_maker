@@ -3,6 +3,7 @@ import base64
 import pathlib
 
 # Pip3 Library
+import pytest
 
 # QTI Package Maker
 from qti_package_maker.assessment_items import item_bank
@@ -73,3 +74,13 @@ def test_save_package_data_uri_decodes_back_to_original_bytes(tmp_path: pathlib.
 	data_uri_end = written_text.index('"', data_uri_start)
 	encoded_payload = written_text[data_uri_start:data_uri_end]
 	assert base64.b64decode(encoded_payload) == PNG_BYTES
+
+
+#============================================
+def test_save_package_rejects_empty_bank_before_creating_file(tmp_path: pathlib.Path) -> None:
+	bank = item_bank.ItemBank()
+	engine = engine_class.EngineClass("sample", verbose=False)
+	outfile = tmp_path / "selftest-empty.html"
+	with pytest.raises(ValueError, match="empty item bank"):
+		engine.save_package(bank, outfile=str(outfile))
+	assert not outfile.exists()

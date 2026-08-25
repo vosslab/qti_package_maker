@@ -1,5 +1,22 @@
 # Changelog
 
+## 2026-08-25
+
+### Fixes and Maintenance
+
+- Isolated HTML self-test controls by item CRC, made MULTI_FIB answer attributes safe for quotes,
+  restored the MA empty-selection message, rejected Boolean and non-finite numeric answers, and
+  made direct empty-bank saves fail before creating an output file. Added focused regressions for
+  each failure without changing result strings, image handling, or inherited host-page fonts.
+  The shared HTML wrapper now also removes trailing spaces and tabs from every emitted line. Audit
+  follow-up removed an unreachable empty-bank branch, documented the NUM validation contract, and
+  pruned two implementation-text-coupled tests.
+
+### Developer Tests and Notes
+
+- Targeted HTML output, media, validation, pyflakes, typing, and repository whitespace gates: 752
+  passed. Full repository suite: 3072 passed.
+
 ## 2026-08-20
 
 ### Fixes and Maintenance

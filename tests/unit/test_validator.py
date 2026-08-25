@@ -91,6 +91,22 @@ def test_validate_num_rejects_negative_tolerance() -> None:
 		validator.validate_NUM("Q?", 3.14, -0.01)
 
 
+@pytest.mark.parametrize("answer_float,tolerance_float", [
+	(True, 0.0),
+	(1.0, False),
+	(float("nan"), 0.0),
+	(float("inf"), 0.0),
+	(float("-inf"), 0.0),
+	(1.0, float("nan")),
+	(1.0, float("inf")),
+])
+def test_validate_num_rejects_non_finite_and_boolean_values(
+	answer_float: float | bool, tolerance_float: float | bool
+) -> None:
+	with pytest.raises(ValueError):
+		validator.validate_NUM("Q?", answer_float, tolerance_float)
+
+
 def test_validate_match_accepts_valid() -> None:
 	assert validator.validate_MATCH("Match the fruit to their color?", ["orange", "strawberry"], ["orange", "red"]) is True
 
